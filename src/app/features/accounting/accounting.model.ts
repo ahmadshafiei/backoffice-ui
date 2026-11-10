@@ -29,7 +29,7 @@ export const ACCOUNT_TYPE_LABEL: Record<number, string> = {
 export const NORMAL_BALANCE_LABEL: Record<number, string> = {
   [NormalBalance.Debit]: 'بدهکار',
   [NormalBalance.Credit]: 'بستانکار',
-  [NormalBalance.Both]: 'هر دو',
+  [NormalBalance.Both]: 'بد/بس',
 };
 
 export const ACCOUNT_TYPE_OPTIONS: readonly SelectOption[] =

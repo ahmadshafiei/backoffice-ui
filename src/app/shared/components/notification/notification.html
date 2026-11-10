@@ -1,4 +1,4 @@
-<div class="stack" role="region" aria-label="اعلان‌ها">
+<div #stack class="stack" popover="manual" role="region" aria-label="اعلان‌ها">
   @for (toast of api.toasts(); track toast.id) {
     <div class="toast" [class]="'toast ' + toast.kind" [attr.role]="toast.kind === 'error' ? 'alert' : 'status'">
       <app-icon [name]="toast.kind === 'success' ? 'circle-check' : toast.kind === 'error' ? 'circle-alert' : 'info'" [size]="18" />

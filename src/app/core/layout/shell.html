@@ -6,11 +6,11 @@
     <app-menu [groups]="menu" [collapsed]="layout.collapsed() && !layout.isMobile()"
       (navigated)="layout.closeDrawer()" (expandRequested)="layout.setCollapsed(false)" />
   </aside>
+
   <div class="scrim" (click)="layout.closeDrawer()" aria-hidden="true"></div>
 
   <main class="content" id="main" tabindex="-1">
     <div class="page"><router-outlet /></div>
   </main>
-
   <app-footer class="footer" />
 </div>

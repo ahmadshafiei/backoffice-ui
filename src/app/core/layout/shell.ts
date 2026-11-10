@@ -5,10 +5,11 @@ import { Footer } from './footer/footer';
 import { LayoutStore } from './layout-store';
 import { MENU } from './menu.config';
 import { Navbar } from './navbar/navbar';
+import { Notification } from '../../shared/components/notification/notification';
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, Navbar, Footer, Menu],
+  imports: [RouterOutlet, Navbar, Footer, Menu, Notification],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './shell.html',
   styleUrl: './shell.css',

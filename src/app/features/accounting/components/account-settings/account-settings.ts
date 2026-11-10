@@ -61,14 +61,12 @@ export class AccountSettingsPage {
     try {
       const settings = await firstValueFrom(this.api.getSettings());
       this.form.reset({
-        // The GET response names the first field `groupAccountCodeLength` (the PUT body does not).
         groupAccountLength: this.asText(settings.groupAccountCodeLength),
         generalAccountLength: this.asText(settings.generalAccountLength),
         subsidiaryAccountLength: this.asText(settings.subsidiaryAccountLength),
         detailAccountLength: this.asText(settings.detailAccountLength),
       });
     } catch {
-      // The interceptor already showed the error; keep the page usable for a retry.
       this.loadFailed.set(true);
     } finally {
       this.form.enable();

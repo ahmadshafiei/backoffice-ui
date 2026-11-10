@@ -12,7 +12,7 @@ export class NotificationApi {
 
   success(message: string): void { this.push('success', message, 4000); }
   info(message: string): void { this.push('info', message, 4000); }
-  error(message: string): void { this.push('error', message, 8000); }
+  error(message: string): void { this.push('error', message, 4000); }
 
   dismiss(id: number): void {
     this.toasts.update((list) => list.filter((t) => t.id !== id));

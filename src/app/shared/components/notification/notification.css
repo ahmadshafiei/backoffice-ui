@@ -1,17 +1,88 @@
 .stack {
-  position: fixed; z-index: 100;
-  inset-inline-start: 16px; bottom: calc(var(--footer-h) + 16px);
-  display: grid; gap: 8px; width: min(380px, calc(100vw - 32px)); pointer-events: none;
+  position: fixed;
+  z-index: 100;
+  inset-block-start: auto;
+  inset-block-end: calc(var(--footer-h) + 16px);
+  inset-inline-start: 16px;
+  inset-inline-end: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  width: min(380px, calc(100vw - 32px));
+  max-height: none;
+  overflow: visible;
+  display: grid;
+  gap: 8px;
+  pointer-events: none;
 }
+
+/* Only browsers with the Popover API hide it while closed; older ones just keep the z-index-less stack. */
+
+@supports selector(:popover-open) {
+
+  .stack {
+    display: none;
+  }
+
+  .stack:popover-open {
+    display: grid;
+  }
+
+}
+
 .toast {
-  pointer-events: auto; display: flex; align-items: flex-start; gap: 10px; padding: 10px 10px 10px 8px;
-  border: 1px solid var(--line); border-radius: var(--radius-panel); background: var(--surface); color: var(--ink);
-  box-shadow: var(--shadow-float); border-inline-start: 4px solid var(--primary);
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 10px 10px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-float);
+  border-inline-start: 4px solid var(--primary);
   animation: in 0.18s ease-out;
 }
-.toast app-icon { margin-top: 3px; color: var(--primary-text); }
-.toast p { flex: 1; font-size: 13.5px; line-height: 1.7; padding-top: 3px; }
-.toast .icon-btn { width: 28px; height: 28px; }
-.toast.success { border-inline-start-color: var(--success); } .toast.success app-icon { color: var(--success); }
-.toast.error { border-inline-start-color: var(--danger); } .toast.error app-icon { color: var(--danger); }
-@keyframes in { from { opacity: 0; transform: translateY(8px); } }
+
+.toast app-icon {
+  margin-top: 3px;
+  color: var(--primary-text);
+}
+
+.toast p {
+  flex: 1;
+  font-size: 13.5px;
+  line-height: 1.7;
+  padding-top: 3px;
+}
+
+.toast .icon-btn {
+  width: 28px;
+  height: 28px;
+}
+
+.toast.success {
+  border-inline-start-color: var(--success);
+}
+
+.toast.success app-icon {
+  color: var(--success);
+}
+
+.toast.error {
+  border-inline-start-color: var(--danger);
+}
+
+.toast.error app-icon {
+  color: var(--danger);
+}
+
+@keyframes in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
