@@ -1,15 +1,15 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, model, output, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NotificationApi } from '../../../core/services/notification-api';
-import { SelectField, SelectOption } from '../../../shared/components/fields/select-field';
-import { TextField } from '../../../shared/components/fields/text-field';
-import { ToggleField } from '../../../shared/components/fields/toggle-field';
-import { Modal } from '../../../shared/components/modal/modal';
+import { NotificationApi } from '../../../../core/services/notification-api';
+import { SelectField, SelectOption } from '../../../../shared/components/fields/select-field';
+import { TextField } from '../../../../shared/components/fields/text-field';
+import { ToggleField } from '../../../../shared/components/fields/toggle-field';
+import { Modal } from '../../../../shared/components/modal/modal';
 import {
   ACCOUNT_LEVEL_LABEL, ACCOUNT_TYPE_OPTIONS, Account, AccountLevel, AccountType, NORMAL_BALANCE_OPTIONS, NormalBalance,
-} from '../accounting.model';
-import { AccountsStore } from '../accounts-store';
+} from '../../accounting.model';
+import { AccountsStore } from '../../accounts-store';
 
 let nextFormId = 0;
 
@@ -44,7 +44,7 @@ export class AccountFormModal {
   protected readonly typeOptions = ACCOUNT_TYPE_OPTIONS;
   protected readonly balanceOptions = NORMAL_BALANCE_OPTIONS;
   protected readonly showParent = computed(() => this.level() !== AccountLevel.Group);
-  protected readonly showType = computed(() => this.level() !== AccountLevel.Subsidiary);
+  protected readonly showType = computed(() => this.level() == AccountLevel.Group);
   protected readonly showBalance = computed(() => this.level() !== AccountLevel.Group);
   protected readonly showDetailAllowed = computed(() => this.level() === AccountLevel.Subsidiary);
 

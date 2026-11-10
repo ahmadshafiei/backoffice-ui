@@ -6,15 +6,15 @@ import { PageHeader } from '../../../../shared/components/page-header/page-heade
 import { SearchBox } from '../../../../shared/components/search-box/search-box';
 import { FaNumberPipe } from '../../../../shared/pipes/fa-number';
 import { Account, AccountLevel, NORMAL_BALANCE_LABEL } from '../../accounting.model';
-import { AccountFormModal } from '../../components/account-form-modal';
-import { AccountListBase } from '../../components/account-list-base';
+import { AccountFormModal } from '../../components/accounts/account-form-modal';
+import { AccountListBase } from '../../components/accounts/account-list-base';
 
 @Component({
   selector: 'app-subsidiary-accounts',
   imports: [PageHeader, SearchBox, Icon, DataTable, TableCell, TableRowActions, AccountFormModal, ConfirmDialog, FaNumberPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './subsidiary-accounts.html',
-  styleUrl: '../../components/list-page.css',
+  styleUrl: '../../components/accounts/list-page.css',
 })
 export class SubsidiaryAccounts extends AccountListBase {
   protected readonly level = AccountLevel.Subsidiary;

@@ -1,9 +1,9 @@
 import { Directive, computed, inject, linkedSignal, signal } from '@angular/core';
-import { NotificationApi } from '../../../core/services/notification-api';
-import { pageCount, paginate } from '../../../shared/utils/array.utils';
-import { toEnDigits } from '../../../shared/utils/digits.utils';
-import { ACCOUNT_LEVEL_LABEL, Account, AccountLevel } from '../accounting.model';
-import { AccountsStore } from '../accounts-store';
+import { NotificationApi } from '../../../../core/services/notification-api';
+import { pageCount, paginate } from '../../../../shared/utils/array.utils';
+import { toEnDigits } from '../../../../shared/utils/digits.utils';
+import { ACCOUNT_LEVEL_LABEL, Account, AccountLevel } from '../../accounting.model';
+import { AccountsStore } from '../../accounts-store';
 
 /** State and behaviour common to the group / general / subsidiary account list pages. */
 @Directive()

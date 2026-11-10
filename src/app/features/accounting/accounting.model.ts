@@ -98,3 +98,10 @@ export interface AccountingSettings {
   subsidiaryAccountLength: number;
   detailAccountLength: number;
 }
+
+export interface UpdateAccountingSettingsRequest {
+  groupAccountLength: number;
+  generalAccountLength: number;
+  subsidiaryAccountLength: number;
+  detailAccountLength: number;
+}

@@ -11,6 +11,11 @@ export const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'accounting/group-accounts' },
       { path: 'accounting', loadChildren: () => import('./features/accounting/accounting.routes').then((m) => m.ACCOUNTING_ROUTES) },
+      {
+        path: 'system/account-settings',
+        title: 'تنظیم حساب‌ها',
+        loadComponent: () => import('./features/accounting/components/account-settings/account-settings').then((m) => m.AccountSettingsPage),
+      },
       // Menu entries that have no feature yet land on a placeholder instead of a 404.
       { path: 'online-trading', title: 'معاملات برخط', loadComponent: () => import('./core/pages/coming-soon/coming-soon').then((m) => m.ComingSoon) },
       { path: ':section/:page', title: (_route, state) => menuLabelFor(state.url) ?? 'صفحه', loadComponent: () => import('./core/pages/coming-soon/coming-soon').then((m) => m.ComingSoon) },

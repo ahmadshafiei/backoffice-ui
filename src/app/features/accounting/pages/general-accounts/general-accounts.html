@@ -2,8 +2,8 @@
 
 <section class="panel">
   <div class="toolbar">
-    <app-search-box [(value)]="search" placeholder="جستجوی نام یا کد" />
     <button type="button" class="btn btn-primary" (click)="openCreate()"><app-icon name="plus" [size]="16" />ایجاد حساب کل</button>
+    <app-search-box [(value)]="search" placeholder="جستجوی نام یا کد" />
   </div>
 
   <app-data-table [columns]="columns" [rows]="pageRows()" [total]="filtered().length" [loading]="store.loading()"
@@ -13,7 +13,7 @@
     <ng-template appCell="name" let-row><span class="name">{{ row.name }}</span></ng-template>
     <ng-template appCell="parentId" let-row>{{ parentName(row) }}</ng-template>
     <ng-template appCell="accountType" let-row>
-      <span class="chip" [class]="'chip type-' + row.accountType">{{ typeLabel[row.accountType] }}</span>
+      <span>{{ typeLabel[row.accountType] }}</span>
     </ng-template>
     <ng-template appCell="normalBalance" let-row>{{ row.normalBalance === null ? '—' : balanceLabel[row.normalBalance] }}</ng-template>
     <ng-template appCell="isActive" let-row>

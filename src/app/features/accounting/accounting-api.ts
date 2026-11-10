@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, expand, map, reduce, takeWhile } from 'rxjs';
 import {
   Account, AccountingSettings, CreateDetailClassRequest, DetailClass, ModifyAccountRequest, PagedResult,
-  RegisterAccountRequest,
+  RegisterAccountRequest, UpdateAccountingSettingsRequest,
 } from './accounting.model';
 
 const ACCOUNTS = '/api/v1/accounts';
@@ -77,7 +77,7 @@ export class AccountingApi {
     return this.http.get<AccountingSettings>('/api/v1/accounting-settings');
   }
 
-  setSettings(body: { groupAccountLength: number; generalAccountLength: number; subsidiaryAccountLength: number; detailAccountLength: number }): Observable<void> {
+  setSettings(body: UpdateAccountingSettingsRequest): Observable<void> {
     return this.http.put<void>('/api/v1/accounting-settings', body);
   }
 }

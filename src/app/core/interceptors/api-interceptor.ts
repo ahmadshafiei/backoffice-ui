@@ -32,9 +32,13 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
 /** Turns an HTTP failure (ASP.NET ProblemDetails or not) into a user-facing Farsi message. */
 export function describeHttpError(error: HttpErrorResponse): string {
   if (error.status === 0) return 'ارتباط با سرور برقرار نشد. اتصال شبکه را بررسی کنید.';
-  const body = error.error as { detail?: string | null; title?: string | null } | string | null;
-  const fromBody = typeof body === 'string' ? body : (body?.detail || body?.title);
+
+  const body = error.error as { message?: string | null; code?: number | null } | string | null;
+  
+  const fromBody = typeof body === 'string' ? body : (body?.message);
+  
   if (fromBody) return fromBody;
+  
   switch (error.status) {
     case 400: return 'درخواست نامعتبر است.';
     case 403: return 'شما به این بخش دسترسی ندارید.';
