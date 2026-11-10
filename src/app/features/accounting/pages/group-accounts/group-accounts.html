@@ -1,0 +1,29 @@
+<app-page-header title="گروه حساب‌های کل" [subtitle]="store.loading() ? '' : (filtered().length | faNumber) + ' گروه حساب'" />
+
+<section class="panel">
+  <div class="toolbar">
+    <app-search-box [(value)]="search" placeholder="جستجوی نام یا کد" />
+    <button type="button" class="btn btn-primary" (click)="openCreate()"><app-icon name="plus" [size]="16" />ایجاد گروه حساب</button>
+  </div>
+
+  <app-data-table [columns]="columns" [rows]="pageRows()" [total]="filtered().length" [loading]="store.loading()"
+    [rowKey]="rowKey" [(page)]="page" [(pageSize)]="pageSize" caption="فهرست گروه حساب‌های کل"
+    emptyTitle="گروه حسابی پیدا نشد" emptyMessage="با دکمه «ایجاد گروه حساب» اولین گروه را اضافه کنید.">
+    <ng-template appCell="accountCode" let-row><span class="code">{{ row.accountCode }}</span></ng-template>
+    <ng-template appCell="name" let-row><span class="name">{{ row.name }}</span></ng-template>
+    <ng-template appCell="isActive" let-row>
+      <span class="chip" [class.is-active]="row.isActive" [class.is-inactive]="!row.isActive">{{ row.isActive ? 'فعال' : 'غیرفعال' }}</span>
+    </ng-template>
+    <ng-template appCell="accountType" let-row>
+      <span class="chip" [class]="'chip type-' + row.accountType">{{ typeLabel[row.accountType] }}</span>
+    </ng-template>
+    <ng-template appRowActions let-row>
+      <button type="button" class="icon-btn" [attr.aria-label]="'ویرایش ' + row.name" title="ویرایش" (click)="openEdit(row)"><app-icon name="pencil" [size]="16" /></button>
+      <button type="button" class="icon-btn danger" [attr.aria-label]="'حذف ' + row.name" title="حذف" (click)="askDelete(row)"><app-icon name="trash-2" [size]="16" /></button>
+    </ng-template>
+  </app-data-table>
+</section>
+
+<app-account-form-modal [(open)]="formOpen" [level]="level" [account]="editing()" />
+<app-confirm-dialog [(open)]="deleteOpen" title="حذف گروه حساب" confirmLabel="حذف" [danger]="true" [busy]="busy()"
+  [message]="'«' + (deleting()?.name ?? '') + '» حذف شود؟ این کار قابل بازگشت نیست.'" (confirmed)="confirmDelete()" />

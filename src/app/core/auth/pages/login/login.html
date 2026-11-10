@@ -1,0 +1,9 @@
+<main class="screen">
+  <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <app-brand-logo [height]="44" />
+    <h1>ورود به بک‌آفیس</h1>
+    <app-text-field label="نام کاربری" formControlName="username" [ltr]="true" [required]="true" />
+    <app-text-field label="گذرواژه" type="password" formControlName="password" [ltr]="true" [required]="true" />
+    <button type="submit" class="btn btn-primary" [disabled]="busy()">ورود</button>
+  </form>
+</main>

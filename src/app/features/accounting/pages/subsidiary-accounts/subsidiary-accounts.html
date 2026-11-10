@@ -1,0 +1,32 @@
+<app-page-header title="حساب‌های معین" [subtitle]="store.loading() ? '' : (filtered().length | faNumber) + ' حساب معین'" />
+
+<section class="panel">
+  <div class="toolbar">
+    <app-search-box [(value)]="search" placeholder="جستجوی نام یا کد" />
+    <button type="button" class="btn btn-primary" (click)="openCreate()"><app-icon name="plus" [size]="16" />ایجاد حساب معین</button>
+  </div>
+
+  <app-data-table [columns]="columns" [rows]="pageRows()" [total]="filtered().length" [loading]="store.loading()"
+    [rowKey]="rowKey" [(page)]="page" [(pageSize)]="pageSize" caption="فهرست حساب‌های معین"
+    emptyTitle="حساب معینی پیدا نشد" emptyMessage="با دکمه «ایجاد حساب معین» اولین حساب را اضافه کنید.">
+    <ng-template appCell="accountCode" let-row><span class="code">{{ row.accountCode }}</span></ng-template>
+    <ng-template appCell="name" let-row><span class="name">{{ row.name }}</span></ng-template>
+    <ng-template appCell="parentId" let-row>{{ parentName(row) }}</ng-template>
+    <ng-template appCell="normalBalance" let-row>{{ row.normalBalance === null ? '—' : balanceLabel[row.normalBalance] }}</ng-template>
+    <ng-template appCell="isActive" let-row>
+      <span class="chip" [class.is-active]="row.isActive" [class.is-inactive]="!row.isActive">{{ row.isActive ? 'فعال' : 'غیرفعال' }}</span>
+    </ng-template>
+    <ng-template appCell="isDetailAllowed" let-row>
+      @if (row.isDetailAllowed) { <span class="yes"><app-icon name="circle-check" [size]="18" /><span class="sr-only">بله</span></span> }
+      @else { <span class="muted">خیر</span> }
+    </ng-template>
+    <ng-template appRowActions let-row>
+      <button type="button" class="icon-btn" [attr.aria-label]="'ویرایش ' + row.name" title="ویرایش" (click)="openEdit(row)"><app-icon name="pencil" [size]="16" /></button>
+      <button type="button" class="icon-btn danger" [attr.aria-label]="'حذف ' + row.name" title="حذف" (click)="askDelete(row)"><app-icon name="trash-2" [size]="16" /></button>
+    </ng-template>
+  </app-data-table>
+</section>
+
+<app-account-form-modal [(open)]="formOpen" [level]="level" [account]="editing()" />
+<app-confirm-dialog [(open)]="deleteOpen" title="حذف حساب معین" confirmLabel="حذف" [danger]="true" [busy]="busy()"
+  [message]="'«' + (deleting()?.name ?? '') + '» حذف شود؟ این کار قابل بازگشت نیست.'" (confirmed)="confirmDelete()" />

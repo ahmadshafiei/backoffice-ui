@@ -1,0 +1,86 @@
+<div class="scroll">
+  <table>
+    @if (caption()) { <caption class="sr-only">{{ caption() }}</caption> }
+    <thead>
+      <tr>
+        @for (column of columns(); track column.key) {
+          <th scope="col" [style.width]="column.width ?? null">{{ column.header }}</th>
+        }
+        @if (actions()) { <th scope="col" class="actions-col">عملیات</th> }
+      </tr>
+    </thead>
+    <tbody [attr.aria-busy]="loading()">
+      @if (loading()) {
+        @for (n of skeleton(); track n) {
+          <tr class="skeleton" aria-hidden="true">
+            @for (c of columns(); track c.key) { <td><span class="bar"></span></td> }
+            @if (actions()) { <td><span class="bar short"></span></td> }
+          </tr>
+        }
+      } @else if (rows().length === 0) {
+        <tr class="empty-row">
+          <td [attr.colspan]="colCount()">
+            <app-empty-state [title]="emptyTitle()" [message]="emptyMessage()" />
+          </td>
+        </tr>
+      } @else {
+        @for (row of rows(); track rowKey()(row)) {
+          <tr>
+            @for (column of columns(); track column.key) {
+              <td>
+                @if (cellMap().get(column.key); as template) {
+                  <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{ $implicit: row }" />
+                } @else {
+                  {{ cellText(row, column) }}
+                }
+              </td>
+            }
+            @if (actions(); as rowActions) {
+              <td class="actions-col">
+                <div class="row-actions">
+                  <ng-container [ngTemplateOutlet]="rowActions.template" [ngTemplateOutletContext]="{ $implicit: row }" />
+                </div>
+              </td>
+            }
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+</div>
+
+<nav class="pager" aria-label="صفحه‌بندی جدول">
+  <p class="range" aria-live="polite">
+    @if (total() > 0) {
+      نمایش {{ from() | faNumber }} تا {{ to() | faNumber }} از {{ total() | faNumber }}
+    } @else {
+      بدون نتیجه
+    }
+  </p>
+
+  <label class="size">
+    تعداد در صفحه
+    <select [value]="pageSize()" (change)="setPageSize($event)">
+      @for (size of pageSizeOptions(); track size) {
+        <option [value]="size" [selected]="size === pageSize()">{{ size | faNumber }}</option>
+      }
+    </select>
+  </label>
+
+  <div class="pages">
+    <button type="button" class="icon-btn" aria-label="صفحه قبل" [disabled]="page() <= 1 || loading()" (click)="goTo(page() - 1)">
+      <app-icon name="chevron-right" [size]="16" />
+    </button>
+    @for (p of pages(); track $index) {
+      @if (p === null) {
+        <span class="gap" aria-hidden="true">…</span>
+      } @else {
+        <button type="button" class="page" [class.current]="p === page()" [attr.aria-current]="p === page() ? 'page' : null"
+          [disabled]="loading()" (click)="goTo(p)">{{ p | faNumber: false }}</button>
+      }
+    }
+    <button type="button" class="icon-btn" aria-label="صفحه بعد" [disabled]="page() >= totalPages() || loading()" (click)="goTo(page() + 1)">
+      <app-icon name="chevron-left" [size]="16" />
+    </button>
+  </div>
+</nav>

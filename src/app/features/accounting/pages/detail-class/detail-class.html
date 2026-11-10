@@ -1,0 +1,37 @@
+<app-page-header title="طبقه تفصیلی" [subtitle]="loading() && total() === 0 ? '' : (total() | faNumber) + ' طبقه'" />
+
+<section class="panel">
+  <div class="toolbar">
+    <span></span>
+    <button type="button" class="btn btn-primary" (click)="openCreate()"><app-icon name="plus" [size]="16" />ایجاد طبقه تفصیلی</button>
+  </div>
+
+  <app-data-table [columns]="columns" [rows]="rows()" [total]="total()" [loading]="loading()" [rowKey]="rowKey"
+    [(page)]="page" [(pageSize)]="pageSize" caption="فهرست طبقات تفصیلی"
+    emptyTitle="طبقه تفصیلی ثبت نشده است" emptyMessage="با دکمه «ایجاد طبقه تفصیلی» اولین طبقه را اضافه کنید.">
+    <ng-template appCell="detailClassCode" let-row><span class="code">{{ row.detailClassCode }}</span></ng-template>
+    <ng-template appCell="name" let-row><span class="name">{{ row.name }}</span></ng-template>
+    <ng-template appCell="normalBalance" let-row>{{ balanceLabel[row.normalBalance] }}</ng-template>
+    <ng-template appRowActions let-row>
+      <button type="button" class="icon-btn danger" [attr.aria-label]="'حذف ' + row.name" title="حذف" (click)="askDelete(row)"><app-icon name="trash-2" [size]="16" /></button>
+    </ng-template>
+  </app-data-table>
+</section>
+
+<app-modal [(open)]="formOpen" title="ایجاد طبقه تفصیلی" width="480px" [closeOnBackdrop]="false">
+  @if (formOpen()) {
+    <form id="detail-class-form" class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <app-text-field label="کد طبقه" formControlName="detailClassCode" [ltr]="true" [latinDigits]="true" inputmode="numeric"
+        [required]="true" [messages]="{ pattern: 'کد طبقه فقط شامل ارقام است.' }" />
+      <app-text-field label="نام" formControlName="name" [required]="true" [messages]="{ pattern: 'این فیلد الزامی است.' }" />
+      <app-select-field label="ماهیت" formControlName="normalBalance" [options]="balanceOptions" [required]="true" />
+    </form>
+  }
+  <ng-container modalFooter>
+    <button type="submit" class="btn btn-primary" form="detail-class-form" [disabled]="busy()">ایجاد</button>
+    <button type="button" class="btn" [disabled]="busy()" (click)="formOpen.set(false)">انصراف</button>
+  </ng-container>
+</app-modal>
+
+<app-confirm-dialog [(open)]="deleteOpen" title="حذف طبقه تفصیلی" confirmLabel="حذف" [danger]="true" [busy]="busy()"
+  [message]="'«' + (deleting()?.name ?? '') + '» حذف شود؟ این کار قابل بازگشت نیست.'" (confirmed)="confirmDelete()" />

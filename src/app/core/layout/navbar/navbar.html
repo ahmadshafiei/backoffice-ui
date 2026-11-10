@@ -1,0 +1,31 @@
+<header class="bar">
+  <div class="start">
+    <button type="button" class="icon-btn" aria-controls="sidebar"
+      [attr.aria-expanded]="layout.isMobile() ? layout.drawerOpen() : !layout.collapsed()"
+      aria-label="باز و بسته کردن منو" (click)="layout.toggleNav()">
+      <app-icon name="menu" [size]="20" />
+    </button>
+    <app-brand-logo [height]="34" />
+  </div>
+
+  <div class="end">
+    <button type="button" class="icon-btn" (click)="themeStore.toggle()"
+      [attr.aria-label]="themeStore.theme() === 'dark' ? 'تم روشن' : 'تم تیره'"
+      [attr.title]="themeStore.theme() === 'dark' ? 'تم روشن' : 'تم تیره'">
+      <app-icon [name]="themeStore.theme() === 'dark' ? 'sun' : 'moon'" [size]="19" />
+    </button>
+
+    @if (auth.user(); as user) {
+      <div class="profile">
+        <span class="avatar" aria-hidden="true">{{ initial() }}</span>
+        <div class="who">
+          <strong>{{ user.fullName }}</strong>
+          <span>{{ user.role }}</span>
+        </div>
+        <button type="button" class="icon-btn danger" aria-label="خروج از پنل" title="خروج از پنل" (click)="logout()">
+          <app-icon name="log-out" [size]="19" [flip]="true" />
+        </button>
+      </div>
+    }
+  </div>
+</header>

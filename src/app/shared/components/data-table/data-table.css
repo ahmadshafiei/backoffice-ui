@@ -1,0 +1,54 @@
+:host { display: block; }
+
+.scroll { overflow-x: auto; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+
+th {
+  position: sticky; top: 0;
+  padding: 10px 16px;
+  text-align: start; font-size: 12.5px; font-weight: 600; color: var(--ink-2); white-space: nowrap;
+  background: var(--surface-2);
+  border-block: 1px solid var(--line);
+}
+
+td { padding: 11px 16px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+
+tbody tr:not(.skeleton):not(.empty-row):hover td { background: var(--surface-2); }
+tbody tr:last-child td { border-bottom: 0; }
+
+.actions-col { width: 1%; white-space: nowrap; text-align: end; }
+th.actions-col { text-align: center; }
+.row-actions { display: inline-flex; gap: 2px; }
+
+.empty-row td { padding: 0; }
+
+.skeleton .bar {
+  display: block; height: 12px; width: 70%; border-radius: 6px;
+  background: linear-gradient(90deg, var(--line) 25%, var(--surface-2) 50%, var(--line) 75%);
+  background-size: 200% 100%; animation: shimmer 1.4s linear infinite;
+}
+.skeleton .bar.short { width: 56px; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+.pager {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap;
+  padding: 10px 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-2);
+}
+.range { margin-inline-end: auto; }
+
+.size { display: inline-flex; align-items: center; gap: 8px; }
+.size select {
+  height: 30px; padding: 0 8px; border: 1px solid var(--line-strong); border-radius: var(--radius-control);
+  background: var(--surface); color: var(--ink);
+}
+
+.pages { display: inline-flex; align-items: center; gap: 4px; }
+.page {
+  min-width: 30px; height: 30px; padding: 0 6px; border: 1px solid transparent; border-radius: var(--radius-control);
+  background: transparent; color: var(--ink); cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.page:hover:not(:disabled):not(.current) { background: var(--surface-2); border-color: var(--line); }
+.page.current { background: var(--primary); color: var(--on-primary); font-weight: 600; }
+.pages .icon-btn { width: 30px; height: 30px; }
+.gap { padding: 0 2px; color: var(--ink-3); }

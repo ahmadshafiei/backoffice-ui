@@ -1,0 +1,31 @@
+<nav [class.collapsed]="collapsed()" aria-label="منوی اصلی">
+  <ul class="groups">
+    @for (group of groups(); track group.id) {
+      <li>
+        @if (group.path) {
+          <a class="row" [routerLink]="group.path" routerLinkActive="active" [attr.title]="collapsed() ? group.label : null" (click)="navigated.emit()">
+            <app-icon [name]="group.icon" [size]="19" />
+            <span class="label">{{ group.label }}</span>
+          </a>
+        } @else {
+          <button type="button" class="row" [class.has-active]="activeGroupId() === group.id"
+            [attr.aria-expanded]="!collapsed() && isOpen(group)" [attr.aria-controls]="'menu-' + group.id"
+            [attr.title]="collapsed() ? group.label : null" (click)="toggle(group)">
+            <app-icon [name]="group.icon" [size]="19" />
+            <span class="label">{{ group.label }}</span>
+            <app-icon class="caret" name="chevron-down" [size]="15" />
+          </button>
+          <div class="panel" [class.open]="!collapsed() && isOpen(group)" [id]="'menu-' + group.id">
+            <ul class="children">
+              @for (child of group.children; track child.path) {
+                <li>
+                  <a [routerLink]="child.path" routerLinkActive="active" [tabindex]="!collapsed() && isOpen(group) ? 0 : -1" (click)="navigated.emit()">{{ child.label }}</a>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </li>
+    }
+  </ul>
+</nav>

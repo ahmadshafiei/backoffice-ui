@@ -1,0 +1,42 @@
+<div class="field" [class.invalid]="!!error()">
+  @if (label()) {
+    <label class="label" [attr.for]="id">{{ label() }}@if (required()) {<span class="req" aria-hidden="true"> *</span>}</label>
+  }
+  <div class="input-wrap">
+    <input class="control ltr" [id]="id" type="text" dir="ltr" inputmode="numeric" autocomplete="off"
+      [value]="text()" [disabled]="disabled()" [attr.placeholder]="placeholder()"
+      [attr.aria-invalid]="error() ? 'true' : null" [attr.aria-describedby]="describedBy()"
+      (input)="onInput($event)" (blur)="onBlur()" />
+    <button type="button" class="icon-btn trigger" aria-label="انتخاب تاریخ" aria-haspopup="dialog"
+      [attr.aria-expanded]="isOpen()" [disabled]="disabled()" (click)="toggle()">
+      <app-icon name="calendar" [size]="16" />
+    </button>
+  </div>
+  @if (error()) {
+    <p class="msg error" [id]="id + '-msg'" role="alert">{{ error() }}</p>
+  } @else if (hint()) {
+    <p class="msg hint" [id]="id + '-msg'">{{ hint() }}</p>
+  }
+
+  @if (isOpen()) {
+    <div class="panel" role="dialog" aria-label="تقویم">
+      <div class="nav">
+        <button type="button" class="icon-btn" aria-label="ماه قبل" (click)="shiftMonth(-1)"><app-icon name="chevron-right" [size]="16" /></button>
+        <strong>{{ months[view().jm - 1] }} {{ view().jy | faNumber: false }}</strong>
+        <button type="button" class="icon-btn" aria-label="ماه بعد" (click)="shiftMonth(1)"><app-icon name="chevron-left" [size]="16" /></button>
+      </div>
+      <div class="grid" role="grid">
+        @for (w of weekdays; track w) { <span class="dow" role="columnheader">{{ w }}</span> }
+        @for (day of cells(); track $index) {
+          @if (day === null) {
+            <span></span>
+          } @else {
+            <button type="button" class="day" [class.selected]="isSelected(day)" [class.today]="isToday(day)"
+              [attr.aria-pressed]="isSelected(day)" (click)="pick(day)">{{ day | faNumber: false }}</button>
+          }
+        }
+      </div>
+      <button type="button" class="btn today-btn" (click)="goToday()">امروز</button>
+    </div>
+  }
+</div>

@@ -1,0 +1,32 @@
+<app-modal [(open)]="open" [title]="title()" width="560px" [closeOnBackdrop]="false">
+  @if (open()) {
+    <form class="grid" [id]="formId" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <app-text-field label="کد حساب" formControlName="accountCode" [ltr]="true" [latinDigits]="true"
+        inputmode="numeric" [required]="true" [messages]="{ pattern: 'کد حساب فقط شامل ارقام است.' }" />
+      <app-text-field label="نام" formControlName="name" [required]="true" [messages]="{ pattern: 'این فیلد الزامی است.' }" />
+
+      @if (showParent()) {
+        <app-select-field class="wide" [label]="parentLabel()" formControlName="parentId" [options]="parentOptions()"
+          [placeholder]="'انتخاب ' + parentLabel()" [required]="true" />
+      }
+      @if (showType()) {
+        <app-select-field label="نوع حساب" formControlName="accountType" [options]="typeOptions" [required]="true" />
+      }
+      @if (showBalance()) {
+        <app-select-field label="ماهیت" formControlName="normalBalance" [options]="balanceOptions" [required]="true" />
+      }
+
+      <div class="toggles wide">
+        <app-toggle-field label="فعال" formControlName="isActive" />
+        @if (showDetailAllowed()) {
+          <app-toggle-field label="تفصیل‌پذیر" formControlName="isDetailAllowed" />
+        }
+      </div>
+    </form>
+  }
+
+  <ng-container modalFooter>
+    <button type="submit" class="btn btn-primary" [attr.form]="formId" [disabled]="busy()">{{ isEdit() ? 'ذخیره تغییرات' : 'ایجاد' }}</button>
+    <button type="button" class="btn" [disabled]="busy()" (click)="open.set(false)">انصراف</button>
+  </ng-container>
+</app-modal>

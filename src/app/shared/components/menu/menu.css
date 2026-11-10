@@ -1,0 +1,39 @@
+:host { display: block; }
+ul { list-style: none; margin: 0; padding: 0; }
+.groups { display: grid; gap: 2px; padding: 12px 10px; }
+
+.row {
+  position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 42px; padding: 0 12px;
+  border: 0; border-radius: 8px; background: transparent; color: var(--nav-ink); text-decoration: none;
+  font-size: 14px; font-weight: 500; text-align: start; cursor: pointer;
+}
+.row:hover { background: var(--nav-hover); color: var(--nav-ink-strong); }
+.row:focus-visible, .children a:focus-visible { outline-color: var(--nav-accent); }
+.row.has-active { color: var(--nav-ink-strong); }
+.row.active { background: var(--nav-active-bg); color: var(--nav-ink-strong); }
+.label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.caret { transition: rotate 0.18s; opacity: 0.7; }
+.row[aria-expanded='true'] .caret { rotate: 180deg; }
+
+/* Group body animates open with a grid-row transition (no fixed heights). */
+.panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.2s ease; }
+.panel.open { grid-template-rows: 1fr; }
+.panel > .children { overflow: hidden; min-height: 0; }
+.children { position: relative; margin: 2px 0 6px; padding-inline-start: 31px; }
+/* A single rule down the group ties its pages to the parent icon. */
+.children::before { content: ''; position: absolute; inset-block: 4px; inset-inline-start: 21px; width: 1px; background: var(--nav-line); }
+.children a {
+  position: relative; display: block; padding: 6px 12px; border-radius: 6px; color: var(--nav-ink);
+  text-decoration: none; font-size: 13.5px; line-height: 1.6;
+}
+.children a:hover { background: var(--nav-hover); color: var(--nav-ink-strong); }
+.children a.active { color: var(--nav-ink-strong); font-weight: 600; background: var(--nav-active-bg); }
+.children a.active::before {
+  content: ''; position: absolute; inset-block: 6px; inset-inline-start: -10px; width: 3px; border-radius: 2px; background: var(--nav-accent);
+}
+
+/* Icon rail */
+nav.collapsed .groups { padding-inline: 8px; }
+nav.collapsed .row { justify-content: center; padding: 0; }
+nav.collapsed .label, nav.collapsed .caret, nav.collapsed .panel { display: none; }
+nav.collapsed .row.has-active { background: var(--nav-active-bg); }
