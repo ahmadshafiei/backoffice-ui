@@ -52,7 +52,7 @@
 <nav class="pager" aria-label="صفحه‌بندی جدول">
   <p class="range" aria-live="polite">
     @if (total() > 0) {
-      نمایش {{ from() | faNumber }} تا {{ to() | faNumber }} از {{ total() | faNumber }}
+      تعداد کل : {{total()}}
     } @else {
       بدون نتیجه
     }

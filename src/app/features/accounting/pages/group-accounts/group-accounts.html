@@ -2,7 +2,6 @@
 
 <section class="panel">
   <div class="toolbar">
-    <app-search-box [(value)]="search" placeholder="جستجوی نام یا کد" />
     <button type="button" class="btn btn-primary" (click)="openCreate()"><app-icon name="plus" [size]="16" />ایجاد گروه حساب</button>
   </div>
 
@@ -15,7 +14,7 @@
       <span class="chip" [class.is-active]="row.isActive" [class.is-inactive]="!row.isActive">{{ row.isActive ? 'فعال' : 'غیرفعال' }}</span>
     </ng-template>
     <ng-template appCell="accountType" let-row>
-      <span class="chip" [class]="'chip type-' + row.accountType">{{ typeLabel[row.accountType] }}</span>
+      <span >{{ typeLabel[row.accountType] }}</span>
     </ng-template>
     <ng-template appRowActions let-row>
       <button type="button" class="icon-btn" [attr.aria-label]="'ویرایش ' + row.name" title="ویرایش" (click)="openEdit(row)"><app-icon name="pencil" [size]="16" /></button>
