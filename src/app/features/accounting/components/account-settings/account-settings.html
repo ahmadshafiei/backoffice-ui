@@ -6,11 +6,6 @@
       <h2>طول کد</h2>
       <p>تعداد ارقام کد را برای هر سطح حساب وارد کنید. مقدار هر سطح مستقل است و مبنای ساخت کد حساب قرار می‌گیرد.</p>
     </div>
-    <span class="total">
-      طول کل کد حساب
-      <strong>{{ total() | faNumber }}</strong>
-      رقم
-    </span>
   </header>
 
   <form class="lengths" [formGroup]="form" (ngSubmit)="submit()" novalidate>

@@ -1,6 +1,5 @@
 import { SelectOption } from '../../shared/components/fields/select-field';
 
-/* ---- Enums (mirror the C# byte enums; the API sends/receives the numeric value) ---- */
 
 export const AccountLevel = { Group: 0, General: 1, Subsidiary: 2 } as const;
 export type AccountLevel = (typeof AccountLevel)[keyof typeof AccountLevel];
@@ -38,7 +37,6 @@ export const ACCOUNT_TYPE_OPTIONS: readonly SelectOption[] =
 export const NORMAL_BALANCE_OPTIONS: readonly SelectOption[] =
   Object.values(NormalBalance).map((value) => ({ value, label: NORMAL_BALANCE_LABEL[value] }));
 
-/* ---- DTOs (see swagger v1.json) ---- */
 
 export interface Account {
   id: string;
@@ -65,7 +63,6 @@ export interface RegisterAccountRequest {
   parentId: string | null;
 }
 
-/** PATCH body – code, level, type, balance and parent are immutable after creation. */
 export interface ModifyAccountRequest {
   name: string;
   isActive: boolean;
@@ -91,12 +88,12 @@ export interface PagedResult<T> {
   items: T[];
 }
 
-/** Note: the GET response names the first field `groupAccountCodeLength`, the PUT body `groupAccountLength`. */
 export interface AccountingSettings {
   groupAccountCodeLength: number;
   generalAccountLength: number;
   subsidiaryAccountLength: number;
   detailAccountLength: number;
+  detailClassCodeLength: number;
 }
 
 export interface UpdateAccountingSettingsRequest {
@@ -104,4 +101,5 @@ export interface UpdateAccountingSettingsRequest {
   generalAccountLength: number;
   subsidiaryAccountLength: number;
   detailAccountLength: number;
+  detailClassCodeLength: number;
 }
