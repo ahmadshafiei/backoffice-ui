@@ -9,7 +9,7 @@ import { Notification } from '../../shared/components/notification/notification'
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, Navbar, Footer, Menu, Notification],
+  imports: [RouterOutlet, Navbar, Footer, Menu],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './shell.html',
   styleUrl: './shell.css',

@@ -3,7 +3,6 @@
 <section class="panel">
   <div class="toolbar">
     <button type="button" class="btn btn-primary" (click)="openCreate()"><app-icon name="plus" [size]="16" />ایجاد حساب کل</button>
-    <app-search-box [(value)]="search" placeholder="جستجوی نام یا کد" />
   </div>
 
   <app-data-table [columns]="columns" [rows]="pageRows()" [total]="filtered().length" [loading]="store.loading()"

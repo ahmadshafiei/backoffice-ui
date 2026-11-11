@@ -61,7 +61,7 @@ export class AccountFormModal {
     name: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(/\S/)] }),
     parentId: new FormControl<string | null>(null),
     accountType: new FormControl<AccountType | null>(null),
-    normalBalance: new FormControl<NormalBalance | null>(null),
+    normalBalance: new FormControl<NormalBalance>(NormalBalance.Debit, { validators: [Validators.required] }),
     isActive: new FormControl(true, { nonNullable: true }),
     isDetailAllowed: new FormControl(false, { nonNullable: true }),
   });
@@ -100,7 +100,6 @@ export class AccountFormModal {
 
     setRequired(controls.parentId, level !== AccountLevel.Group);
     setRequired(controls.accountType, level !== AccountLevel.Subsidiary);
-    setRequired(controls.normalBalance, level !== AccountLevel.Group);
 
     if (account) {
       controls.accountCode.disable({ emitEvent: false });
@@ -138,12 +137,10 @@ export class AccountFormModal {
           accountCode: value.accountCode,
           isActive: value.isActive,
           accountLevel: level,
-          // A subsidiary account has no type of its own in the form: it follows its general account.
           accountType: isSubsidiary ? (parent?.accountType ?? null) : value.accountType,
-          // Only subsidiary accounts are leaves that documents can post to.
           isPostable: isSubsidiary,
           isDetailAllowed: isSubsidiary ? value.isDetailAllowed : false,
-          normalBalance: level === AccountLevel.Group ? null : value.normalBalance,
+          normalBalance: value.normalBalance,
           parentId: level === AccountLevel.Group ? null : value.parentId,
         });
         this.notify.success(`${this.noun()} ایجاد شد.`);

@@ -3,7 +3,6 @@ import { DataTable, TableCell, TableColumn, TableRowActions } from '../../../../
 import { Icon } from '../../../../shared/components/icon/icon';
 import { ConfirmDialog } from '../../../../shared/components/modal/confirm-dialog';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
-import { SearchBox } from '../../../../shared/components/search-box/search-box';
 import { FaNumberPipe } from '../../../../shared/pipes/fa-number';
 import { ACCOUNT_TYPE_LABEL, Account, AccountLevel, NORMAL_BALANCE_LABEL } from '../../accounting.model';
 import { AccountFormModal } from '../../components/accounts/account-form-modal';
@@ -11,7 +10,7 @@ import { AccountListBase } from '../../components/accounts/account-list-base';
 
 @Component({
   selector: 'app-general-accounts',
-  imports: [PageHeader, SearchBox, Icon, DataTable, TableCell, TableRowActions, AccountFormModal, ConfirmDialog, FaNumberPipe],
+  imports: [PageHeader, Icon, DataTable, TableCell, TableRowActions, AccountFormModal, ConfirmDialog, FaNumberPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './general-accounts.html',
   styleUrl: '../../components/accounts/list-page.css',

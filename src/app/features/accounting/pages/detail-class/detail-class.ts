@@ -19,7 +19,7 @@ import { DetailClass, NORMAL_BALANCE_LABEL, NORMAL_BALANCE_OPTIONS, NormalBalanc
   imports: [ReactiveFormsModule, PageHeader, Icon, DataTable, TableCell, TableRowActions, Modal, TextField, SelectField, ConfirmDialog, FaNumberPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './detail-class.html',
-  styleUrl: '../../components/list-page.css',
+  styleUrl: '../../components/accounts/list-page.css'
 })
 export class DetailClassPage {
   private readonly api = inject(AccountingApi);
