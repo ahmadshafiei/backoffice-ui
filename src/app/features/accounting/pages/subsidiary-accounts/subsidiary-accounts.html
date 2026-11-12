@@ -1,11 +1,11 @@
-<app-page-header title="حساب‌های معین" [subtitle]="store.loading() ? '' : (filtered().length | faNumber) + ' حساب معین'" />
+<app-page-header title="حساب‌های معین" [subtitle]="loading() ? '' : (total() | faNumber) + ' حساب معین'" />
 
 <section class="panel">
   <div class="toolbar">
     <button type="button" class="btn btn-primary" (click)="openCreate()"><app-icon name="plus" [size]="16" />ایجاد حساب معین</button>
   </div>
 
-  <app-data-table [columns]="columns" [rows]="pageRows()" [total]="filtered().length" [loading]="store.loading()"
+  <app-data-table [columns]="columns" [rows]="rows()" [total]="total()" [loading]="loading()"
     [rowKey]="rowKey" [(page)]="page" [(pageSize)]="pageSize" caption="فهرست حساب‌های معین"
     emptyTitle="حساب معینی پیدا نشد" emptyMessage="با دکمه «ایجاد حساب معین» اولین حساب را اضافه کنید.">
     <ng-template appCell="accountCode" let-row><span class="code">{{ row.accountCode }}</span></ng-template>
@@ -26,6 +26,6 @@
   </app-data-table>
 </section>
 
-<app-account-form-modal [(open)]="formOpen" [level]="level" [account]="editing()" />
+<app-account-form-modal [(open)]="formOpen" [level]="level" [account]="editing()" (saved)="reload()" />
 <app-confirm-dialog [(open)]="deleteOpen" title="حذف حساب معین" confirmLabel="حذف" [danger]="true" [busy]="busy()"
   [message]="'«' + (deleting()?.name ?? '') + '» حذف شود؟ این کار قابل بازگشت نیست.'" (confirmed)="confirmDelete()" />

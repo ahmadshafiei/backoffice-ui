@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, model, output, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 import { NotificationApi } from '../../../../core/services/notification-api';
 import { SelectField, SelectOption } from '../../../../shared/components/fields/select-field';
 import { TextField } from '../../../../shared/components/fields/text-field';
@@ -9,7 +10,7 @@ import { Modal } from '../../../../shared/components/modal/modal';
 import {
   ACCOUNT_LEVEL_LABEL, ACCOUNT_TYPE_OPTIONS, Account, AccountLevel, AccountType, NORMAL_BALANCE_OPTIONS, NormalBalance,
 } from '../../accounting.model';
-import { AccountsStore } from '../../accounts-store';
+import { AccountingApi } from '../../accounting-api';
 
 let nextFormId = 0;
 
@@ -31,8 +32,9 @@ export class AccountFormModal {
   readonly level = input.required<AccountLevel>();
   /** The account being edited; `null` means create. */
   readonly account = input<Account | null>(null);
+  readonly saved = output<void>();
 
-  private readonly store = inject(AccountsStore);
+  private readonly api = inject(AccountingApi);
   private readonly notify = inject(NotificationApi);
 
   protected readonly formId = `account-form-${nextFormId++}`;
@@ -51,10 +53,13 @@ export class AccountFormModal {
   protected readonly parentLabel = computed(() =>
     this.level() === AccountLevel.General ? 'گروه حساب' : 'حساب کل');
 
+  private readonly parents = signal<readonly Account[]>([]);
+
   protected readonly parentOptions = computed<readonly SelectOption[]>(() => {
-    const parents = this.level() === AccountLevel.General ? this.store.groups() : this.store.generals();
-    return parents.map((p) => ({ value: p.id, label: `${p.name} (${p.accountCode})` }));
+    return this.parents().map((p) => ({ value: p.id, label: `${p.name} (${p.accountCode})` }));
   });
+
+  private readonly byId = computed(() => new Map(this.parents().map((a) => [a.id, a] as const)));
 
   protected readonly form = new FormGroup({
     accountCode: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(/^\d+$/)] }),
@@ -74,7 +79,7 @@ export class AccountFormModal {
     // A general account normally shares its group's type – pre-fill it, the user can still change it.
     this.form.controls.parentId.valueChanges.pipe(takeUntilDestroyed()).subscribe((id) => {
       if (this.level() !== AccountLevel.General || this.isEdit() || !id) return;
-      const group = this.store.byId().get(id);
+      const group = this.byId().get(id);
       if (group) this.form.controls.accountType.setValue(group.accountType);
     });
   }
@@ -83,6 +88,7 @@ export class AccountFormModal {
     const { controls } = this.form;
     const account = this.account();
     const level = this.level();
+    void this.loadParents(level);
 
     this.form.enable({ emitEvent: false });
     this.form.reset(
@@ -109,6 +115,19 @@ export class AccountFormModal {
     }
   }
 
+  private async loadParents(level: AccountLevel): Promise<void> {
+    if (level === AccountLevel.Group) {
+      this.parents.set([]);
+      return;
+    }
+    const parentLevel = level === AccountLevel.General ? AccountLevel.Group : AccountLevel.General;
+    try {
+      this.parents.set(await firstValueFrom(this.api.allAccounts(parentLevel)));
+    } catch {
+      /* surfaced by the interceptor */
+    }
+  }
+
   protected async submit(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -123,16 +142,17 @@ export class AccountFormModal {
     this.busy.set(true);
     try {
       if (account) {
-        await this.store.modify(account.id, {
+        await firstValueFrom(this.api.modifyAccount(account.id, {
           name,
           isActive: value.isActive,
           isPostable: account.isPostable,
           isDetailAllowed: isSubsidiary ? value.isDetailAllowed : account.isDetailAllowed,
-        });
+        }));
+        this.saved.emit();
         this.notify.success('تغییرات ذخیره شد.');
       } else {
-        const parent = value.parentId ? this.store.byId().get(value.parentId) : undefined;
-        await this.store.register({
+        const parent = value.parentId ? this.byId().get(value.parentId) : undefined;
+        await firstValueFrom(this.api.registerAccount({
           name,
           accountCode: value.accountCode,
           isActive: value.isActive,
@@ -142,7 +162,8 @@ export class AccountFormModal {
           isDetailAllowed: isSubsidiary ? value.isDetailAllowed : false,
           normalBalance: value.normalBalance,
           parentId: level === AccountLevel.Group ? null : value.parentId,
-        });
+        }));
+        this.saved.emit();
         this.notify.success(`${this.noun()} ایجاد شد.`);
       }
       this.open.set(false);

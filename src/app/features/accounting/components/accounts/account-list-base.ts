@@ -1,6 +1,6 @@
-import { Directive, computed, inject, linkedSignal, signal } from '@angular/core';
+import { Directive, computed, effect, inject, linkedSignal, signal, untracked } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { NotificationApi } from '../../../../core/services/notification-api';
-import { pageCount, paginate } from '../../../../shared/utils/array.utils';
 import { toEnDigits } from '../../../../shared/utils/digits.utils';
 import { ACCOUNT_LEVEL_LABEL, Account, AccountLevel } from '../../accounting.model';
 import { AccountingApi } from '../../accounting-api';
@@ -10,8 +10,14 @@ import { AccountingApi } from '../../accounting-api';
 export abstract class AccountListBase {
   protected abstract readonly level: AccountLevel;
 
-  protected readonly store = inject(AccountingApi);
+  private readonly api = inject(AccountingApi);
   private readonly notify = inject(NotificationApi);
+
+  protected readonly rows = signal<readonly Account[]>([]);
+  protected readonly total = signal(0);
+  protected readonly loading = signal(false);
+  protected readonly parents = signal<readonly Account[]>([]);
+  protected readonly parentById = computed(() => new Map(this.parents().map((a) => [a.id, a] as const)));
 
   protected readonly search = signal('');
   /** Jumps back to page 1 whenever the search text changes. */
@@ -27,19 +33,48 @@ export abstract class AccountListBase {
   protected readonly rowKey = (account: Account): string => account.id;
   protected readonly noun = computed(() => ACCOUNT_LEVEL_LABEL[this.level]);
 
-  protected readonly filtered = computed(() => {
-    const term = toEnDigits(this.search()).trim().toLowerCase();
-    const rows = this.store.accounts().filter((a) => a.accountLevel === this.level);
-    return term ? rows.filter((a) => a.name.toLowerCase().includes(term) || a.accountCode.includes(term)) : rows;
-  });
-  protected readonly pageRows = computed(() => paginate(this.filtered(), this.page(), this.pageSize()));
-
   constructor() {
-    void this.store.load();
+    void this.loadParents();
+
+    effect(() => {
+      const pageNumber = this.page();
+      const pageSize = this.pageSize();
+      const name = toEnDigits(this.search()).trim();
+      untracked(() => void this.load(pageNumber, pageSize, name));
+    });
+  }
+
+  protected reload(): Promise<void> {
+    return this.load(this.page(), this.pageSize(), toEnDigits(this.search()).trim());
+  }
+
+  private async load(pageNumber: number, pageSize: number, name: string): Promise<void> {
+    this.loading.set(true);
+    try {
+      const res = await firstValueFrom(
+        this.api.listAccounts({ accountLevel: this.level, pageNumber, pageSize, name: name || undefined }),
+      );
+      this.rows.set(res.items);
+      this.total.set(Number(res.totalCount));
+    } catch {
+      /* surfaced by the interceptor */
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  private async loadParents(): Promise<void> {
+    if (this.level === AccountLevel.Group) return;
+    const parentLevel = this.level === AccountLevel.General ? AccountLevel.Group : AccountLevel.General;
+    try {
+      this.parents.set(await firstValueFrom(this.api.allAccounts(parentLevel)));
+    } catch {
+      /* surfaced by the interceptor */
+    }
   }
 
   protected parentName(account: Account): string {
-    return (account.parentId && this.store.byId().get(account.parentId)?.name) || '—';
+    return (account.parentId && this.parentById().get(account.parentId)?.name) || '—';
   }
 
   protected openCreate(): void {
@@ -62,10 +97,11 @@ export abstract class AccountListBase {
     if (!account) return;
     this.busy.set(true);
     try {
-      await this.store.remove(account.id);
+      await firstValueFrom(this.api.deleteAccount(account.id));
       this.notify.success(`«${account.name}» حذف شد.`);
       this.deleteOpen.set(false);
-      this.page.update((p) => Math.min(p, pageCount(this.filtered().length, this.pageSize())));
+      if (this.rows().length === 1 && this.page() > 1) this.page.update((p) => p - 1);
+      else await this.reload();
     } catch {
       /* the interceptor already showed the server's reason */
     } finally {
