@@ -2,7 +2,6 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
-import { environment } from '../../../environments/environment';
 import { AuthStore } from '../auth/auth-store';
 import { NotificationApi } from '../services/notification-api';
 
@@ -11,10 +10,8 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
   const notify = inject(NotificationApi);
   const auth = inject(AuthStore);
   const router = inject(Router);
-
-  const url = /^https?:\/\//.test(req.url) ? req.url : `${environment.apiBaseUrl}${req.url}`;
-
-  return next(req.clone({ url })).pipe(
+  
+  return next(req).pipe(
     catchError((error: unknown) => {
       if (error instanceof HttpErrorResponse) {
         if (error.status === 401) {

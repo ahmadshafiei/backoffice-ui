@@ -5,9 +5,11 @@ import {
   Account, AccountingSettings, CreateDetailClassRequest, DetailClass, ModifyAccountRequest, PagedResult,
   RegisterAccountRequest, UpdateAccountingSettingsRequest,
 } from './accounting.model';
+import { environment } from '../../../environments/environment';
 
 const ACCOUNTS = '/api/v1/accounts';
 const DETAIL_CLASSES = '/api/v1/detail-classes';
+const SETTINGS = '/api/v1/accounting-settings';
 
 /** Thin typed wrapper over the Accounting WebApi (base URL is added by the API interceptor). */
 @Injectable({ providedIn: 'root' })
@@ -19,7 +21,7 @@ export class AccountingApi {
   listAccounts(query: { pageNumber: number; pageSize: number; name?: string }): Observable<PagedResult<Account>> {
     let params = new HttpParams().set('PageNumber', query.pageNumber).set('PageSize', query.pageSize);
     if (query.name) params = params.set('Name', query.name);
-    return this.http.get<PagedResult<Account>>(ACCOUNTS, { params });
+    return this.http.get<PagedResult<Account>>(environment.projectionBaseUrl + ACCOUNTS, { params });
   }
 
   /**
@@ -41,43 +43,43 @@ export class AccountingApi {
   }
 
   getAccount(id: string): Observable<Account> {
-    return this.http.get<Account>(`${ACCOUNTS}/${id}`);
+    return this.http.get<Account>(`${environment.projectionBaseUrl}${ACCOUNTS}/${id}`);
   }
 
   registerAccount(body: RegisterAccountRequest): Observable<void> {
-    return this.http.post<void>(ACCOUNTS, body);
+    return this.http.post<void>(`${environment.apiBaseUrl}${ACCOUNTS}`, body);
   }
 
   modifyAccount(id: string, body: ModifyAccountRequest): Observable<void> {
-    return this.http.patch<void>(`${ACCOUNTS}/${id}`, body);
+    return this.http.patch<void>(`${environment.apiBaseUrl}${ACCOUNTS}/${id}`, body);
   }
 
   deleteAccount(id: string): Observable<void> {
-    return this.http.delete<void>(`${ACCOUNTS}/${id}`);
+    return this.http.delete<void>(`${environment.apiBaseUrl}${ACCOUNTS}/${id}`);
   }
 
   /* ---- Detail classes ---- */
 
   listDetailClasses(query: { pageNumber: number; pageSize: number }): Observable<PagedResult<DetailClass>> {
     const params = new HttpParams().set('PageNumber', query.pageNumber).set('PageSize', query.pageSize);
-    return this.http.get<PagedResult<DetailClass>>(DETAIL_CLASSES, { params });
+    return this.http.get<PagedResult<DetailClass>>(`${environment.projectionBaseUrl}${DETAIL_CLASSES}`, { params });
   }
 
   createDetailClass(body: CreateDetailClassRequest): Observable<void> {
-    return this.http.post<void>(DETAIL_CLASSES, body);
+    return this.http.post<void>(`${environment.apiBaseUrl}${DETAIL_CLASSES}`, body);
   }
 
   deleteDetailClass(id: string): Observable<void> {
-    return this.http.delete<void>(`${DETAIL_CLASSES}/${id}`);
+    return this.http.delete<void>(`${environment.projectionBaseUrl}${DETAIL_CLASSES}/${id}`);
   }
 
   /* ---- Settings (code lengths) ---- */
 
   getSettings(): Observable<AccountingSettings> {
-    return this.http.get<AccountingSettings>('/api/v1/accounting-settings');
+    return this.http.get<AccountingSettings>(`${environment.apiBaseUrl}${SETTINGS}`);
   }
 
   setSettings(body: UpdateAccountingSettingsRequest): Observable<void> {
-    return this.http.put<void>('/api/v1/accounting-settings', body);
+    return this.http.put<void>(`${environment.apiBaseUrl}${SETTINGS}`, body);
   }
 }

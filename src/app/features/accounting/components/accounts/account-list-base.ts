@@ -3,14 +3,14 @@ import { NotificationApi } from '../../../../core/services/notification-api';
 import { pageCount, paginate } from '../../../../shared/utils/array.utils';
 import { toEnDigits } from '../../../../shared/utils/digits.utils';
 import { ACCOUNT_LEVEL_LABEL, Account, AccountLevel } from '../../accounting.model';
-import { AccountsStore } from '../../accounts-store';
+import { AccountingApi } from '../../accounting-api';
 
 /** State and behaviour common to the group / general / subsidiary account list pages. */
 @Directive()
 export abstract class AccountListBase {
   protected abstract readonly level: AccountLevel;
 
-  protected readonly store = inject(AccountsStore);
+  protected readonly store = inject(AccountingApi);
   private readonly notify = inject(NotificationApi);
 
   protected readonly search = signal('');
