@@ -2,13 +2,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, expand, map, reduce, shareReplay, takeWhile, tap } from 'rxjs';
 import {
-  Account, AccountLevel, AccountingSettings, CreateDetailClassRequest, DetailClass, ModifyAccountRequest, PagedResult,
-  RegisterAccountRequest, UpdateAccountingSettingsRequest,
+  Account, AccountClass, AccountLevel, AccountingSettings, AssignAccountClassRequest, CreateDetailClassRequest, DetailClass,
+  ModifyAccountRequest, PagedResult, RegisterAccountRequest, UpdateAccountingSettingsRequest,
 } from './accounting.model';
 import { environment } from '../../../environments/environment';
 
 const ACCOUNTS = '/api/v1/accounts';
 const DETAIL_CLASSES = '/api/v1/detail-classes';
+const ACCOUNT_CLASSES_QUERY = '/api/v1/accounts/account-classes';
+const ACCOUNT_CLASSES = '/api/v1/account-classes';
 const SETTINGS = '/api/v1/accounting-settings';
 
 /** Thin typed wrapper over the Accounting WebApi (base URL is added by the API interceptor). */
@@ -101,6 +103,24 @@ export class AccountingApi {
     return this.http.delete<void>(`${environment.apiBaseUrl}${DETAIL_CLASSES}/${id}`);
   }
 
+  /** Every detail class in one call (`pageSize = -1` means "all" on the server). */
+  listAllDetailClasses(): Observable<DetailClass[]> {
+    return this.listDetailClasses({ pageNumber: 1, pageSize: -1 }).pipe(map((res) => res.items ?? []));
+  }
+
+  /* ---- Account <-> detail class links ---- */
+
+  listAccountClasses(query: { pageNumber: number; pageSize: number }): Observable<PagedResult<AccountClass>> {
+    const params = new HttpParams().set('PageNumber', query.pageNumber).set('PageSize', query.pageSize);
+    return this.http
+      .get<unknown>(`${environment.projectionBaseUrl}${ACCOUNT_CLASSES_QUERY}`, { params })
+      .pipe(map((res) => normalizeAccountClasses(res)));
+  }
+
+  assignAccountClasses(body: AssignAccountClassRequest): Observable<void> {
+    return this.http.put<void>(`${environment.apiBaseUrl}${ACCOUNT_CLASSES}`, body);
+  }
+
   /* ---- Settings (code lengths) ---- */
 
   getSettings(): Observable<AccountingSettings> {
@@ -110,4 +130,32 @@ export class AccountingApi {
   setSettings(body: UpdateAccountingSettingsRequest): Observable<void> {
     return this.http.put<void>(`${environment.apiBaseUrl}${SETTINGS}`, body);
   }
+}
+
+/**
+ * The endpoint is documented as a paged result but single-row payloads are also seen in practice,
+ * so accept a page envelope, a bare array, or one record.
+ */
+function normalizeAccountClasses(res: unknown): PagedResult<AccountClass> {
+  const toRow = (row: AccountClass): AccountClass => ({
+    accountId: row.accountId,
+    accountName: row.accountName,
+    detailClassesId: row.detailClassesId ?? [],
+  });
+
+  if (Array.isArray(res)) {
+    const items = (res as AccountClass[]).map(toRow);
+    return { totalCount: items.length, items };
+  }
+
+  const body = res as (Partial<PagedResult<AccountClass>> & Partial<AccountClass>) | null;
+  if (Array.isArray(body?.items)) {
+    const items = body.items.map(toRow);
+    return { totalCount: body.totalCount ?? items.length, items };
+  }
+  if (body?.accountId) {
+    const item = toRow(body as AccountClass);
+    return { totalCount: 1, items: [item] };
+  }
+  return { totalCount: 0, items: [] };
 }

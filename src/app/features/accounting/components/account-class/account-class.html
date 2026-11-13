@@ -1,0 +1,44 @@
+<app-page-header title="ارتباط معین با طبقه تفصیلی"
+  [subtitle]="loading() && total() === 0 ? '' : (total() | faNumber) + ' حساب'" />
+
+<section class="panel">
+  <div class="toolbar">
+    <button type="button" class="btn btn-primary" [disabled]="!hasChanges() || saving()" (click)="save()">
+      <app-icon name="circle-check" [size]="16" />ذخیره
+    </button>
+    <div class="toolbar-hint">
+      @if (hasChanges()) {
+        <span class="pending">{{ changedRows().length | faNumber }} ردیف تغییر کرده است</span>
+        <button type="button" class="btn" [disabled]="saving()" (click)="resetChanges()">بازگردانی</button>
+      } @else {
+        <span class="muted">برای اتصال طبقه تفصیلی به حساب، خانه‌های جدول را علامت بزنید.</span>
+      }
+    </div>
+  </div>
+
+  @if (!loading() && detailClasses().length === 0) {
+    <p class="notice">
+      <app-icon name="info" [size]="16" />
+      هنوز طبقه تفصیلی‌ای ثبت نشده است؛ ابتدا از صفحه «طبقه تفصیلی» طبقه‌ها را ایجاد کنید.
+    </p>
+  }
+
+  <app-data-table [columns]="columns()" [rows]="rows()" [total]="total()" [loading]="loading()" [rowKey]="rowKey"
+    [(page)]="page" [(pageSize)]="pageSize" caption="ارتباط حساب‌های معین با طبقه‌های تفصیلی"
+    emptyTitle="حسابی برای نمایش وجود ندارد"
+    emptyMessage="پس از ثبت حساب‌های معین، ارتباط آن‌ها با طبقه‌های تفصیلی از این صفحه تنظیم می‌شود.">
+    <ng-template appCell="accountName" let-row>
+      <span class="name" [class.is-dirty]="changedRows().includes(row)">{{ row.accountName }}</span>
+    </ng-template>
+    @for (detailClass of detailClasses(); track detailClass.id) {
+      <ng-template [appCell]="detailClass.id" let-row>
+        <span class="check-cell">
+          <input type="checkbox" [checked]="isChecked(row.accountId, detailClass.id)" [disabled]="saving()"
+            [attr.aria-label]="'اتصال ' + detailClass.name + ' به ' + row.accountName"
+            [attr.title]="detailClass.detailClassCode + ' - ' + detailClass.name"
+            (change)="toggle(row.accountId, detailClass.id)" />
+        </span>
+      </ng-template>
+    }
+  </app-data-table>
+</section>

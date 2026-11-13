@@ -1,60 +1,41 @@
-# برقراری ارتباط طبقه تفصیلی با سرور
+# وصل کردن صفحه ارتباط معین با طبقه تفصیلی
 
 ## لیست api های سمت سرور
 ```
-POST: /api/v1/detail-classes 
-    request:
+PUT: {apiBaseUrl}/api/v1/account-classes
+request:
     {
-    "name": "string",
-    "detailClassCode": "string",
-    "normalBalance": 0
-    }
-    response: 204
-
-GET:/api/v1/detail-classes 
-    queryParam: pageNumber,pageSize
-    response:
-    {
-    "totalCount": 0,
-    "items": [
-        {
-        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-        "name": "string",
-        "detailClassCode": "string",
-        "normalBalance": 0
-        }
+    "accountId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "detailClassesId": [
+        "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ]
     }
 
-DELETE: /api/v1/detail-classes/{detailClassId}
-    response: 204
+response: 
+    201
 
-GET: /api/v1/detail-classes/{detailClassId}
-    response: 
+GET:{projectionBaseUrl}/api/v1/account-classes
+params: 
+    pageNumber, pageSize
+
+response:
     {
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "name": "string",
-    "detailClassCode": "string",
-    "normalBalance": 0
-    }
-```
-
-# پیاده سازی component جدید ارتباط معین با تفصیلی
-
-این کامپوننت باید به ارتباط معین با طبقه تفصیلی تغییر نام پیدا کنه و برای اسم فایل ها از account-class استفاده بشه
-
-## لیست api های سمت سرور مربوط به این بخش
-
-```
-POST: /api/v1/account-classes
-    request:
-    {
+    "accountName": "string",
     "accountId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "detailClassId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    "detailClassesId": [
+        "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ]
     }
-    response: 204
 ```
+
+# پیاده سازی component جدید ارتباط معین با طبقه تفصیلی
+
+ برای اسم فایل ها از account-class استفاده بشه
+
 
 ### برای ui این بخش چیزی که میخوام پیاده شه 
-یه جدول داریم که سر ستون هاش هاش میشه اسم طبقه ها و اولین هر ردیف میشه اختصاص دادن معین ها با طبقه ی اون ستون و تو هر خونه ی این جدول یه check-box هست که اگه تیکش خورده بود یعنی ارتباط بین این 2 تا با هم برقرار هست که همون `api get (/api/v1/account-classes)` میشه که بالا آوردم
+یه جدول داریم که سر ستون هاش هاش میشه اسم طبقه ها یا همون detail-class که اگه با pageSize = -1 صدا کنی api رو ، همه رو برمیگردونه. 
 
+برای گرفتن ردیف ها از api-get که بالا اشاره شده بهش استفاده کن و تو هر ردیف قبل از اولین ستون AccountName رو بزار و تو هر خونه از جدول یه check-box بزار برای اختصاص دادن accountId مربوط به اون ردیف با detailClassId مربوط به اون ستون
+
+یه دکمه ذخیره هم بزار وقتی تغییرات رو با عوض کردن checkbox ها اعمال کرد با زدن اون دکمه api put که بالا اورده شده صدا زده بشه
