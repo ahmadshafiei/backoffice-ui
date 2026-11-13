@@ -22,6 +22,6 @@ export class GroupAccounts extends AccountListBase {
     { key: 'accountCode', header: 'کد حساب', width: '140px' },
     { key: 'name', header: 'نام' },
     { key: 'isActive', header: 'وضعیت', width: '130px' },
-    { key: 'accountType', header: 'نوع', width: '150px' },
+    { key: 'accountType', header: 'نوع', width: '150px' }
   ];
 }

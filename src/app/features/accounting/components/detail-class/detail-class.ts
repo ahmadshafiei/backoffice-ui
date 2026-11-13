@@ -107,7 +107,6 @@ export class DetailClassPage {
       await firstValueFrom(this.api.deleteDetailClass(row.id));
       this.notify.success(`«${row.name}» حذف شد.`);
       this.deleteOpen.set(false);
-      // Deleting the last row of the last page: step back one page (the effect reloads).
       if (this.rows().length === 1 && this.page() > 1) this.page.update((p) => p - 1);
       else await this.load(this.page(), this.pageSize());
     } catch {

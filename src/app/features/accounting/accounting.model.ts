@@ -49,6 +49,7 @@ export interface Account {
   isPostable: boolean;
   isDetailAllowed: boolean;
   parentId: string | null;
+  parentName: string | null;
 }
 
 export interface RegisterAccountRequest {

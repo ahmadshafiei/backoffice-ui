@@ -10,7 +10,7 @@
     emptyTitle="حساب معینی پیدا نشد" emptyMessage="با دکمه «ایجاد حساب معین» اولین حساب را اضافه کنید.">
     <ng-template appCell="accountCode" let-row><span class="code">{{ row.accountCode }}</span></ng-template>
     <ng-template appCell="name" let-row><span class="name">{{ row.name }}</span></ng-template>
-    <ng-template appCell="parentId" let-row>{{ parentName(row) }}</ng-template>
+    <ng-template appCell="parentId" let-row>{{ row.parentName }}</ng-template>
     <ng-template appCell="normalBalance" let-row>{{ row.normalBalance === null ? '—' : balanceLabel[row.normalBalance] }}</ng-template>
     <ng-template appCell="isActive" let-row>
       <span class="chip" [class.is-active]="row.isActive" [class.is-inactive]="!row.isActive">{{ row.isActive ? 'فعال' : 'غیرفعال' }}</span>

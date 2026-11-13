@@ -44,7 +44,8 @@ export abstract class AccountListBase {
     });
   }
 
-  protected reload(): Promise<void> {
+  protected async reload(): Promise<void> {
+    await new Promise(resolve => setTimeout(resolve, 2000));
     return this.load(this.page(), this.pageSize(), toEnDigits(this.search()).trim());
   }
 
@@ -71,10 +72,6 @@ export abstract class AccountListBase {
     } catch {
       /* surfaced by the interceptor */
     }
-  }
-
-  protected parentName(account: Account): string {
-    return (account.parentId && this.parentById().get(account.parentId)?.name) || '—';
   }
 
   protected openCreate(): void {

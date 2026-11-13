@@ -47,6 +47,7 @@ export class AccountFormModal {
   protected readonly balanceOptions = NORMAL_BALANCE_OPTIONS;
   protected readonly showParent = computed(() => this.level() !== AccountLevel.Group);
   protected readonly showType = computed(() => this.level() == AccountLevel.Group);
+  protected readonly showNormalBalance = computed(() => this.level() != AccountLevel.Group);
   protected readonly showBalance = computed(() => this.level() !== AccountLevel.Group);
   protected readonly showDetailAllowed = computed(() => this.level() === AccountLevel.Subsidiary);
 
@@ -66,7 +67,7 @@ export class AccountFormModal {
     name: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(/\S/)] }),
     parentId: new FormControl<string | null>(null),
     accountType: new FormControl<AccountType | null>(null),
-    normalBalance: new FormControl<NormalBalance>(NormalBalance.Debit, { validators: [Validators.required] }),
+    normalBalance: new FormControl<NormalBalance | null>(null),
     isActive: new FormControl(true, { nonNullable: true }),
     isDetailAllowed: new FormControl(false, { nonNullable: true }),
   });
@@ -106,6 +107,7 @@ export class AccountFormModal {
 
     setRequired(controls.parentId, level !== AccountLevel.Group);
     setRequired(controls.accountType, level !== AccountLevel.Subsidiary);
+    setRequired(controls.normalBalance, level !== AccountLevel.Subsidiary);
 
     if (account) {
       controls.accountCode.disable({ emitEvent: false });

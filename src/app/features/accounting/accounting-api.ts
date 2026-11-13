@@ -98,7 +98,7 @@ export class AccountingApi {
   }
 
   deleteDetailClass(id: string): Observable<void> {
-    return this.http.delete<void>(`${environment.projectionBaseUrl}${DETAIL_CLASSES}/${id}`);
+    return this.http.delete<void>(`${environment.apiBaseUrl}${DETAIL_CLASSES}/${id}`);
   }
 
   /* ---- Settings (code lengths) ---- */

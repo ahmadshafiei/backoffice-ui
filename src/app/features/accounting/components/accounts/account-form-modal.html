@@ -13,8 +13,9 @@
     @if (showType()) {
     <app-select-field label="نوع حساب" formControlName="accountType" [options]="typeOptions" [required]="true" />
     }
-    
+    @if(showNormalBalance()){
     <app-select-field label="ماهیت" formControlName="normalBalance" [options]="balanceOptions" [required]="true" />
+    }
 
     <div class="toggles wide">
       <app-toggle-field label="فعال" formControlName="isActive" />
