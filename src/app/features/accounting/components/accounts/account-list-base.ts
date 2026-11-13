@@ -41,7 +41,6 @@ export abstract class AccountListBase {
   }
 
   protected async reload(): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 2000));
     return this.load(this.page(), this.pageSize(), toEnDigits(this.search()).trim());
   }
 

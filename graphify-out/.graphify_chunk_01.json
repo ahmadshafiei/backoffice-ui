@@ -1,0 +1,236 @@
+{
+  "nodes": [
+    {
+      "id": "agents_graphify",
+      "label": "Graphify project workflow",
+      "file_type": "concept",
+      "source_file": "D:\\Projects\\backoffice-ui\\AGENTS.md",
+      "source_location": "L1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "readme_backoffice",
+      "label": "Brokerage back office",
+      "file_type": "document",
+      "source_file": "D:\\Projects\\backoffice-ui\\README.md",
+      "source_location": "L1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "readme_accounting",
+      "label": "Accounting feature",
+      "file_type": "concept",
+      "source_file": "D:\\Projects\\backoffice-ui\\README.md",
+      "source_location": "L10",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "readme_auth_stub",
+      "label": "Authentication stub",
+      "file_type": "concept",
+      "source_file": "D:\\Projects\\backoffice-ui\\README.md",
+      "source_location": "L13",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "readme_account_class",
+      "label": "Account class associations",
+      "file_type": "concept",
+      "source_file": "D:\\Projects\\backoffice-ui\\README.md",
+      "source_location": "L17",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "readme_account_settings",
+      "label": "Accounting settings",
+      "file_type": "concept",
+      "source_file": "D:\\Projects\\backoffice-ui\\README.md",
+      "source_location": "L18",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "prds_detailclass_account_class",
+      "label": "Account class association page",
+      "file_type": "concept",
+      "source_file": "D:\\Projects\\backoffice-ui\\prds\\DetailClass.MD",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "prds_detailclass_get_account_classes",
+      "label": "GET /api/v1/account-classes",
+      "file_type": "concept",
+      "source_file": "D:\\Projects\\backoffice-ui\\prds\\DetailClass.MD",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "prds_detailclass_put_account_classes",
+      "label": "PUT /api/v1/account-classes",
+      "file_type": "concept",
+      "source_file": "D:\\Projects\\backoffice-ui\\prds\\DetailClass.MD",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "prds_detailclass_detail_class_columns",
+      "label": "Detail class columns",
+      "file_type": "concept",
+      "source_file": "D:\\Projects\\backoffice-ui\\prds\\DetailClass.MD",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "prds_detailclass_checkbox_assignments",
+      "label": "Account and detail class assignments",
+      "file_type": "concept",
+      "source_file": "D:\\Projects\\backoffice-ui\\prds\\DetailClass.MD",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "prds_detailclass_save_changes",
+      "label": "Save changed assignments",
+      "file_type": "concept",
+      "source_file": "D:\\Projects\\backoffice-ui\\prds\\DetailClass.MD",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "readme_backoffice",
+      "target": "readme_accounting",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "D:\\Projects\\backoffice-ui\\README.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "readme_accounting",
+      "target": "readme_account_class",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "D:\\Projects\\backoffice-ui\\README.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "readme_accounting",
+      "target": "readme_account_settings",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "D:\\Projects\\backoffice-ui\\README.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "prds_detailclass_account_class",
+      "target": "prds_detailclass_get_account_classes",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "D:\\Projects\\backoffice-ui\\prds\\DetailClass.MD",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "prds_detailclass_account_class",
+      "target": "prds_detailclass_put_account_classes",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "D:\\Projects\\backoffice-ui\\prds\\DetailClass.MD",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "prds_detailclass_account_class",
+      "target": "prds_detailclass_detail_class_columns",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "D:\\Projects\\backoffice-ui\\prds\\DetailClass.MD",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "prds_detailclass_account_class",
+      "target": "prds_detailclass_checkbox_assignments",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "D:\\Projects\\backoffice-ui\\prds\\DetailClass.MD",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "prds_detailclass_save_changes",
+      "target": "prds_detailclass_put_account_classes",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "D:\\Projects\\backoffice-ui\\prds\\DetailClass.MD",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "readme_account_class",
+      "target": "prds_detailclass_account_class",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "D:\\Projects\\backoffice-ui\\README.md",
+      "source_location": "L17",
+      "weight": 1
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "coverage": {
+    "D:\\Projects\\backoffice-ui\\AGENTS.md": 14,
+    "D:\\Projects\\backoffice-ui\\README.md": 20,
+    "D:\\Projects\\backoffice-ui\\prds\\DetailClass.MD": 41
+  }
+}

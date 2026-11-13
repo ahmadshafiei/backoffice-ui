@@ -1,0 +1,45 @@
+{
+  "nodes": [
+    {
+      "id": "public_farabi_group_logo_farabi_financial_group_logo",
+      "label": "Farabi Financial Group logo",
+      "file_type": "image",
+      "source_file": "D:\\Projects\\backoffice-ui\\public\\farabi-group-logo.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "public_favicon_farabi_brand_icon",
+      "label": "Farabi brand favicon",
+      "file_type": "image",
+      "source_file": "D:\\Projects\\backoffice-ui\\public\\favicon.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "public_favicon_farabi_brand_icon",
+      "target": "public_farabi_group_logo_farabi_financial_group_logo",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "D:\\Projects\\backoffice-ui\\public\\favicon.svg",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "coverage": {
+    "D:\\Projects\\backoffice-ui\\public\\farabi-group-logo.svg": 67,
+    "D:\\Projects\\backoffice-ui\\public\\favicon.svg": 1
+  }
+}

@@ -12,10 +12,10 @@ export class AccountingSettingsService {
   private readonly http = inject(HttpClient);
 
   get(): Observable<AccountingSettings> {
-    return this.http.get<AccountingSettings>(`${environment.apiBaseUrl}${SETTINGS}`);
+    return this.http.get<AccountingSettings>(`${SETTINGS}`);
   }
 
   update(body: UpdateAccountingSettingsRequest): Observable<void> {
-    return this.http.put<void>(`${environment.apiBaseUrl}${SETTINGS}`, body);
+    return this.http.put<void>(`${SETTINGS}`, body);
   }
 }

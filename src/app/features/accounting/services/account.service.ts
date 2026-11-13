@@ -21,7 +21,7 @@ export class AccountService {
       .set('PageNumber', query.pageNumber)
       .set('PageSize', query.pageSize);
     if (query.name) params = params.set('Name', query.name);
-    return this.http.get<PagedResult<Account>>(environment.projectionBaseUrl + ACCOUNTS, { params });
+    return this.http.get<PagedResult<Account>>(ACCOUNTS, { params });
   }
 
   /** Every account of one level in a single call (`pageSize = -1`), cached until the next mutation. */
@@ -39,18 +39,18 @@ export class AccountService {
   }
 
   get(id: string): Observable<Account> {
-    return this.http.get<Account>(`${environment.projectionBaseUrl}${ACCOUNTS}/${id}`);
+    return this.http.get<Account>(`${ACCOUNTS}/${id}`);
   }
 
   register(body: RegisterAccountRequest): Observable<void> {
-    return this.http.post<void>(`${environment.apiBaseUrl}${ACCOUNTS}`, body).pipe(tap(() => this.allCache.clear()));
+    return this.http.post<void>(`${ACCOUNTS}`, body).pipe(tap(() => this.allCache.clear()));
   }
 
   modify(id: string, body: ModifyAccountRequest): Observable<void> {
-    return this.http.patch<void>(`${environment.apiBaseUrl}${ACCOUNTS}/${id}`, body).pipe(tap(() => this.allCache.clear()));
+    return this.http.patch<void>(`${ACCOUNTS}/${id}`, body).pipe(tap(() => this.allCache.clear()));
   }
 
   remove(id: string): Observable<void> {
-    return this.http.delete<void>(`${environment.apiBaseUrl}${ACCOUNTS}/${id}`).pipe(tap(() => this.allCache.clear()));
+    return this.http.delete<void>(`${ACCOUNTS}/${id}`).pipe(tap(() => this.allCache.clear()));
   }
 }

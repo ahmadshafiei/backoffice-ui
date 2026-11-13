@@ -13,19 +13,18 @@ export class DetailClassService {
 
   list(query: { pageNumber: number; pageSize: number }): Observable<PagedResult<DetailClass>> {
     const params = new HttpParams().set('PageNumber', query.pageNumber).set('PageSize', query.pageSize);
-    return this.http.get<PagedResult<DetailClass>>(`${environment.projectionBaseUrl}${DETAIL_CLASSES}`, { params });
+    return this.http.get<PagedResult<DetailClass>>(`${DETAIL_CLASSES}`, { params });
   }
 
-  /** Every detail class in a single call (`pageSize = -1`). */
   all(): Observable<DetailClass[]> {
     return this.list({ pageNumber: 1, pageSize: PAGE_SIZE_ALL }).pipe(map((res) => res.items ?? []));
   }
 
   create(body: CreateDetailClassRequest): Observable<void> {
-    return this.http.post<void>(`${environment.apiBaseUrl}${DETAIL_CLASSES}`, body);
+    return this.http.post<void>(`${DETAIL_CLASSES}`, body);
   }
 
   remove(id: string): Observable<void> {
-    return this.http.delete<void>(`${environment.apiBaseUrl}${DETAIL_CLASSES}/${id}`);
+    return this.http.delete<void>(`${DETAIL_CLASSES}/${id}`);
   }
 }
