@@ -10,8 +10,9 @@ import { ConfirmDialog } from '../../../../shared/components/modal/confirm-dialo
 import { Modal } from '../../../../shared/components/modal/modal';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { FaNumberPipe } from '../../../../shared/pipes/fa-number';
-import { AccountingApi } from '../../accounting-api';
-import { DetailClass, NORMAL_BALANCE_LABEL, NORMAL_BALANCE_OPTIONS, NormalBalance } from '../../accounting.model';
+import { DetailClass } from '../../models/detail-class.model';
+import { NORMAL_BALANCE_LABEL, NORMAL_BALANCE_OPTIONS, NormalBalance } from '../../models/normal-balance.model';
+import { DetailClassService } from '../../services/detail-class.service';
 
 /** Detail classes (طبقه تفصیلی). The API supports list / create / delete – there is no update endpoint. */
 @Component({
@@ -22,7 +23,7 @@ import { DetailClass, NORMAL_BALANCE_LABEL, NORMAL_BALANCE_OPTIONS, NormalBalanc
   styleUrl: '..//accounts/list-page.css'
 })
 export class DetailClassPage {
-  private readonly api = inject(AccountingApi);
+  private readonly detailClasses = inject(DetailClassService);
   private readonly notify = inject(NotificationApi);
 
   protected readonly rows = signal<readonly DetailClass[]>([]);
@@ -63,7 +64,7 @@ export class DetailClassPage {
   private async load(pageNumber: number, pageSize: number): Promise<void> {
     this.loading.set(true);
     try {
-      const res = await firstValueFrom(this.api.listDetailClasses({ pageNumber, pageSize }));
+      const res = await firstValueFrom(this.detailClasses.list({ pageNumber, pageSize }));
       this.rows.set(res.items);
       this.total.set(Number(res.totalCount));
     } catch {
@@ -83,7 +84,7 @@ export class DetailClassPage {
     const { detailClassCode, name, normalBalance } = this.form.getRawValue();
     this.busy.set(true);
     try {
-      await firstValueFrom(this.api.createDetailClass({ detailClassCode, name: name.trim(), normalBalance: normalBalance as NormalBalance }));
+      await firstValueFrom(this.detailClasses.create({ detailClassCode, name: name.trim(), normalBalance: normalBalance as NormalBalance }));
       this.notify.success('طبقه تفصیلی ایجاد شد.');
       this.formOpen.set(false);
       await this.load(this.page(), this.pageSize());
@@ -104,7 +105,7 @@ export class DetailClassPage {
     if (!row) return;
     this.busy.set(true);
     try {
-      await firstValueFrom(this.api.deleteDetailClass(row.id));
+      await firstValueFrom(this.detailClasses.remove(row.id));
       this.notify.success(`«${row.name}» حذف شد.`);
       this.deleteOpen.set(false);
       if (this.rows().length === 1 && this.page() > 1) this.page.update((p) => p - 1);

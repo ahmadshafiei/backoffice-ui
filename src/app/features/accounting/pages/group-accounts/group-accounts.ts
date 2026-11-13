@@ -4,7 +4,7 @@ import { Icon } from '../../../../shared/components/icon/icon';
 import { ConfirmDialog } from '../../../../shared/components/modal/confirm-dialog';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { FaNumberPipe } from '../../../../shared/pipes/fa-number';
-import { ACCOUNT_TYPE_LABEL, Account, AccountLevel } from '../../accounting.model';
+import { ACCOUNT_TYPE_LABEL, Account, AccountLevel } from '../../models/account.model';
 import { AccountFormModal } from '../../components/accounts/account-form-modal';
 import { AccountListBase } from '../../components/accounts/account-list-base';
 

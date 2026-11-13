@@ -5,17 +5,27 @@ import { DataTable, TableCell, TableColumn } from '../../../../shared/components
 import { Icon } from '../../../../shared/components/icon/icon';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { FaNumberPipe } from '../../../../shared/pipes/fa-number';
-import { AccountingApi } from '../../accounting-api';
-import { AccountClass, DetailClass } from '../../accounting.model';
+import { AccountClass } from '../../models/account-class.model';
+import { DetailClass } from '../../models/detail-class.model';
+import { AccountClassService } from '../../services/account-class.service';
+import { DetailClassService } from '../../services/detail-class.service';
 
-type Selection = ReadonlyMap<string, ReadonlySet<string>>;
+interface RowEdit {
+  /** Selection the user wants to save. */
+  ids: ReadonlySet<string>;
+  /** Selection the server returned for this row, used to detect changes and to revert. */
+  baseline: ReadonlySet<string>;
+}
 
 /**
- * Account ↔ detail-class links (ارتباط معین با طبقه تفصیلی).
+ * Account <-> detail-class links.
  *
- * Rows come from `GET /account-classes`; every detail class is one column, and each cell is a
- * checkbox that grants the row's `accountId` the column's `detailClassId`. Saving PUTs one body
- * per changed account with its full set of detail class ids.
+ * Rows come from `GET /account-classes` with server-side paging; the columns are the complete
+ * list of detail classes (`pageSize = -1`). Every cell is a checkbox that grants the row's
+ * `accountId` the column's `detailClassId`. Saving PUTs one body per changed account with its
+ * full set of detail class ids.
+ *
+ * Edits are keyed by `accountId`, so checkboxes ticked on another page survive a page change.
  */
 @Component({
   selector: 'app-account-class',
@@ -25,7 +35,8 @@ type Selection = ReadonlyMap<string, ReadonlySet<string>>;
   styleUrl: './account-class.css',
 })
 export class AccountClassPage {
-  private readonly api = inject(AccountingApi);
+  private readonly accountClasses = inject(AccountClassService);
+  private readonly detailClassesApi = inject(DetailClassService);
   private readonly notify = inject(NotificationApi);
 
   protected readonly rows = signal<readonly AccountClass[]>([]);
@@ -37,10 +48,7 @@ export class AccountClassPage {
 
   protected readonly detailClasses = signal<readonly DetailClass[]>([]);
 
-  /** Checkbox state as returned by the server, used to detect what the user changed. */
-  private readonly saved = signal<Selection>(new Map());
-  /** Checkbox state currently shown in the table. */
-  private readonly draft = signal<Selection>(new Map());
+  private readonly edits = signal<ReadonlyMap<string, RowEdit>>(new Map());
 
   protected readonly rowKey = (row: AccountClass): string => row.accountId;
 
@@ -49,28 +57,26 @@ export class AccountClassPage {
     ...this.detailClasses().map((detailClass) => ({ key: detailClass.id, header: detailClass.name })),
   ]);
 
-  protected readonly changedRows = computed(() => {
-    const draft = this.draft();
-    const saved = this.saved();
-    return this.rows().filter((row) => !sameSet(draft.get(row.accountId), saved.get(row.accountId)));
-  });
+  private readonly changed = computed(() =>
+    [...this.edits()].filter(([, edit]) => !sameSet(edit.ids, edit.baseline)),
+  );
 
-  protected readonly hasChanges = computed(() => this.changedRows().length > 0);
+  protected readonly changedCount = computed(() => this.changed().length);
+  protected readonly hasChanges = computed(() => this.changedCount() > 0);
 
   constructor() {
-    // Server-side paging: refetch whenever page or page size changes.
+    void this.loadDetailClasses();
+
     effect(() => {
       const pageNumber = this.page();
       const pageSize = this.pageSize();
       untracked(() => void this.load(pageNumber, pageSize));
     });
-
-    void this.loadDetailClasses();
   }
 
   private async loadDetailClasses(): Promise<void> {
     try {
-      this.detailClasses.set(await firstValueFrom(this.api.listAllDetailClasses()));
+      this.detailClasses.set(await firstValueFrom(this.detailClassesApi.all()));
     } catch {
       /* surfaced by the interceptor */
     }
@@ -79,12 +85,9 @@ export class AccountClassPage {
   private async load(pageNumber: number, pageSize: number): Promise<void> {
     this.loading.set(true);
     try {
-      const res = await firstValueFrom(this.api.listAccountClasses({ pageNumber, pageSize }));
+      const res = await firstValueFrom(this.accountClasses.list({ pageNumber, pageSize }));
       this.rows.set(res.items);
       this.total.set(Number(res.totalCount));
-      const selection = new Map(res.items.map((row) => [row.accountId, toSet(row.detailClassesId)] as const));
-      this.saved.set(selection);
-      this.draft.set(selection);
     } catch {
       /* surfaced by the interceptor */
     } finally {
@@ -92,41 +95,46 @@ export class AccountClassPage {
     }
   }
 
-  protected isChecked(accountId: string, detailClassId: string): boolean {
-    return this.draft().get(accountId)?.has(detailClassId) ?? false;
+  protected isChecked(row: AccountClass, detailClassId: string): boolean {
+    const edit = this.edits().get(row.accountId);
+    if (edit) return edit.ids.has(detailClassId);
+    return toSet(row.detailClassesId).has(detailClassId);
   }
 
-  protected toggle(accountId: string, detailClassId: string): void {
-    this.draft.update((current) => {
-      const next = new Map(current);
-      const ids = new Set(next.get(accountId) ?? []);
+  protected isDirty(row: AccountClass): boolean {
+    const edit = this.edits().get(row.accountId);
+    return !!edit && !sameSet(edit.ids, edit.baseline);
+  }
+
+  protected toggle(row: AccountClass, detailClassId: string): void {
+    this.edits.update((current) => {
+      const baseline = current.get(row.accountId)?.baseline ?? toSet(row.detailClassesId);
+      const ids = new Set(current.get(row.accountId)?.ids ?? baseline);
       if (ids.has(detailClassId)) ids.delete(detailClassId);
       else ids.add(detailClassId);
-      next.set(accountId, ids);
+
+      const next = new Map(current);
+      if (sameSet(ids, baseline)) next.delete(row.accountId);
+      else next.set(row.accountId, { ids, baseline });
       return next;
     });
   }
 
   protected resetChanges(): void {
-    this.draft.set(this.saved());
+    this.edits.set(new Map());
   }
 
   protected async save(): Promise<void> {
-    const changed = this.changedRows();
+    const changed = this.changed();
     if (changed.length === 0) return;
 
-    const draft = this.draft();
     this.saving.set(true);
     try {
-      for (const row of changed) {
-        await firstValueFrom(
-          this.api.assignAccountClasses({
-            accountId: row.accountId,
-            detailClassesId: [...(draft.get(row.accountId) ?? [])],
-          }),
-        );
+      for (const [accountId, edit] of changed) {
+        await firstValueFrom(this.accountClasses.assign({ accountId, detailClassesId: [...edit.ids] }));
       }
       this.notify.success('ارتباط حساب با طبقه‌های تفصیلی ذخیره شد.');
+      this.edits.set(new Map());
       await this.load(this.page(), this.pageSize());
     } catch {
       /* keep the checkboxes as they are so the user can retry */
@@ -140,10 +148,8 @@ function toSet(ids: readonly string[] | null | undefined): ReadonlySet<string> {
   return new Set(ids ?? []);
 }
 
-function sameSet(a: ReadonlySet<string> | undefined, b: ReadonlySet<string> | undefined): boolean {
-  const left = a ?? new Set<string>();
-  const right = b ?? new Set<string>();
-  if (left.size !== right.size) return false;
-  for (const id of left) if (!right.has(id)) return false;
+function sameSet(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
+  if (a.size !== b.size) return false;
+  for (const id of a) if (!b.has(id)) return false;
   return true;
 }

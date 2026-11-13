@@ -7,10 +7,9 @@ import { SelectField, SelectOption } from '../../../../shared/components/fields/
 import { TextField } from '../../../../shared/components/fields/text-field';
 import { ToggleField } from '../../../../shared/components/fields/toggle-field';
 import { Modal } from '../../../../shared/components/modal/modal';
-import {
-  ACCOUNT_LEVEL_LABEL, ACCOUNT_TYPE_OPTIONS, Account, AccountLevel, AccountType, NORMAL_BALANCE_OPTIONS, NormalBalance,
-} from '../../accounting.model';
-import { AccountingApi } from '../../accounting-api';
+import { ACCOUNT_LEVEL_LABEL, ACCOUNT_TYPE_OPTIONS, Account, AccountLevel, AccountType } from '../../models/account.model';
+import { NORMAL_BALANCE_OPTIONS, NormalBalance } from '../../models/normal-balance.model';
+import { AccountService } from '../../services/account.service';
 
 let nextFormId = 0;
 
@@ -34,7 +33,7 @@ export class AccountFormModal {
   readonly account = input<Account | null>(null);
   readonly saved = output<void>();
 
-  private readonly api = inject(AccountingApi);
+  private readonly accounts = inject(AccountService);
   private readonly notify = inject(NotificationApi);
 
   protected readonly formId = `account-form-${nextFormId++}`;
@@ -124,7 +123,7 @@ export class AccountFormModal {
     }
     const parentLevel = level === AccountLevel.General ? AccountLevel.Group : AccountLevel.General;
     try {
-      this.parents.set(await firstValueFrom(this.api.allAccounts(parentLevel)));
+      this.parents.set(await firstValueFrom(this.accounts.all(parentLevel)));
     } catch {
       /* surfaced by the interceptor */
     }
@@ -144,7 +143,7 @@ export class AccountFormModal {
     this.busy.set(true);
     try {
       if (account) {
-        await firstValueFrom(this.api.modifyAccount(account.id, {
+        await firstValueFrom(this.accounts.modify(account.id, {
           name,
           isActive: value.isActive,
           isPostable: account.isPostable,
@@ -154,7 +153,7 @@ export class AccountFormModal {
         this.notify.success('تغییرات ذخیره شد.');
       } else {
         const parent = value.parentId ? this.byId().get(value.parentId) : undefined;
-        await firstValueFrom(this.api.registerAccount({
+        await firstValueFrom(this.accounts.register({
           name,
           accountCode: value.accountCode,
           isActive: value.isActive,

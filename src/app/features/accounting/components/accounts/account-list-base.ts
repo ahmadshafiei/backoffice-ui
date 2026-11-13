@@ -2,22 +2,20 @@ import { Directive, computed, effect, inject, linkedSignal, signal, untracked } 
 import { firstValueFrom } from 'rxjs';
 import { NotificationApi } from '../../../../core/services/notification-api';
 import { toEnDigits } from '../../../../shared/utils/digits.utils';
-import { ACCOUNT_LEVEL_LABEL, Account, AccountLevel } from '../../accounting.model';
-import { AccountingApi } from '../../accounting-api';
+import { ACCOUNT_LEVEL_LABEL, Account, AccountLevel } from '../../models/account.model';
+import { AccountService } from '../../services/account.service';
 
 /** State and behaviour common to the group / general / subsidiary account list pages. */
 @Directive()
 export abstract class AccountListBase {
   protected abstract readonly level: AccountLevel;
 
-  private readonly api = inject(AccountingApi);
+  private readonly accounts = inject(AccountService);
   private readonly notify = inject(NotificationApi);
 
   protected readonly rows = signal<readonly Account[]>([]);
   protected readonly total = signal(0);
   protected readonly loading = signal(false);
-  protected readonly parents = signal<readonly Account[]>([]);
-  protected readonly parentById = computed(() => new Map(this.parents().map((a) => [a.id, a] as const)));
 
   protected readonly search = signal('');
   /** Jumps back to page 1 whenever the search text changes. */
@@ -34,8 +32,6 @@ export abstract class AccountListBase {
   protected readonly noun = computed(() => ACCOUNT_LEVEL_LABEL[this.level]);
 
   constructor() {
-    void this.loadParents();
-
     effect(() => {
       const pageNumber = this.page();
       const pageSize = this.pageSize();
@@ -53,7 +49,7 @@ export abstract class AccountListBase {
     this.loading.set(true);
     try {
       const res = await firstValueFrom(
-        this.api.listAccounts({ accountLevel: this.level, pageNumber, pageSize, name: name || undefined }),
+        this.accounts.list({ accountLevel: this.level, pageNumber, pageSize, name: name || undefined }),
       );
       this.rows.set(res.items);
       this.total.set(Number(res.totalCount));
@@ -61,16 +57,6 @@ export abstract class AccountListBase {
       /* surfaced by the interceptor */
     } finally {
       this.loading.set(false);
-    }
-  }
-
-  private async loadParents(): Promise<void> {
-    if (this.level === AccountLevel.Group) return;
-    const parentLevel = this.level === AccountLevel.General ? AccountLevel.Group : AccountLevel.General;
-    try {
-      this.parents.set(await firstValueFrom(this.api.allAccounts(parentLevel)));
-    } catch {
-      /* surfaced by the interceptor */
     }
   }
 
@@ -94,7 +80,7 @@ export abstract class AccountListBase {
     if (!account) return;
     this.busy.set(true);
     try {
-      await firstValueFrom(this.api.deleteAccount(account.id));
+      await firstValueFrom(this.accounts.remove(account.id));
       this.notify.success(`«${account.name}» حذف شد.`);
       this.deleteOpen.set(false);
       if (this.rows().length === 1 && this.page() > 1) this.page.update((p) => p - 1);

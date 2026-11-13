@@ -5,7 +5,7 @@ import { NotificationApi } from '../../../../core/services/notification-api';
 import { TextField } from '../../../../shared/components/fields/text-field';
 import { Icon } from '../../../../shared/components/icon/icon';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
-import { AccountingApi } from '../../accounting-api';
+import { AccountingSettingsService } from '../../services/accounting-settings.service';
 
 @Component({
   selector: 'app-account-settings',
@@ -15,7 +15,7 @@ import { AccountingApi } from '../../accounting-api';
   styleUrl: './account-settings.css',
 })
 export class AccountSettingsPage {
-  private readonly api = inject(AccountingApi);
+  private readonly api = inject(AccountingSettingsService);
   private readonly notify = inject(NotificationApi);
 
   protected readonly fields: readonly { control: string; label: string }[] = [
@@ -47,7 +47,7 @@ export class AccountSettingsPage {
     this.loadFailed.set(false);
     this.form.disable();
     try {
-      const settings = await firstValueFrom(this.api.getSettings());
+      const settings = await firstValueFrom(this.api.get());
       this.form.reset({
         groupAccountLength: this.asText(settings.groupAccountCodeLength),
         generalAccountLength: this.asText(settings.generalAccountLength),
@@ -68,7 +68,7 @@ export class AccountSettingsPage {
     const raw = this.form.getRawValue();
     this.busy.set(true);
     try {
-      await firstValueFrom(this.api.setSettings({
+      await firstValueFrom(this.api.update({
         groupAccountLength: Number(raw.groupAccountLength),
         generalAccountLength: Number(raw.generalAccountLength),
         subsidiaryAccountLength: Number(raw.subsidiaryAccountLength),

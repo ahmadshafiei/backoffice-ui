@@ -8,7 +8,7 @@
     </button>
     <div class="toolbar-hint">
       @if (hasChanges()) {
-        <span class="pending">{{ changedRows().length | faNumber }} ردیف تغییر کرده است</span>
+        <span class="pending">{{ changedCount() | faNumber }} ردیف تغییر کرده است</span>
         <button type="button" class="btn" [disabled]="saving()" (click)="resetChanges()">بازگردانی</button>
       } @else {
         <span class="muted">برای اتصال طبقه تفصیلی به حساب، خانه‌های جدول را علامت بزنید.</span>
@@ -28,15 +28,15 @@
     emptyTitle="حسابی برای نمایش وجود ندارد"
     emptyMessage="پس از ثبت حساب‌های معین، ارتباط آن‌ها با طبقه‌های تفصیلی از این صفحه تنظیم می‌شود.">
     <ng-template appCell="accountName" let-row>
-      <span class="name" [class.is-dirty]="changedRows().includes(row)">{{ row.accountName }}</span>
+      <span class="name" [class.is-dirty]="isDirty(row)">{{ row.accountName }}</span>
     </ng-template>
     @for (detailClass of detailClasses(); track detailClass.id) {
       <ng-template [appCell]="detailClass.id" let-row>
         <span class="check-cell">
-          <input type="checkbox" [checked]="isChecked(row.accountId, detailClass.id)" [disabled]="saving()"
+          <input type="checkbox" [checked]="isChecked(row, detailClass.id)" [disabled]="saving()"
             [attr.aria-label]="'اتصال ' + detailClass.name + ' به ' + row.accountName"
             [attr.title]="detailClass.detailClassCode + ' - ' + detailClass.name"
-            (change)="toggle(row.accountId, detailClass.id)" />
+            (change)="toggle(row, detailClass.id)" />
         </span>
       </ng-template>
     }
