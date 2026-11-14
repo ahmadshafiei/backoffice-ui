@@ -132,10 +132,10 @@
     "semantic_hash": ""
   },
   "src/app/features/accounting/components/account-class/account-class.ts": {
-    "mtime": 1794567360.27873,
-    "seen": 1794581832.7420423,
-    "ast_hash": "5592e82a114e2f3cca0b92e46920898b",
-    "semantic_hash": "5592e82a114e2f3cca0b92e46920898b"
+    "mtime": 1794682527.8943882,
+    "seen": 1794682653.113108,
+    "ast_hash": "019deac758fbc0500909bf12825fd588",
+    "semantic_hash": ""
   },
   "src/app/features/accounting/components/account-settings/account-settings.ts": {
     "mtime": 1794566236.6617763,
@@ -216,10 +216,10 @@
     "semantic_hash": "4ce3bbe8bdc725c9594af08f92f623aa"
   },
   "src/app/features/accounting/services/account-class.service.ts": {
-    "mtime": 1794579872.1248853,
-    "seen": 1794581832.7420423,
-    "ast_hash": "6e8c00248cd1ea211e451057df8e0895",
-    "semantic_hash": "6e8c00248cd1ea211e451057df8e0895"
+    "mtime": 1794682219.9745245,
+    "seen": 1794682653.113108,
+    "ast_hash": "20d0940b31fc6d17818ca6701d9ba3be",
+    "semantic_hash": ""
   },
   "src/app/features/accounting/services/account.service.ts": {
     "mtime": 1794579207.7573235,
@@ -429,9 +429,9 @@
     "ast_empty": true
   },
   "src/app/features/accounting/components/detail-accounts/detail-accounts.ts": {
-    "mtime": 1794680527.922041,
-    "seen": 1794680569.8570793,
-    "ast_hash": "cb51e7ce1e37c842445e1bbe5a8c0d2b",
+    "mtime": 1794680599.252468,
+    "seen": 1794682653.113108,
+    "ast_hash": "29e358f16c8492e6237e17c4687baf4d",
     "semantic_hash": ""
   },
   "src/app/features/accounting/models/detail-account.model.ts": {
@@ -453,9 +453,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1794680528.8500926,
-    "seen": 1794680569.8570793,
-    "ast_hash": "3f88358901a38c4be710c273acf37407",
+    "mtime": 1794682565.8147514,
+    "seen": 1794682653.113108,
+    "ast_hash": "8c60c84d04dc4fae1734bbf973b8fd83",
     "semantic_hash": ""
   },
   "prds/DetailClass.MD": {
@@ -489,9 +489,9 @@
     "semantic_hash": ""
   },
   "src/app/features/accounting/components/account-class/account-class.html": {
-    "mtime": 1794567389.6657505,
-    "seen": 1794680569.8570793,
-    "ast_hash": "f611c82e782658f1159007a8eb0f20ba",
+    "mtime": 1794682518.2399104,
+    "seen": 1794682653.113108,
+    "ast_hash": "40436ffdd68eeeaa4658b83ecbd60e41",
     "semantic_hash": ""
   },
   "src/app/features/accounting/components/account-settings/account-settings.html": {

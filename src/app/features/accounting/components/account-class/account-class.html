@@ -3,24 +3,27 @@
 
 <section class="panel">
   <div class="toolbar">
-    <button type="button" class="btn btn-primary" [disabled]="!hasChanges() || saving()" (click)="save()">
-      <app-icon name="circle-check" [size]="16" />ذخیره
-    </button>
     <div class="toolbar-hint">
       @if (hasChanges()) {
-        <span class="pending">{{ changedCount() | faNumber }} ردیف تغییر کرده است</span>
-        <button type="button" class="btn" [disabled]="saving()" (click)="resetChanges()">بازگردانی</button>
-      } @else {
-        <span class="muted">برای اتصال طبقه تفصیلی به حساب، خانه‌های جدول را علامت بزنید.</span>
+      <span class="pending">{{ changedCount() | faNumber }} ردیف تغییر کرده است</span>
+      <button type="button" class="btn" [disabled]="saving()" (click)="resetChanges()">بازگردانی</button>
       }
+      <button type="button" class="btn btn-primary" [disabled]="!hasChanges() || saving()" (click)="save()">
+        <app-icon name="circle-check" [size]="16" />ذخیره
+      </button>
+    </div>
+    <div class="search">
+      <app-icon name="search" [size]="16" />
+      <input class="control" type="search" placeholder="نام یا کد حساب معین" [formControl]="searchControl"
+        aria-label="جستجوی نام یا کد حساب معین" (keydown.enter)="applySearch()" />
     </div>
   </div>
 
   @if (!loading() && detailClasses().length === 0) {
-    <p class="notice">
-      <app-icon name="info" [size]="16" />
-      هنوز طبقه تفصیلی‌ای ثبت نشده است؛ ابتدا از صفحه «طبقه تفصیلی» طبقه‌ها را ایجاد کنید.
-    </p>
+  <p class="notice">
+    <app-icon name="info" [size]="16" />
+    هنوز طبقه تفصیلی‌ای ثبت نشده است؛ ابتدا از صفحه «طبقه تفصیلی» طبقه‌ها را ایجاد کنید.
+  </p>
   }
 
   <app-data-table [columns]="columns()" [rows]="rows()" [total]="total()" [loading]="loading()" [rowKey]="rowKey"
@@ -31,14 +34,14 @@
       <span class="name" [class.is-dirty]="isDirty(row)">{{ row.accountName }}</span>
     </ng-template>
     @for (detailClass of detailClasses(); track detailClass.id) {
-      <ng-template [appCell]="detailClass.id" let-row>
-        <span class="check-cell">
-          <input type="checkbox" [checked]="isChecked(row, detailClass.id)" [disabled]="saving()"
-            [attr.aria-label]="'اتصال ' + detailClass.name + ' به ' + row.accountName"
-            [attr.title]="detailClass.detailClassCode + ' - ' + detailClass.name"
-            (change)="toggle(row, detailClass.id)" />
-        </span>
-      </ng-template>
+    <ng-template [appCell]="detailClass.id" let-row>
+      <span class="check-cell">
+        <input type="checkbox" [checked]="isChecked(row, detailClass.id)" [disabled]="saving()"
+          [attr.aria-label]="'اتصال ' + detailClass.name + ' به ' + row.accountName"
+          [attr.title]="detailClass.detailClassCode + ' - ' + detailClass.name"
+          (change)="toggle(row, detailClass.id)" />
+      </span>
+    </ng-template>
     }
   </app-data-table>
 </section>

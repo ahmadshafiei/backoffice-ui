@@ -10,8 +10,10 @@ const ACCOUNT_CLASSES = '/api/v1/account-classes';
 export class AccountClassService {
   private readonly http = inject(HttpClient);
 
-  list(query: { pageNumber: number; pageSize: number }): Observable<PagedResult<AccountClass>> {
-    const params = new HttpParams().set('PageNumber', query.pageNumber).set('PageSize', query.pageSize);
+  /** `searchExp` matches an account name or code; the server ignores it until the query supports it. */
+  list(query: { pageNumber: number; pageSize: number; searchExp?: string }): Observable<PagedResult<AccountClass>> {
+    let params = new HttpParams().set('PageNumber', query.pageNumber).set('PageSize', query.pageSize);
+    if (query.searchExp) params = params.set('searchExp', query.searchExp);
     return this.http
       .get<PagedResult<AccountClass>>('/api/v1/accounts/account-classes', { params });
   }

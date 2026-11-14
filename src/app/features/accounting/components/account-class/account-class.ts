@@ -1,10 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, linkedSignal, signal, untracked } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, firstValueFrom } from 'rxjs';
 import { NotificationApi } from '../../../../core/services/notification-api';
 import { DataTable, TableCell, TableColumn } from '../../../../shared/components/data-table/data-table';
 import { Icon } from '../../../../shared/components/icon/icon';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { FaNumberPipe } from '../../../../shared/pipes/fa-number';
+import { toEnDigits } from '../../../../shared/utils/digits.utils';
 import { AccountClass } from '../../models/account-class.model';
 import { DetailClass } from '../../models/detail-class.model';
 import { AccountClassService } from '../../services/account-class.service';
@@ -29,7 +32,7 @@ interface RowEdit {
  */
 @Component({
   selector: 'app-account-class',
-  imports: [PageHeader, Icon, DataTable, TableCell, FaNumberPipe],
+  imports: [PageHeader, Icon, DataTable, TableCell, FaNumberPipe, ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './account-class.html',
   styleUrl: './account-class.css',
@@ -43,8 +46,13 @@ export class AccountClassPage {
   protected readonly total = signal(0);
   protected readonly loading = signal(false);
   protected readonly saving = signal(false);
-  protected readonly page = signal(1);
   protected readonly pageSize = signal(10);
+
+  /** Text as typed; committed to `searchExp` only after the user stops typing. */
+  protected readonly searchControl = new FormControl('', { nonNullable: true });
+  protected readonly searchExp = signal('');
+  /** Back to page 1 whenever a new search is committed. */
+  protected readonly page = linkedSignal({ source: this.searchExp, computation: () => 1 });
 
   protected readonly detailClasses = signal<readonly DetailClass[]>([]);
 
@@ -64,13 +72,22 @@ export class AccountClassPage {
   protected readonly changedCount = computed(() => this.changed().length);
   protected readonly hasChanges = computed(() => this.changedCount() > 0);
 
+  protected applySearch(): void {
+    this.searchExp.set(toEnDigits(this.searchControl.value).trim());
+  }
+
   constructor() {
     void this.loadDetailClasses();
+
+    this.searchControl.valueChanges
+      .pipe(debounceTime(600), distinctUntilChanged(), takeUntilDestroyed())
+      .subscribe((value) => this.searchExp.set(toEnDigits(value).trim()));
 
     effect(() => {
       const pageNumber = this.page();
       const pageSize = this.pageSize();
-      untracked(() => void this.load(pageNumber, pageSize));
+      const searchExp = this.searchExp();
+      untracked(() => void this.load(pageNumber, pageSize, searchExp));
     });
   }
 
@@ -82,10 +99,12 @@ export class AccountClassPage {
     }
   }
 
-  private async load(pageNumber: number, pageSize: number): Promise<void> {
+  private async load(pageNumber: number, pageSize: number, searchExp: string): Promise<void> {
     this.loading.set(true);
     try {
-      const res = await firstValueFrom(this.accountClasses.list({ pageNumber, pageSize }));
+      const res = await firstValueFrom(
+        this.accountClasses.list({ pageNumber, pageSize, searchExp: searchExp || undefined }),
+      );
       this.rows.set(res.items);
       this.total.set(Number(res.totalCount));
     } catch {
@@ -135,7 +154,7 @@ export class AccountClassPage {
       }
       this.notify.success('ارتباط حساب با طبقه‌های تفصیلی ذخیره شد.');
       this.edits.set(new Map());
-      await this.load(this.page(), this.pageSize());
+      await this.load(this.page(), this.pageSize(), this.searchExp());
     } catch {
       /* keep the checkboxes as they are so the user can retry */
     } finally {
