@@ -126,10 +126,10 @@
     "semantic_hash": "096b9bb24a7a5a70853f740e321e5c0e"
   },
   "src/app/features/accounting/accounting.routes.ts": {
-    "mtime": 1794561537.095099,
-    "seen": 1794581832.7420423,
-    "ast_hash": "c0cba6874e7c4a1a7f19313663782c63",
-    "semantic_hash": "c0cba6874e7c4a1a7f19313663782c63"
+    "mtime": 1794680534.1463592,
+    "seen": 1794680569.8570793,
+    "ast_hash": "55d8d65352550938a9fe9adf4750834d",
+    "semantic_hash": ""
   },
   "src/app/features/accounting/components/account-class/account-class.ts": {
     "mtime": 1794567360.27873,
@@ -427,5 +427,167 @@
     "ast_hash": "9e61a5663cdfef3c963a3595ac1a7813",
     "semantic_hash": "9e61a5663cdfef3c963a3595ac1a7813",
     "ast_empty": true
+  },
+  "src/app/features/accounting/components/detail-accounts/detail-accounts.ts": {
+    "mtime": 1794680527.922041,
+    "seen": 1794680569.8570793,
+    "ast_hash": "cb51e7ce1e37c842445e1bbe5a8c0d2b",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/models/detail-account.model.ts": {
+    "mtime": 1794680391.2797859,
+    "seen": 1794680569.8570793,
+    "ast_hash": "0dea26270419517ff774efab4eca5b7d",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/services/detail-account.service.ts": {
+    "mtime": 1794680391.536378,
+    "seen": 1794680569.8570793,
+    "ast_hash": "52660abefb73d8bdef15b2eb21db46e0",
+    "semantic_hash": ""
+  },
+  "AGENTS.md": {
+    "mtime": 1794581608.7673094,
+    "seen": 1794680569.8570793,
+    "ast_hash": "f36539ecc9af68f33ebd72770ce4a19e",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1794680528.8500926,
+    "seen": 1794680569.8570793,
+    "ast_hash": "3f88358901a38c4be710c273acf37407",
+    "semantic_hash": ""
+  },
+  "prds/DetailClass.MD": {
+    "mtime": 1794579207.7573235,
+    "seen": 1794680569.8570793,
+    "ast_hash": "3b0a58697403f0ec8fe34b01546f3843",
+    "semantic_hash": ""
+  },
+  "prds/detail-account.md": {
+    "mtime": 1794679806.7176309,
+    "seen": 1794680569.8570793,
+    "ast_hash": "e3ff74039356f92915695a7f1ffd0f69",
+    "semantic_hash": ""
+  },
+  "src/app/core/auth/pages/login/login.html": {
+    "mtime": 1794322592.3454318,
+    "seen": 1794680569.8570793,
+    "ast_hash": "cc37312644f99c8e7f895f459f0a07b9",
+    "semantic_hash": ""
+  },
+  "src/app/core/layout/navbar/navbar.html": {
+    "mtime": 1794322592.3454318,
+    "seen": 1794680569.8570793,
+    "ast_hash": "d1092e3e9e88e0aee244ba12bfa7e695",
+    "semantic_hash": ""
+  },
+  "src/app/core/layout/shell.html": {
+    "mtime": 1794332658.1980193,
+    "seen": 1794680569.8570793,
+    "ast_hash": "3621e75f99465ca37e6cf78a22f2ee9c",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/components/account-class/account-class.html": {
+    "mtime": 1794567389.6657505,
+    "seen": 1794680569.8570793,
+    "ast_hash": "f611c82e782658f1159007a8eb0f20ba",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/components/account-settings/account-settings.html": {
+    "mtime": 1794413915.221205,
+    "seen": 1794680569.8570793,
+    "ast_hash": "2de3ca449f3c5b9d649c380cce7c7b39",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/components/accounts/account-form-modal.html": {
+    "mtime": 1794506611.3001058,
+    "seen": 1794680569.8570793,
+    "ast_hash": "31dc103fb659aa0bbd51da2619c26bc9",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/components/detail-accounts/detail-accounts.html": {
+    "mtime": 1794680528.251198,
+    "seen": 1794680569.8570793,
+    "ast_hash": "6199c04b1c39c64563176fb2f8f1cda2",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/components/detail-class/detail-class.html": {
+    "mtime": 1794411667.3784146,
+    "seen": 1794680569.8570793,
+    "ast_hash": "dd01d795c7f2bd55f62740b742d00fda",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/pages/general-accounts/general-accounts.html": {
+    "mtime": 1794506826.0473533,
+    "seen": 1794680569.8570793,
+    "ast_hash": "2da52840d56dccfdaffd91df756b8180",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/pages/group-accounts/group-accounts.html": {
+    "mtime": 1794506592.3333273,
+    "seen": 1794680569.8570793,
+    "ast_hash": "a945958851122b2c6f319383af794ed3",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/pages/subsidiary-accounts/subsidiary-accounts.html": {
+    "mtime": 1794506172.7473586,
+    "seen": 1794680569.8570793,
+    "ast_hash": "8bca6394fb1851384be1c70ce9618409",
+    "semantic_hash": ""
+  },
+  "src/app/shared/components/brand-logo/brand-logo.html": {
+    "mtime": 1794322592.3613966,
+    "seen": 1794680569.8570793,
+    "ast_hash": "466ef42b28d240f659f268f5c679f112",
+    "semantic_hash": ""
+  },
+  "src/app/shared/components/data-table/data-table.html": {
+    "mtime": 1794323966.633822,
+    "seen": 1794680569.8570793,
+    "ast_hash": "03c11b98e9d4cab5eb0f543d5745870a",
+    "semantic_hash": ""
+  },
+  "src/app/shared/components/datepicker/datepicker.html": {
+    "mtime": 1794322592.3613966,
+    "seen": 1794680569.8570793,
+    "ast_hash": "638171781ed2366df7ad7537a739bdea",
+    "semantic_hash": ""
+  },
+  "src/app/shared/components/menu/menu.html": {
+    "mtime": 1794322592.3613966,
+    "seen": 1794680569.8570793,
+    "ast_hash": "1089c893b3c0b93782e0f63bc3f8aa76",
+    "semantic_hash": ""
+  },
+  "src/app/shared/components/notification/notification.html": {
+    "mtime": 1794332342.3882098,
+    "seen": 1794680569.8570793,
+    "ast_hash": "d1847b7dc648e22ef770c733f49967f4",
+    "semantic_hash": ""
+  },
+  "src/index.html": {
+    "mtime": 1794322592.3613966,
+    "seen": 1794680569.8570793,
+    "ast_hash": "2ab3c3419068f51507c18f69ff0f7a8a",
+    "semantic_hash": ""
+  },
+  "public/farabi-group-logo.svg": {
+    "mtime": 1794322592.3454318,
+    "seen": 1794680569.8570793,
+    "ast_hash": "409a6c8c3b9ce1f9461f1936e6dd5284",
+    "semantic_hash": ""
+  },
+  "public/favicon.svg": {
+    "mtime": 1794322592.3454318,
+    "seen": 1794680569.8570793,
+    "ast_hash": "34570397b10a49b5274537325c60a138",
+    "semantic_hash": ""
+  },
+  "package-lock.json": {
+    "mtime": 1794322616.7551708,
+    "seen": 1794680569.8570793,
+    "ast_hash": "1b66836acb33929da3ec0a0bba0c7d40",
+    "semantic_hash": ""
   }
 }
