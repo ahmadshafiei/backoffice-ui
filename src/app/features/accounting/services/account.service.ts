@@ -7,13 +7,18 @@ import { PAGE_SIZE_ALL, PagedResult } from '../models/paged-result.model';
 
 const ACCOUNTS = '/api/v1/accounts';
 
-/** Accounts of every level (group / general / subsidiary) – one resource on the server. */
 @Injectable({ providedIn: 'root' })
 export class AccountService {
   private readonly http = inject(HttpClient);
 
-  /** `all` results, one entry per level, so the parent pickers share one request. */
   private readonly allCache = new Map<AccountLevel, Observable<Account[]>>();
+
+
+  searchPostable(query: { searchExp?: string }): Observable<PagedResult<Account>> {
+    let params = new HttpParams().set('pageNumber', 1).set('pageSize', 10).set('isDetailAllowed', 'false');
+    if (query.searchExp) params = params.set('searchExp', query.searchExp);
+    return this.http.get<PagedResult<Account>>(ACCOUNTS, { params });
+  }
 
   list(query: { accountLevel: AccountLevel; pageNumber: number; pageSize: number; name?: string }): Observable<PagedResult<Account>> {
     let params = new HttpParams()

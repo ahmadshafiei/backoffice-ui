@@ -1,7 +1,7 @@
 import { SelectOption } from '../../../shared/components/fields/select-field';
 import { NormalBalance } from './normal-balance.model';
 
-export const AccountLevel = { Group: 0, General: 1, Subsidiary: 2 } as const;
+export const AccountLevel = { Group: 0, General: 1, Subsidiary: 2, Detail: 3 } as const;
 export type AccountLevel = (typeof AccountLevel)[keyof typeof AccountLevel];
 
 export const AccountType = { Asset: 0, Liability: 1, Equity: 2, Revenue: 3, Expense: 4, Memorandum: 5 } as const;
@@ -11,6 +11,7 @@ export const ACCOUNT_LEVEL_LABEL: Record<number, string> = {
   [AccountLevel.Group]: 'گروه حساب کل',
   [AccountLevel.General]: 'حساب کل',
   [AccountLevel.Subsidiary]: 'حساب معین',
+  [AccountLevel.Detail]: 'حساب تفصیلی',
 };
 
 export const ACCOUNT_TYPE_LABEL: Record<number, string> = {
@@ -33,10 +34,11 @@ export interface Account {
   accountLevel: AccountLevel;
   normalBalance: NormalBalance | null;
   isActive: boolean;
-  isPostable: boolean;
   isDetailAllowed: boolean;
   parentId: string | null;
   parentName: string | null;
+  detailClassId: string | null;
+  canBeUsedAsParty: boolean | null;
 }
 
 export interface RegisterAccountRequest {
@@ -45,15 +47,16 @@ export interface RegisterAccountRequest {
   isActive: boolean;
   accountLevel: AccountLevel;
   accountType: AccountType | null;
-  isPostable: boolean | null;
   isDetailAllowed: boolean | null;
   normalBalance: NormalBalance | null;
   parentId: string | null;
+  detailClassId: string | null;
+  canBeUsedAsParty: boolean | null;
 }
 
 export interface ModifyAccountRequest {
   name: string;
   isActive: boolean;
-  isPostable: boolean;
-  isDetailAllowed: boolean;
+  isDetailAllowed: boolean | null;
+  canBeUsedAsParty: boolean | null;
 }

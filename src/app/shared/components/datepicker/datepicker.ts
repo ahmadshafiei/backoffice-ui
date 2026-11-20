@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, computed, inject, input, signal, viewChild } from '@angular/core';
 import { FaNumberPipe } from '../../pipes/fa-number';
 import { toEnDigits } from '../../utils/digits.utils';
+import { FloatingPosition, floatingPosition } from '../../utils/floating.util';
 import {
   JALALI_MONTHS, JALALI_WEEKDAYS_SHORT, JalaliDate, formatJalali, jalaliMonthLength, jalaliWeekday,
   parseJalali, toGregorian, toJalali,
@@ -23,12 +24,21 @@ export class Datepicker extends FieldBase<string> {
   readonly placeholder = input('۱۴۰۵/۰۱/۰۱');
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly anchor = viewChild.required<ElementRef<HTMLElement>>('anchor');
 
   protected readonly months = JALALI_MONTHS;
   protected readonly weekdays = JALALI_WEEKDAYS_SHORT;
   protected readonly isOpen = signal(false);
   protected readonly text = signal('');
   protected readonly view = signal<{ jy: number; jm: number }>(this.today());
+  protected readonly panelPosition = signal<FloatingPosition>({ top: 0, left: 0, width: 288, maxHeight: 400, above: false });
+
+  private viewportCleanup: (() => void) | null = null;
+
+  constructor() {
+    super();
+    this.destroyRef.onDestroy(() => this.stopListeningToViewport());
+  }
 
   protected readonly selected = computed<JalaliDate | null>(() => {
     const iso = this.value();
@@ -90,7 +100,7 @@ export class Datepicker extends FieldBase<string> {
     this.localError.set('');
     this.text.set(formatJalali(picked));
     this.commit(toIso(toGregorian(picked)));
-    this.isOpen.set(false);
+    this.close();
     this.onTouched();
   }
 
@@ -109,16 +119,52 @@ export class Datepicker extends FieldBase<string> {
 
   protected toggle(): void {
     if (this.disabled()) return;
-    this.isOpen.update((o) => !o);
+    if (this.isOpen()) {
+      this.close();
+      return;
+    }
+    this.isOpen.set(true);
+    this.positionPanel();
+    this.listenToViewport();
   }
 
   @HostListener('document:click', ['$event'])
   protected onDocumentClick(event: MouseEvent): void {
-    if (this.isOpen() && !this.host.nativeElement.contains(event.target as Node)) this.isOpen.set(false);
+    if (this.isOpen() && !this.host.nativeElement.contains(event.target as Node)) this.close();
   }
 
   @HostListener('keydown.escape')
-  protected onEscape(): void { this.isOpen.set(false); }
+  protected onEscape(): void { this.close(); }
+
+  private close(): void {
+    this.isOpen.set(false);
+    this.stopListeningToViewport();
+  }
+
+  private positionPanel(): void {
+    const view = this.host.nativeElement.ownerDocument.defaultView;
+    if (!view) return;
+    const anchor = this.anchor().nativeElement.getBoundingClientRect();
+    this.panelPosition.set(floatingPosition(anchor, view.innerWidth, view.innerHeight, 288, 400, 360));
+  }
+
+  private listenToViewport(): void {
+    this.stopListeningToViewport();
+    const view = this.host.nativeElement.ownerDocument.defaultView;
+    if (!view) return;
+    const update = () => { if (this.isOpen()) this.positionPanel(); };
+    view.addEventListener('resize', update);
+    view.addEventListener('scroll', update, true);
+    this.viewportCleanup = () => {
+      view.removeEventListener('resize', update);
+      view.removeEventListener('scroll', update, true);
+    };
+  }
+
+  private stopListeningToViewport(): void {
+    this.viewportCleanup?.();
+    this.viewportCleanup = null;
+  }
 
   private commit(iso: string | null): void {
     this.value.set(iso);

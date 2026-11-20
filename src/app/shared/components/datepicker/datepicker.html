@@ -2,8 +2,8 @@
   @if (label()) {
     <label class="label" [attr.for]="id">{{ label() }}@if (required()) {<span class="req" aria-hidden="true"> *</span>}</label>
   }
-  <div class="input-wrap">
-    <input class="control ltr" [id]="id" type="text" dir="ltr" inputmode="numeric" autocomplete="off"
+  <div class="input-wrap" #anchor>
+    <input class="control" [id]="id" type="text" inputmode="numeric" autocomplete="off"
       [value]="text()" [disabled]="disabled()" [attr.placeholder]="placeholder()"
       [attr.aria-invalid]="error() ? 'true' : null" [attr.aria-describedby]="describedBy()"
       (input)="onInput($event)" (blur)="onBlur()" />
@@ -19,7 +19,10 @@
   }
 
   @if (isOpen()) {
-    <div class="panel" role="dialog" aria-label="تقویم">
+    <div class="panel" role="dialog" aria-label="تقویم"
+      [style.top.px]="panelPosition().top" [style.left.px]="panelPosition().left"
+      [style.width.px]="panelPosition().width" [style.maxHeight.px]="panelPosition().maxHeight"
+      [style.transform]="panelPosition().above ? 'translateY(-100%)' : 'none'">
       <div class="nav">
         <button type="button" class="icon-btn" aria-label="ماه قبل" (click)="shiftMonth(-1)"><app-icon name="chevron-right" [size]="16" /></button>
         <strong>{{ months[view().jm - 1] }} {{ view().jy | faNumber: false }}</strong>

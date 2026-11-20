@@ -59,8 +59,9 @@ export const MENU: readonly MenuGroup[] = [
       { label: 'حساب‌های معین', path: '/accounting/subsidiary-accounts' },
       { label: 'حساب‌های تفصیلی', path: '/accounting/detail-accounts' },
       { label: 'طبقه تفصیلی', path: '/accounting/detail-class' },
-      { label: 'ارتباط معین با طبقه تفصیلی', path: '/accounting/account-class' },
-    ],
+       { label: 'ارتباط معین با طبقه تفصیلی', path: '/accounting/account-class' },
+       { label: 'اسناد حسابداری', path: '/accounting/journals' },
+     ],
   },
   {
     id: 'reports', label: 'گزارش‌ها', icon: 'chart-column',

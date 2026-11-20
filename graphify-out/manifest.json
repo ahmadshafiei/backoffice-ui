@@ -78,10 +78,10 @@
     "semantic_hash": "85595a1b86fe4d76be3aaa572560af28"
   },
   "src/app/core/layout/menu.config.ts": {
-    "mtime": 1794556251.6918516,
-    "seen": 1794581832.7366824,
-    "ast_hash": "8a37eb20f33f2ebbc22fe9d2e6d4d1ab",
-    "semantic_hash": "8a37eb20f33f2ebbc22fe9d2e6d4d1ab"
+    "mtime": 1795031666.0427654,
+    "seen": 1795032475.7291489,
+    "ast_hash": "0a9ea5d6d23d29becb04ab72157cee71",
+    "semantic_hash": ""
   },
   "src/app/core/layout/navbar/navbar.ts": {
     "mtime": 1794322592.3454318,
@@ -126,15 +126,15 @@
     "semantic_hash": "096b9bb24a7a5a70853f740e321e5c0e"
   },
   "src/app/features/accounting/accounting.routes.ts": {
-    "mtime": 1794680534.1463592,
-    "seen": 1794680569.8570793,
-    "ast_hash": "55d8d65352550938a9fe9adf4750834d",
+    "mtime": 1795031659.7109325,
+    "seen": 1795032475.7291489,
+    "ast_hash": "d28d70850cbf9dc35eb09e6177b73d36",
     "semantic_hash": ""
   },
   "src/app/features/accounting/components/account-class/account-class.ts": {
-    "mtime": 1794682527.8943882,
-    "seen": 1794682653.113108,
-    "ast_hash": "019deac758fbc0500909bf12825fd588",
+    "mtime": 1794683164.9300349,
+    "seen": 1795032475.7291489,
+    "ast_hash": "f06e843cfb58cb9d93f45ae0a62c0a36",
     "semantic_hash": ""
   },
   "src/app/features/accounting/components/account-settings/account-settings.ts": {
@@ -222,10 +222,10 @@
     "semantic_hash": ""
   },
   "src/app/features/accounting/services/account.service.ts": {
-    "mtime": 1794579207.7573235,
-    "seen": 1794581832.7420423,
-    "ast_hash": "b438d7acf971e1911e1eb81d52382a9f",
-    "semantic_hash": "b438d7acf971e1911e1eb81d52382a9f"
+    "mtime": 1795031554.7958312,
+    "seen": 1795032475.7291489,
+    "ast_hash": "f4b20dd9a72c478af92ec545aadf8502",
+    "semantic_hash": ""
   },
   "src/app/features/accounting/services/accounting-settings.service.ts": {
     "mtime": 1794579448.4027612,
@@ -258,10 +258,10 @@
     "semantic_hash": "56c144308414d618ad56dadda535b533"
   },
   "src/app/shared/components/datepicker/datepicker.ts": {
-    "mtime": 1794322592.3613966,
-    "seen": 1794581832.7420423,
-    "ast_hash": "c8c481f1bdfd80a82491487222838eec",
-    "semantic_hash": "c8c481f1bdfd80a82491487222838eec"
+    "mtime": 1795032324.1360261,
+    "seen": 1795032475.7291489,
+    "ast_hash": "63e10bc9cc13f2afbe99f118f457eefb",
+    "semantic_hash": ""
   },
   "src/app/shared/components/empty-state/empty-state.ts": {
     "mtime": 1794322592.3613966,
@@ -489,9 +489,9 @@
     "semantic_hash": ""
   },
   "src/app/features/accounting/components/account-class/account-class.html": {
-    "mtime": 1794682518.2399104,
-    "seen": 1794682653.113108,
-    "ast_hash": "40436ffdd68eeeaa4658b83ecbd60e41",
+    "mtime": 1794682789.3833969,
+    "seen": 1795032475.7291489,
+    "ast_hash": "432e7174da93a44da0b8d6235a654422",
     "semantic_hash": ""
   },
   "src/app/features/accounting/components/account-settings/account-settings.html": {
@@ -549,9 +549,9 @@
     "semantic_hash": ""
   },
   "src/app/shared/components/datepicker/datepicker.html": {
-    "mtime": 1794322592.3613966,
-    "seen": 1794680569.8570793,
-    "ast_hash": "638171781ed2366df7ad7537a739bdea",
+    "mtime": 1795032333.2454178,
+    "seen": 1795032475.7291489,
+    "ast_hash": "de4f90e96a38f64b2440d84351e481bd",
     "semantic_hash": ""
   },
   "src/app/shared/components/menu/menu.html": {
@@ -582,6 +582,54 @@
     "mtime": 1794322592.3454318,
     "seen": 1794680569.8570793,
     "ast_hash": "34570397b10a49b5274537325c60a138",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/components/journals/account-picker.ts": {
+    "mtime": 1795032373.9966426,
+    "seen": 1795032475.7291489,
+    "ast_hash": "19a71e45637bb260e63be23eeeb10f83",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/components/journals/journal-edit.ts": {
+    "mtime": 1795031752.9119134,
+    "seen": 1795032475.7291489,
+    "ast_hash": "b135983510e9d980842674df3143fb90",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/components/journals/journals.ts": {
+    "mtime": 1795031762.4993925,
+    "seen": 1795032475.7291489,
+    "ast_hash": "38a3360eac58ea3bec0ef33e7e3914c1",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/models/journal.model.ts": {
+    "mtime": 1795031515.0259147,
+    "seen": 1795032475.7291489,
+    "ast_hash": "4dd4be6341c4cad350757e1bc9c891ac",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/services/journal.service.ts": {
+    "mtime": 1795031529.2037587,
+    "seen": 1795032475.7291489,
+    "ast_hash": "d73eab6006fb45b004515b6bc70df8e6",
+    "semantic_hash": ""
+  },
+  "src/app/shared/utils/floating.util.ts": {
+    "mtime": 1795032287.1890998,
+    "seen": 1795032475.7291489,
+    "ast_hash": "ff5a2f386dfc4139c0f8fb18b134fdf3",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/components/journals/journal-edit.html": {
+    "mtime": 1795032407.004559,
+    "seen": 1795032475.7291489,
+    "ast_hash": "ecb809622225041cbbef27c268d1c58c",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/components/journals/journals.html": {
+    "mtime": 1795031608.872458,
+    "seen": 1795032475.7291489,
+    "ast_hash": "718e09095c85e5d0329653657d1e5ebd",
     "semantic_hash": ""
   },
   "package-lock.json": {

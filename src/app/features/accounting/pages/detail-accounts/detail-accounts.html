@@ -1,0 +1,47 @@
+<app-page-header title="تفصیلی" [subtitle]="loading() ? '' : (total() | faNumber) + ' تفصیلی'" />
+
+<section class="panel">
+  <div class="toolbar">
+    <button type="button" class="btn btn-primary" (click)="openCreate()"><app-icon name="plus" [size]="16" />ایجاد
+      تفصیلی</button>
+  </div>
+
+  <app-data-table [columns]="columns" [rows]="rows()" [total]="total()" [loading]="loading()" [rowKey]="rowKey"
+    [(page)]="page" [(pageSize)]="pageSize" caption="فهرست تفصیلی" emptyTitle="تفصیلی پیدا نشد"
+    emptyMessage="با دکمه «ایجاد تفصیلی» اولین حساب را اضافه کنید.">
+    <ng-template appCell="accountCode" let-row><span class="code">{{ row.accountCode }}</span></ng-template>
+    <ng-template appCell="name" let-row><span class="name">{{ row.name }}</span></ng-template>
+    <ng-template appCell="detailClassName" let-row><span class="name">{{ row.detailClassName }}</span></ng-template>
+    <ng-template appCell="canBeUsedAsParty" let-row>
+
+      @if (row.canBeUsedAsParty) {
+      <span class="yes">
+        <app-icon name="circle-check" [size]="18" />
+        <span class="sr-only">بله</span>
+      </span> }
+      @else {
+      <span class="muted">
+        <app-icon name="x" [size]="18"></app-icon>
+        <span class="sr-only">خیر</span>
+      </span>
+      }
+
+
+    </ng-template>
+    <ng-template appCell="isActive" let-row>
+      <span class="chip" [class.is-active]="row.isActive" [class.is-inactive]="!row.isActive">{{ row.isActive ? 'فعال' :
+        'غیرفعال' }}</span>
+    </ng-template>
+
+    <ng-template appRowActions let-row>
+      <button type="button" class="icon-btn" [attr.aria-label]="'ویرایش ' + row.name" title="ویرایش"
+        (click)="openEdit(row)"><app-icon name="pencil" [size]="16" /></button>
+      <button type="button" class="icon-btn danger" [attr.aria-label]="'حذف ' + row.name" title="حذف"
+        (click)="askDelete(row)"><app-icon name="trash-2" [size]="16" /></button>
+    </ng-template>
+  </app-data-table>
+</section>
+
+<app-account-form-modal [(open)]="formOpen" [level]="level" [account]="editing()" (saved)="reload()" />
+<app-confirm-dialog [(open)]="deleteOpen" title="حذف تفصیلی" confirmLabel="حذف" [danger]="true" [busy]="busy()"
+  [message]="'«' + (deleting()?.name ?? '') + '» حذف شود؟ این کار قابل بازگشت نیست.'" (confirmed)="confirmDelete()" />

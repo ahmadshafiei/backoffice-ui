@@ -1,0 +1,87 @@
+<app-page-header [title]="isEdit() ? 'ویرایش سند حسابداری' : 'سند حسابداری جدید'">
+  <button type="button" class="btn" [disabled]="busy()" (click)="cancel()">انصراف</button>
+  <button type="button" class="btn btn-primary" [disabled]="busy() || loading()" (click)="save()">
+    <app-icon name="circle-check" [size]="16" />ذخیره
+  </button>
+</app-page-header>
+
+@if (loading()) {
+  <p class="state">در حال بارگذاری سند…</p>
+} @else {
+<section class="panel header-panel">
+  <form class="header-grid" [formGroup]="header" novalidate>
+    <app-datepicker label="تاریخ" formControlName="date" [required]="true" />
+    <app-select-field label="شعبه" formControlName="branchId" [options]="branchOptions" placeholder="انتخاب شعبه" [required]="true" />
+    <app-select-field label="نوع سند" formControlName="type" [options]="typeOptions" placeholder="انتخاب نوع" [required]="true" />
+    <app-text-field class="wide" label="شرح سند" formControlName="description" placeholder="شرح کلی سند" />
+  </form>
+</section>
+
+<section class="panel items-panel">
+  <div class="toolbar">
+    <div class="toolbar-hint">
+      <span>تعداد ردیف: {{ itemCount() | faNumber }}</span>
+    </div>
+    <button type="button" class="btn btn-primary" [disabled]="busy()" (click)="addItem()">
+      <app-icon name="plus" [size]="16" />افزودن ردیف
+    </button>
+  </div>
+
+  <div class="scroll">
+    <table class="items">
+      <thead>
+        <tr>
+          <th scope="col" class="col-seq">ردیف</th>
+          <th scope="col" class="col-account">حساب</th>
+          <th scope="col" class="col-amount">بدهکار</th>
+          <th scope="col" class="col-amount">بستانکار</th>
+          <th scope="col">شرح</th>
+          <th scope="col" class="col-actions">عملیات</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (group of items.controls; track $index) {
+          @if ($index >= visibleStart() && $index < visibleEnd()) {
+            <tr [formGroup]="group">
+              <td class="seq">{{ ($index + 1) | faNumber }}</td>
+              <td><app-account-picker formControlName="accountId" [required]="true" /></td>
+              <td><input type="number" class="control" formControlName="debit" min="0" step="0.01" /></td>
+              <td><input type="number" class="control" formControlName="credit" min="0" step="0.01" /></td>
+              <td><input type="text" class="control" formControlName="description" /></td>
+              <td class="actions">
+                <button type="button" class="icon-btn danger" title="حذف ردیف"
+                  [attr.aria-label]="'حذف ردیف ' + ($index + 1)" [disabled]="busy() || items.length <= 1"
+                  (click)="removeItem($index)">
+                  <app-icon name="trash-2" [size]="16" />
+                </button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="totals">
+    <span>جمع بدهکار: <strong>{{ totalDebit() | faNumber }}</strong></span>
+    <span>جمع بستانکار: <strong>{{ totalCredit() | faNumber }}</strong></span>
+    @if (balance() !== 0) {
+      <span class="unbalanced">سند نامتوازن است (اختلاف: {{ balance() | faNumber }})</span>
+    } @else if (itemCount() > 0) {
+      <span class="balanced">سند متوازن است.</span>
+    }
+  </div>
+
+  @if (itemPageCount() > 1) {
+    <nav class="pager" aria-label="صفحه‌بندی ردیف‌های سند">
+      <button type="button" class="icon-btn" aria-label="صفحه قبل" [disabled]="page() <= 1" (click)="goToPage(page() - 1)">
+        <app-icon name="chevron-right" [size]="16" />
+      </button>
+      <span class="range">صفحه {{ page() | faNumber }} از {{ itemPageCount() | faNumber }}</span>
+      <button type="button" class="icon-btn" aria-label="صفحه بعد" [disabled]="page() >= itemPageCount()" (click)="goToPage(page() + 1)">
+        <app-icon name="chevron-left" [size]="16" />
+      </button>
+    </nav>
+  }
+</section>
+}

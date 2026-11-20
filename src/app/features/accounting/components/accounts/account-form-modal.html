@@ -10,6 +10,11 @@
     <app-select-field class="wide" [label]="parentLabel()" formControlName="parentId" [options]="parentOptions()"
       [placeholder]="'انتخاب ' + parentLabel()" [required]="true" />
     }
+    @if (showDetailClass()) {
+    <app-select-field class="wide" label="طبقه تفصیلی" formControlName="detailClassId" [options]="detailClassOptions()"
+      placeholder="انتخاب طبقه تفصیلی" [required]="true" />
+    }
+
     @if (showType()) {
     <app-select-field label="نوع حساب" formControlName="accountType" [options]="typeOptions" [required]="true" />
     }
@@ -22,6 +27,10 @@
       @if (showDetailAllowed()) {
       <app-toggle-field label="تفصیل‌پذیر" formControlName="isDetailAllowed" />
       }
+      @if (showCanBeUsedAsParty()) {
+      <app-toggle-field label="طرف" formControlName="canBeUsedAsParty" />
+      }
+
     </div>
   </form>
   }

@@ -4,7 +4,7 @@
 .trigger { position: absolute; inset-inline-end: 2px; top: 2px; width: 34px; height: 34px; }
 
 .panel {
-  position: absolute; z-index: 20; top: calc(100% + 4px); inset-inline-start: 0; width: 288px; padding: 12px;
+  position: fixed; z-index: 20; width: 288px; padding: 12px; overflow-y: auto;
   border: 1px solid var(--line); border-radius: var(--radius-panel); background: var(--surface); box-shadow: var(--shadow-float);
 }
 .nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }

@@ -15,6 +15,11 @@
     <ng-template appCell="isActive" let-row>
       <span class="chip" [class.is-active]="row.isActive" [class.is-inactive]="!row.isActive">{{ row.isActive ? 'فعال' : 'غیرفعال' }}</span>
     </ng-template>
+        <ng-template appCell="isDetailAllowed" let-row>
+      @if (row.isDetailAllowed) { <span class="yes"><app-icon name="circle-check" [size]="18" /><span class="sr-only">بله</span></span> }
+      @else { <span class="muted">خیر</span> }
+    </ng-template>
+
     <ng-template appCell="isDetailAllowed" let-row>
       @if (row.isDetailAllowed) { <span class="yes"><app-icon name="circle-check" [size]="18" /><span class="sr-only">بله</span></span> }
       @else { <span class="muted">خیر</span> }

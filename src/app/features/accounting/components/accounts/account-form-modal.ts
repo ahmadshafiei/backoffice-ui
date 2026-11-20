@@ -10,6 +10,8 @@ import { Modal } from '../../../../shared/components/modal/modal';
 import { ACCOUNT_LEVEL_LABEL, ACCOUNT_TYPE_OPTIONS, Account, AccountLevel, AccountType } from '../../models/account.model';
 import { NORMAL_BALANCE_OPTIONS, NormalBalance } from '../../models/normal-balance.model';
 import { AccountService } from '../../services/account.service';
+import { DetailClass } from '../../models/detail-class.model';
+import { DetailClassService } from '../../services/detail-class.service';
 
 let nextFormId = 0;
 
@@ -35,6 +37,7 @@ export class AccountFormModal {
 
   private readonly accounts = inject(AccountService);
   private readonly notify = inject(NotificationApi);
+  private readonly detailClassesService = inject(DetailClassService);
 
   protected readonly formId = `account-form-${nextFormId++}`;
   protected readonly busy = signal(false);
@@ -44,19 +47,26 @@ export class AccountFormModal {
 
   protected readonly typeOptions = ACCOUNT_TYPE_OPTIONS;
   protected readonly balanceOptions = NORMAL_BALANCE_OPTIONS;
-  protected readonly showParent = computed(() => this.level() !== AccountLevel.Group);
+  protected readonly showParent = computed(() => this.level() !== AccountLevel.Group && this.level() !== AccountLevel.Detail);
   protected readonly showType = computed(() => this.level() == AccountLevel.Group);
-  protected readonly showNormalBalance = computed(() => this.level() != AccountLevel.Group);
-  protected readonly showBalance = computed(() => this.level() !== AccountLevel.Group);
+  protected readonly showNormalBalance = computed(() => this.level() != AccountLevel.Group && this.level() !== AccountLevel.Detail);
+  protected readonly showBalance = computed(() => this.level() !== AccountLevel.Group && this.level() !== AccountLevel.Detail);
   protected readonly showDetailAllowed = computed(() => this.level() === AccountLevel.Subsidiary);
+  protected readonly showCanBeUsedAsParty = computed(() => this.level() === AccountLevel.Detail);
+  protected readonly showDetailClass = computed(() => this.level() === AccountLevel.Detail);
 
   protected readonly parentLabel = computed(() =>
     this.level() === AccountLevel.General ? 'گروه حساب' : 'حساب کل');
 
   private readonly parents = signal<readonly Account[]>([]);
+  private readonly detailClasses = signal<readonly DetailClass[]>([]);
 
   protected readonly parentOptions = computed<readonly SelectOption[]>(() => {
     return this.parents().map((p) => ({ value: p.id, label: `${p.name} (${p.accountCode})` }));
+  });
+
+  protected readonly detailClassOptions = computed<readonly SelectOption[]>(() => {
+    return this.detailClasses().map((d) => ({ value: d.id, label: `${d.name} (${d.detailClassCode})` }));
   });
 
   private readonly byId = computed(() => new Map(this.parents().map((a) => [a.id, a] as const)));
@@ -68,7 +78,9 @@ export class AccountFormModal {
     accountType: new FormControl<AccountType | null>(null),
     normalBalance: new FormControl<NormalBalance | null>(null),
     isActive: new FormControl(true, { nonNullable: true }),
-    isDetailAllowed: new FormControl(false, { nonNullable: true }),
+    isDetailAllowed: new FormControl(false, { nonNullable: false }),
+    canBeUsedAsParty: new FormControl(false, { nonNullable: true }),
+    detailClassId: new FormControl<string | null>(null)
   });
 
   constructor() {
@@ -76,7 +88,6 @@ export class AccountFormModal {
       if (this.open()) untracked(() => this.prepare());
     });
 
-    // A general account normally shares its group's type – pre-fill it, the user can still change it.
     this.form.controls.parentId.valueChanges.pipe(takeUntilDestroyed()).subscribe((id) => {
       if (this.level() !== AccountLevel.General || this.isEdit() || !id) return;
       const group = this.byId().get(id);
@@ -89,6 +100,7 @@ export class AccountFormModal {
     const account = this.account();
     const level = this.level();
     void this.loadParents(level);
+    void this.loadDetailClasses(level);
 
     this.form.enable({ emitEvent: false });
     this.form.reset(
@@ -100,24 +112,30 @@ export class AccountFormModal {
         normalBalance: account?.normalBalance ?? null,
         isActive: account?.isActive ?? true,
         isDetailAllowed: account?.isDetailAllowed ?? false,
+        canBeUsedAsParty: account?.canBeUsedAsParty ?? false,
+        detailClassId: account?.detailClassId ?? null,
+
       },
       { emitEvent: false },
     );
 
-    setRequired(controls.parentId, level !== AccountLevel.Group);
-    setRequired(controls.accountType, level !== AccountLevel.Subsidiary);
-    setRequired(controls.normalBalance, level !== AccountLevel.Subsidiary);
+    setRequired(controls.parentId, level !== AccountLevel.Group && level !== AccountLevel.Detail);
+    setRequired(controls.accountType, level !== AccountLevel.Subsidiary && level !== AccountLevel.Detail);
+    setRequired(controls.normalBalance, level !== AccountLevel.Subsidiary && level !== AccountLevel.Detail);
+    setRequired(controls.detailClassId, level === AccountLevel.Detail);
+    setRequired(controls.canBeUsedAsParty, level === AccountLevel.Detail);
 
     if (account) {
       controls.accountCode.disable({ emitEvent: false });
       controls.parentId.disable({ emitEvent: false });
       controls.accountType.disable({ emitEvent: false });
       controls.normalBalance.disable({ emitEvent: false });
+      controls.detailClassId.disable({ emitEvent: false });
     }
   }
 
   private async loadParents(level: AccountLevel): Promise<void> {
-    if (level === AccountLevel.Group) {
+    if (level === AccountLevel.Group || level === AccountLevel.Detail) {
       this.parents.set([]);
       return;
     }
@@ -127,6 +145,14 @@ export class AccountFormModal {
     } catch {
       /* surfaced by the interceptor */
     }
+  }
+
+  private async loadDetailClasses(level: AccountLevel): Promise<void> {
+    if (level !== AccountLevel.Detail) {
+      this.detailClasses.set([]);
+      return;
+    }
+    this.detailClasses.set(await firstValueFrom(this.detailClassesService.all()));
   }
 
   protected async submit(): Promise<void> {
@@ -146,8 +172,8 @@ export class AccountFormModal {
         await firstValueFrom(this.accounts.modify(account.id, {
           name,
           isActive: value.isActive,
-          isPostable: account.isPostable,
           isDetailAllowed: isSubsidiary ? value.isDetailAllowed : account.isDetailAllowed,
+          canBeUsedAsParty: value.canBeUsedAsParty
         }));
         this.saved.emit();
         this.notify.success('تغییرات ذخیره شد.');
@@ -159,17 +185,16 @@ export class AccountFormModal {
           isActive: value.isActive,
           accountLevel: level,
           accountType: isSubsidiary ? (parent?.accountType ?? null) : value.accountType,
-          isPostable: isSubsidiary,
           isDetailAllowed: isSubsidiary ? value.isDetailAllowed : false,
           normalBalance: value.normalBalance,
           parentId: level === AccountLevel.Group ? null : value.parentId,
+          canBeUsedAsParty: value.canBeUsedAsParty,
+          detailClassId: value.detailClassId
         }));
         this.saved.emit();
         this.notify.success(`${this.noun()} ایجاد شد.`);
       }
       this.open.set(false);
-    } catch {
-      /* the interceptor already showed the server's reason; keep the dialog open for correction */
     } finally {
       this.busy.set(false);
     }

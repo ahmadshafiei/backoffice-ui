@@ -1,0 +1,29 @@
+<app-page-header title="اسناد حسابداری"
+  [subtitle]="loading() && total() === 0 ? '' : (total() | faNumber) + ' سند'"/>
+
+<section class="panel">
+  <div class="toolbar">
+    <button type="button" class="btn btn-primary" (click)="create()">
+      <app-icon name="plus" [size]="16" />ایجاد سند جدید
+    </button>
+  </div>
+
+  <app-data-table [columns]="columns" [rows]="rows()" [total]="total()" [loading]="loading()" [rowKey]="rowKey"
+    [(page)]="page" [(pageSize)]="pageSize" caption="فهرست اسناد حسابداری"
+    emptyTitle="سندی ثبت نشده است" emptyMessage="با دکمه «ایجاد سند جدید» اولین سند را ثبت کنید.">
+    <ng-template appCell="number" let-row>{{ row.number | faNumber }}</ng-template>
+    <ng-template appCell="date" let-row>{{ row.date | jalaliDate }}</ng-template>
+    <ng-template appCell="branchId" let-row>{{ branchLabel(row.branchId) }}</ng-template>
+    <ng-template appCell="state" let-row>
+      <span class="chip" [class.is-active]="row.state === 2" [class.is-inactive]="row.state !== 2">{{ stateLabel(row.state) }}</span>
+    </ng-template>
+    <ng-template appCell="type" let-row>{{ typeLabel(row.type) }}</ng-template>
+    <ng-template appCell="debit" let-row>{{ row.debit | faNumber }}</ng-template>
+    <ng-template appCell="credit" let-row>{{ row.credit | faNumber }}</ng-template>
+    <ng-template appRowActions let-row>
+      <button type="button" class="icon-btn" [attr.aria-label]="'ویرایش سند ' + row.number" title="ویرایش" (click)="edit(row)">
+        <app-icon name="pencil" [size]="16" />
+      </button>
+    </ng-template>
+  </app-data-table>
+</section>
