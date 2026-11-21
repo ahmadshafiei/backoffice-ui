@@ -1,8 +1,5 @@
 import { Routes } from '@angular/router';
 
-/** `fiscal-year` has no endpoint in the current swagger, so it shows the shared «coming soon» page. */
-const comingSoon = () => import('../../core/pages/coming-soon/coming-soon').then((m) => m.ComingSoon);
-
 export const ACCOUNTING_ROUTES: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'group-accounts' },
   { path: 'group-accounts', title: 'گروه حساب‌های کل', loadComponent: () => import('./pages/group-accounts/group-accounts').then((m) => m.GroupAccounts) },
@@ -14,5 +11,5 @@ export const ACCOUNTING_ROUTES: Routes = [
   { path: 'journals', title: 'اسناد حسابداری', loadComponent: () => import('./components/journals/journals').then((m) => m.JournalsPage) },
   { path: 'journals/new', title: 'سند جدید', loadComponent: () => import('./components/journals/journal-edit').then((m) => m.JournalEditPage) },
   { path: 'journals/:id', title: 'ویرایش سند', loadComponent: () => import('./components/journals/journal-edit').then((m) => m.JournalEditPage) },
-  { path: 'fiscal-year', title: 'تنظیم سال مالی جاری', loadComponent: comingSoon },
+  { path: 'fiscal-periods', title: 'تنظیم دوره مالی', loadComponent: () => import('./components/fiscal-period/fiscal-period').then((m) => m.FiscalPeriodPage) },
 ];

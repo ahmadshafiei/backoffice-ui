@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signa
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, firstValueFrom, map } from 'rxjs';
+import { Observable, firstValueFrom, map, of } from 'rxjs';
 import { NotificationApi } from '../../../../core/services/notification-api';
 import { Icon } from '../../../../shared/components/icon/icon';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
@@ -79,8 +79,15 @@ export class JournalEditPage {
       .pipe(map((result) => result.items ?? []));
   protected readonly accountValue = (account: Account): string => account.id;
   protected readonly accountLabel = (account: Account): string => `${account.accountCode} - ${account.name}`;
-  protected readonly resolveAccountLabel = (id: string): Observable<string> =>
-    this.accounts.get(id).pipe(map((account) => `${account.accountCode} - ${account.name}`));
+  /** Account names that came with the loaded journal (`accountName`), keyed by account id. */
+  private readonly knownAccountNames = new Map<string, string>();
+  /** Uses the name delivered with the journal; only falls back to the accounts API for unknown ids. */
+  protected readonly resolveAccountLabel = (id: string): Observable<string> => {
+    const known = this.knownAccountNames.get(id);
+    return known !== undefined
+      ? of(known)
+      : this.accounts.get(id).pipe(map((account) => `${account.accountCode} - ${account.name}`));
+  };
   protected readonly splitAccountLabel = (label: string): { code: string; name: string } | null => {
     const separator = label.indexOf(' - ');
     return separator < 0
@@ -171,7 +178,9 @@ export class JournalEditPage {
         { emitEvent: false },
       );
       this.items.clear();
-      const items = journal.items?.length ? journal.items : [];
+      const items = [...(journal.items ?? [])].sort((a, b) => a.sequence - b.sequence);
+      this.knownAccountNames.clear();
+      for (const item of items) if (item.accountName) this.knownAccountNames.set(item.accountId, item.accountName);
       for (const item of items) this.items.push(this.makeItem(item), { emitEvent: false });
       if (this.items.length === 0) this.items.push(this.makeItem(), { emitEvent: false });
       this.itemsSignal.update((v) => v + 1);

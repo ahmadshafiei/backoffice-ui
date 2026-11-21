@@ -30,6 +30,8 @@ export interface JournalItem {
   /** Present on items returned by the server; omitted (or ignored) on create. */
   journalItemId?: string;
   accountId: string;
+  /** Returned by the server on read so the UI needs no per-row account lookup; ignored on save. */
+  accountName?: string;
   credit: number;
   debit: number;
   sequence: number;

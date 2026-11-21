@@ -1,0 +1,51 @@
+<app-page-header title="دوره مالی" [subtitle]="loading() && total() === 0 ? '' : (total() | faNumber) + ' دوره'" />
+
+<section class="panel">
+  <div class="toolbar">
+    <button type="button" class="btn btn-primary" (click)="openCreate()"><app-icon name="plus" [size]="16" />ایجاد دوره مالی</button>
+  </div>
+
+  <app-data-table [columns]="columns" [rows]="rows()" [total]="total()" [loading]="loading()" [rowKey]="rowKey"
+    [(page)]="page" [(pageSize)]="pageSize" caption="فهرست دوره‌های مالی"
+    emptyTitle="دوره مالی ثبت نشده است" emptyMessage="با دکمه «ایجاد دوره مالی» اولین دوره را اضافه کنید.">
+    <ng-template appCell="name" let-row><span class="name">{{ row.name }}</span></ng-template>
+    <ng-template appCell="startDate" let-row>{{ jalali(row.startDate) | faNumber: false }}</ng-template>
+    <ng-template appCell="endDate" let-row>{{ jalali(row.endDate) | faNumber: false }}</ng-template>
+    <ng-template appCell="isClosed" let-row>
+      <span class="chip" [class.is-active]="!row.isClosed" [class.is-inactive]="row.isClosed">{{ row.isClosed ? 'بسته' : 'فعال' }}</span>
+    </ng-template>
+    <ng-template appRowActions let-row>
+      @if (row.isClosed) {
+        <button type="button" class="icon-btn" [attr.aria-label]="'فعال‌سازی ' + row.name" title="فعال‌سازی" (click)="askToggle(row)"><app-icon name="lock-open" [size]="16" /></button>
+      } @else {
+        <button type="button" class="icon-btn" [attr.aria-label]="'بستن ' + row.name" title="بستن دوره" (click)="askToggle(row)"><app-icon name="lock" [size]="16" /></button>
+      }
+      <button type="button" class="icon-btn danger" [attr.aria-label]="'حذف ' + row.name" title="حذف" (click)="askDelete(row)"><app-icon name="trash-2" [size]="16" /></button>
+    </ng-template>
+  </app-data-table>
+</section>
+
+<app-modal [(open)]="formOpen" title="ایجاد دوره مالی" width="480px" [closeOnBackdrop]="false">
+  @if (formOpen()) {
+    <form id="fiscal-period-form" class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <app-text-field label="نام دوره" formControlName="name" [required]="true" [messages]="{ pattern: 'این فیلد الزامی است.' }" />
+      <app-datepicker label="تاریخ شروع" formControlName="startDate" [required]="true" />
+      <app-datepicker label="تاریخ پایان" formControlName="endDate" [required]="true" />
+      @if (form.hasError('range') && form.controls.endDate.touched) {
+        <p class="msg error" role="alert">تاریخ پایان باید بعد از تاریخ شروع باشد.</p>
+      }
+      <app-toggle-field label="دوره بسته باشد" formControlName="isClosed" hint="تنها یک دوره مالی می‌تواند فعال (باز) باشد." />
+    </form>
+  }
+  <ng-container modalFooter>
+    <button type="submit" class="btn btn-primary" form="fiscal-period-form" [disabled]="busy()">ایجاد</button>
+    <button type="button" class="btn" [disabled]="busy()" (click)="formOpen.set(false)">انصراف</button>
+  </ng-container>
+</app-modal>
+
+<app-confirm-dialog [(open)]="toggleOpen" [title]="toggling()?.isClosed ? 'فعال‌سازی دوره مالی' : 'بستن دوره مالی'"
+  [confirmLabel]="toggling()?.isClosed ? 'فعال‌سازی' : 'بستن'" [busy]="busy()"
+  [message]="'«' + (toggling()?.name ?? '') + (toggling()?.isClosed ? '» فعال شود؟' : '» بسته شود؟')" (confirmed)="confirmToggle()" />
+
+<app-confirm-dialog [(open)]="deleteOpen" title="حذف دوره مالی" confirmLabel="حذف" [danger]="true" [busy]="busy()"
+  [message]="'«' + (deleting()?.name ?? '') + '» حذف شود؟ این کار قابل بازگشت نیست.'" (confirmed)="confirmDelete()" />

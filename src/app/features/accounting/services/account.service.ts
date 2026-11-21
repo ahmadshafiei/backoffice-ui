@@ -14,7 +14,11 @@ export class AccountService {
 
 
   searchPostable(query: { searchExp?: string }): Observable<PagedResult<Account>> {
-    let params = new HttpParams().set('pageNumber', 1).set('pageSize', 10).set('isDetailAllowed', 'false');
+    let params = new HttpParams()
+      .set('pageNumber', 1)
+      .set('pageSize', 10)
+      .set('isDetailAllowed', 'false')
+      .set('isActive', true);
     if (query.searchExp) params = params.set('searchExp', query.searchExp);
     return this.http.get<PagedResult<Account>>(ACCOUNTS, { params });
   }

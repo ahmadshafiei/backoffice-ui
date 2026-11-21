@@ -53,7 +53,7 @@ export const MENU: readonly MenuGroup[] = [
   {
     id: 'accounting', label: 'حسابداری', icon: 'calculator',
     children: [
-      { label: 'تنظیم سال مالی جاری', path: '/accounting/fiscal-year' },
+      { label: 'تنظیم دوره مالی', path: '/accounting/fiscal-periods' },
       { label: 'گروه حساب‌های کل', path: '/accounting/group-accounts' },
       { label: 'حساب‌های کل', path: '/accounting/general-accounts' },
       { label: 'حساب‌های معین', path: '/accounting/subsidiary-accounts' },

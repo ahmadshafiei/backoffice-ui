@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { of } from 'rxjs';
 import { NotificationApi } from '../../../../core/services/notification-api';
 import { Journal } from '../../models/journal.model';
+import { AccountService } from '../../services/account.service';
 import { JournalService } from '../../services/journal.service';
 import { JOURNAL_VALIDATION_MESSAGES } from '../../utils/journal.utils';
 import { JournalEditPage } from './journal-edit';
@@ -33,12 +34,14 @@ function setup(id: string | null, journal: Journal = makeJournal()) {
     update: vi.fn(() => of(undefined)),
     list: vi.fn(),
   };
+  const accountService = { get: vi.fn(() => of({ accountCode: '0', name: 'x' })), searchPostable: vi.fn(() => of({ items: [] })) };
   const notify = { success: vi.fn(), error: vi.fn(), info: vi.fn() };
   const router = { navigate: vi.fn(() => Promise.resolve(true)) };
 
   TestBed.configureTestingModule({
     providers: [
       { provide: JournalService, useValue: service },
+      { provide: AccountService, useValue: accountService },
       { provide: NotificationApi, useValue: notify },
       { provide: Router, useValue: router },
       {
@@ -48,7 +51,7 @@ function setup(id: string | null, journal: Journal = makeJournal()) {
     ],
   });
 
-  return { fixture: TestBed.createComponent(JournalEditPage), service, notify, router };
+  return { fixture: TestBed.createComponent(JournalEditPage), service, accountService, notify, router };
 }
 
 async function settle(fixture: ReturnType<typeof TestBed.createComponent<JournalEditPage>>): Promise<void> {
@@ -143,5 +146,22 @@ describe('JournalEditPage', () => {
       ],
     });
     expect(router.navigate).toHaveBeenCalledWith(['/accounting/journals']);
+  });
+
+  it('shows rows ordered by sequence and takes account names from the journal without extra requests', async () => {
+    const { fixture, accountService } = setup('journal-1', makeJournal({
+      items: [
+        { accountId: 'account-2', accountName: '2000 - B', debit: 0, credit: 100, sequence: 2, description: '' },
+        { accountId: 'account-1', accountName: '1000 - A', debit: 100, credit: 0, sequence: 1, description: '' },
+      ],
+    }));
+    await settle(fixture);
+
+    const page = fixture.componentInstance as any;
+    expect(page.items.controls.map((group: any) => group.controls.accountId.value)).toEqual(['account-1', 'account-2']);
+    let label = '';
+    page.resolveAccountLabel('account-1').subscribe((value: string) => (label = value));
+    expect(label).toBe('1000 - A');
+    expect(accountService.get).not.toHaveBeenCalled();
   });
 });
