@@ -6,7 +6,7 @@ import { Icon } from '../../../../shared/components/icon/icon';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { FaNumberPipe } from '../../../../shared/pipes/fa-number';
 import { JalaliDatePipe } from '../../../../shared/pipes/date-pipe';
-import { JOURNAL_STATE_LABEL, JOURNAL_TYPE_LABEL, Journal } from '../../models/journal.model';
+import { JOURNAL_STATE_LABEL, JOURNAL_TYPE_LABEL, Journal, JournalState } from '../../models/journal.model';
 import { JournalService } from '../../services/journal.service';
 
 /**
@@ -57,6 +57,10 @@ export class JournalsPage {
 
   protected branchLabel(branchId: number): string {
     return this.branchLabels[branchId] ?? String(branchId);
+  }
+
+  protected isPosted(row: Journal): boolean {
+    return row.state === JournalState.Posted;
   }
 
   constructor() {

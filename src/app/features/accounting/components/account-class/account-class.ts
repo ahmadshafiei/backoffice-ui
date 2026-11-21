@@ -20,16 +20,7 @@ interface RowEdit {
   baseline: ReadonlySet<string>;
 }
 
-/**
- * Account <-> detail-class links.
- *
- * Rows come from `GET /account-classes` with server-side paging; the columns are the complete
- * list of detail classes (`pageSize = -1`). Every cell is a checkbox that grants the row's
- * `accountId` the column's `detailClassId`. Saving PUTs one body per changed account with its
- * full set of detail class ids.
- *
- * Edits are keyed by `accountId`, so checkboxes ticked on another page survive a page change.
- */
+
 @Component({
   selector: 'app-account-class',
   imports: [PageHeader, Icon, DataTable, TableCell, FaNumberPipe, ReactiveFormsModule],

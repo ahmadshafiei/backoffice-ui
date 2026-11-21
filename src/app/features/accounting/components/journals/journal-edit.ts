@@ -1,22 +1,27 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Observable, firstValueFrom, map } from 'rxjs';
 import { NotificationApi } from '../../../../core/services/notification-api';
 import { Icon } from '../../../../shared/components/icon/icon';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
+import { SearchSelect } from '../../../../shared/components/search-select/search-select';
 import { FaNumberPipe } from '../../../../shared/pipes/fa-number';
 import {
   BRANCH_OPTIONS,
   JOURNAL_TYPE_OPTIONS,
+  JournalState,
   JournalItem,
   SaveJournalRequest,
 } from '../../models/journal.model';
-import { AccountPicker } from './account-picker';
+import { Account } from '../../models/account.model';
+import { AccountService } from '../../services/account.service';
 import { Datepicker } from '../../../../shared/components/datepicker/datepicker';
 import { SelectField } from '../../../../shared/components/fields/select-field';
 import { TextField } from '../../../../shared/components/fields/text-field';
 import { JournalService } from '../../services/journal.service';
+import { oppositeSide, toNonNegativeAmount, validateJournalItems } from '../../utils/journal.utils';
 
 interface ItemForm {
   accountId: FormControl<string | null>;
@@ -44,7 +49,7 @@ type ItemGroup = FormGroup<ItemForm>;
     Datepicker,
     SelectField,
     TextField,
-    AccountPicker,
+    SearchSelect,
     FaNumberPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -53,17 +58,35 @@ type ItemGroup = FormGroup<ItemForm>;
 })
 export class JournalEditPage {
   private readonly journals = inject(JournalService);
+  private readonly accounts = inject(AccountService);
   private readonly notify = inject(NotificationApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly branchOptions = BRANCH_OPTIONS;
   protected readonly typeOptions = JOURNAL_TYPE_OPTIONS;
 
   protected readonly isEdit = signal(false);
+  protected readonly readOnly = signal(false);
   protected readonly loading = signal(false);
   protected readonly busy = signal(false);
   protected readonly journalId = signal<string | null>(null);
+
+  protected readonly searchAccounts = (term: string): Observable<readonly Account[]> =>
+    this.accounts
+      .searchPostable({ searchExp: term || undefined })
+      .pipe(map((result) => result.items ?? []));
+  protected readonly accountValue = (account: Account): string => account.id;
+  protected readonly accountLabel = (account: Account): string => `${account.accountCode} - ${account.name}`;
+  protected readonly resolveAccountLabel = (id: string): Observable<string> =>
+    this.accounts.get(id).pipe(map((account) => `${account.accountCode} - ${account.name}`));
+  protected readonly splitAccountLabel = (label: string): { code: string; name: string } | null => {
+    const separator = label.indexOf(' - ');
+    return separator < 0
+      ? null
+      : { code: label.slice(0, separator), name: label.slice(separator + 3) };
+  };
 
   protected readonly page = signal(1);
   protected readonly pageSize = signal(10);
@@ -93,7 +116,7 @@ export class JournalEditPage {
 
   constructor() {
     // Repaint rows / totals when an item value or the row count changes (OnPush).
-    this.items.valueChanges.subscribe(() => this.itemsSignal.update((v) => v + 1));
+    this.items.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.itemsSignal.update((v) => v + 1));
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id && id !== 'new') {
@@ -113,11 +136,23 @@ export class JournalEditPage {
   }
 
   private makeItem(item?: JournalItem): ItemGroup {
-    return new FormGroup<ItemForm>({
+    const group = new FormGroup<ItemForm>({
       accountId: new FormControl<string | null>(item?.accountId ?? null, Validators.required),
-      debit: new FormControl<number | null>(item && item.debit ? item.debit : null),
-      credit: new FormControl<number | null>(item && item.credit ? item.credit : null),
+      debit: new FormControl<number | null>(item?.debit ? toNonNegativeAmount(item.debit) : null, Validators.min(0)),
+      credit: new FormControl<number | null>(item?.credit ? toNonNegativeAmount(item.credit) : null, Validators.min(0)),
       description: new FormControl(item?.description ?? '', { nonNullable: true }),
+    });
+    this.watchAmount(group, 'debit');
+    this.watchAmount(group, 'credit');
+    return group;
+  }
+
+  /** A row is either debit or credit: filling one side clears the other, and negatives become 0. */
+  private watchAmount(group: ItemGroup, side: 'debit' | 'credit'): void {
+    group.controls[side].valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((raw) => {
+      const safe = toNonNegativeAmount(raw);
+      if (safe !== raw) group.controls[side].setValue(safe, { emitEvent: false });
+      if ((safe ?? 0) > 0) group.controls[oppositeSide(side)].setValue(null, { emitEvent: false });
     });
   }
 
@@ -125,6 +160,7 @@ export class JournalEditPage {
     this.loading.set(true);
     try {
       const journal = await firstValueFrom(this.journals.get(id));
+      this.readOnly.set(journal.state === JournalState.Posted);
       this.header.reset(
         {
           date: journal.date ? journal.date.slice(0, 10) : '',
@@ -139,6 +175,7 @@ export class JournalEditPage {
       for (const item of items) this.items.push(this.makeItem(item), { emitEvent: false });
       if (this.items.length === 0) this.items.push(this.makeItem(), { emitEvent: false });
       this.itemsSignal.update((v) => v + 1);
+      if (this.readOnly()) this.disableForm();
     } catch {
       /* surfaced by the interceptor */
     } finally {
@@ -147,11 +184,13 @@ export class JournalEditPage {
   }
 
   protected addItem(): void {
+    if (this.readOnly()) return;
     if (this.itemCount() >= this.pageSize()) this.page.set(this.itemPageCount() + 1);
     this.items.push(this.makeItem());
   }
 
   protected removeItem(index: number): void {
+    if (this.readOnly()) return;
     if (this.items.length <= 1) return;
     this.items.removeAt(index);
     const lastPage = Math.max(1, Math.ceil(this.items.length / this.pageSize()));
@@ -172,23 +211,16 @@ export class JournalEditPage {
   }
 
   private validateItems(): string | null {
-    const controls = this.items.controls;
-    if (controls.length < 2) return 'برای ثبت سند حداقل دو ردیف (یک بدهکار و یک بستانکار) لازم است.';
+    return validateJournalItems(this.items.getRawValue());
+  }
 
-    let debitCount = 0;
-    let creditCount = 0;
-    for (const group of controls) {
-      if (!group.controls.accountId.value) return 'حساب همه ردیف‌ها را انتخاب کنید.';
-      const debit = group.controls.debit.value;
-      const credit = group.controls.credit.value;
-      if (debit && debit > 0) debitCount++;
-      if (credit && credit > 0) creditCount++;
-    }
-    if (debitCount === 0 || creditCount === 0) return 'حداقل یک ردیف بدهکار و یک ردیف بستانکار باید وجود داشته باشد.';
-    return null;
+  private disableForm(): void {
+    this.header.disable({ emitEvent: false });
+    for (const group of this.items.controls) group.disable({ emitEvent: false });
   }
 
   protected async save(): Promise<void> {
+    if (this.readOnly()) return;
     if (this.header.invalid) {
       this.header.markAllAsTouched();
       this.notify.error('اطلاعات کلی سند را کامل کنید.');
@@ -210,8 +242,8 @@ export class JournalEditPage {
         const raw = group.getRawValue();
         return {
           accountId: raw.accountId as string,
-          debit: typeof raw.debit === 'number' && Number.isFinite(raw.debit) ? raw.debit : 0,
-          credit: typeof raw.credit === 'number' && Number.isFinite(raw.credit) ? raw.credit : 0,
+          debit: toNonNegativeAmount(raw.debit) ?? 0,
+          credit: toNonNegativeAmount(raw.credit) ?? 0,
           sequence: index + 1,
           description: (raw.description ?? '').trim(),
         };

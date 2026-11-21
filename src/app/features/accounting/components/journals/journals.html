@@ -21,8 +21,9 @@
     <ng-template appCell="debit" let-row>{{ row.debit | faNumber }}</ng-template>
     <ng-template appCell="credit" let-row>{{ row.credit | faNumber }}</ng-template>
     <ng-template appRowActions let-row>
-      <button type="button" class="icon-btn" [attr.aria-label]="'ویرایش سند ' + row.number" title="ویرایش" (click)="edit(row)">
-        <app-icon name="pencil" [size]="16" />
+      <button type="button" class="icon-btn" [attr.aria-label]="(isPosted(row) ? 'مشاهده سند ' : 'ویرایش سند ') + row.number"
+        [title]="isPosted(row) ? 'مشاهده (سند قطعی)' : 'ویرایش'" (click)="edit(row)">
+        <app-icon [name]="isPosted(row) ? 'eye' : 'pencil'" [size]="16" />
       </button>
     </ng-template>
   </app-data-table>

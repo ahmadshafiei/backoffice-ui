@@ -1,7 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, shareReplay, tap } from 'rxjs';
-import { environment } from '../../../../environments/environment';
 import { Account, AccountLevel, ModifyAccountRequest, RegisterAccountRequest } from '../models/account.model';
 import { PAGE_SIZE_ALL, PagedResult } from '../models/paged-result.model';
 

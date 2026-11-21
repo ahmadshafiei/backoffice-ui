@@ -9,7 +9,7 @@ import { AccountFormModal } from '../../components/accounts/account-form-modal';
 import { AccountListBase } from '../../components/accounts/account-list-base';
 
 @Component({
-  selector: 'app-general-accounts',
+  selector: 'app-detail-accounts',
   imports: [PageHeader, Icon, DataTable, TableCell, TableRowActions, AccountFormModal,
     ConfirmDialog, FaNumberPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,

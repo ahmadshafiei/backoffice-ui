@@ -1,13 +1,21 @@
-<app-page-header [title]="isEdit() ? 'ویرایش سند حسابداری' : 'سند حسابداری جدید'">
-  <button type="button" class="btn" [disabled]="busy()" (click)="cancel()">انصراف</button>
-  <button type="button" class="btn btn-primary" [disabled]="busy() || loading()" (click)="save()">
-    <app-icon name="circle-check" [size]="16" />ذخیره
-  </button>
+<app-page-header [title]="readOnly() ? 'مشاهده سند حسابداری' : (isEdit() ? 'ویرایش سند حسابداری' : 'سند حسابداری جدید')">
+  <button type="button" class="btn" [disabled]="busy()" (click)="cancel()">{{ readOnly() ? 'بازگشت' : 'انصراف' }}</button>
+  @if (!readOnly()) {
+    <button type="button" class="btn btn-primary" [disabled]="busy() || loading()" (click)="save()">
+      <app-icon name="circle-check" [size]="16" />ذخیره
+    </button>
+  }
 </app-page-header>
 
 @if (loading()) {
   <p class="state">در حال بارگذاری سند…</p>
 } @else {
+@if (readOnly()) {
+  <p class="readonly-banner" role="status">
+    <app-icon name="lock" [size]="16" />
+    این سند قطعی (posted) است و قابل ویرایش یا حذف نیست.
+  </p>
+}
 <section class="panel header-panel">
   <form class="header-grid" [formGroup]="header" novalidate>
     <app-datepicker label="تاریخ" formControlName="date" [required]="true" />
@@ -22,9 +30,11 @@
     <div class="toolbar-hint">
       <span>تعداد ردیف: {{ itemCount() | faNumber }}</span>
     </div>
-    <button type="button" class="btn btn-primary" [disabled]="busy()" (click)="addItem()">
-      <app-icon name="plus" [size]="16" />افزودن ردیف
-    </button>
+    @if (!readOnly()) {
+      <button type="button" class="btn btn-primary" [disabled]="busy()" (click)="addItem()">
+        <app-icon name="plus" [size]="16" />افزودن ردیف
+      </button>
+    }
   </div>
 
   <div class="scroll">
@@ -36,7 +46,9 @@
           <th scope="col" class="col-amount">بدهکار</th>
           <th scope="col" class="col-amount">بستانکار</th>
           <th scope="col">شرح</th>
-          <th scope="col" class="col-actions">عملیات</th>
+          @if (!readOnly()) {
+            <th scope="col" class="col-actions">عملیات</th>
+          }
         </tr>
       </thead>
       <tbody>
@@ -44,17 +56,24 @@
           @if ($index >= visibleStart() && $index < visibleEnd()) {
             <tr [formGroup]="group">
               <td class="seq">{{ ($index + 1) | faNumber }}</td>
-              <td><app-account-picker formControlName="accountId" [required]="true" /></td>
+              <td>
+                <app-search-select formControlName="accountId" [required]="true"
+                  [search]="searchAccounts" [optionValue]="accountValue" [optionLabel]="accountLabel"
+                  [resolveLabel]="resolveAccountLabel" [splitLabel]="splitAccountLabel"
+                  placeholder="جستجوی کد یا نام حساب" />
+              </td>
               <td><input type="number" class="control" formControlName="debit" min="0" step="0.01" /></td>
               <td><input type="number" class="control" formControlName="credit" min="0" step="0.01" /></td>
               <td><input type="text" class="control" formControlName="description" /></td>
-              <td class="actions">
-                <button type="button" class="icon-btn danger" title="حذف ردیف"
-                  [attr.aria-label]="'حذف ردیف ' + ($index + 1)" [disabled]="busy() || items.length <= 1"
-                  (click)="removeItem($index)">
-                  <app-icon name="trash-2" [size]="16" />
-                </button>
-              </td>
+              @if (!readOnly()) {
+                <td class="actions">
+                  <button type="button" class="icon-btn danger" title="حذف ردیف"
+                    [attr.aria-label]="'حذف ردیف ' + ($index + 1)" [disabled]="busy() || items.length <= 1"
+                    (click)="removeItem($index)">
+                    <app-icon name="trash-2" [size]="16" />
+                  </button>
+                </td>
+              }
             </tr>
           }
         }
