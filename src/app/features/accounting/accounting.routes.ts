@@ -11,5 +11,7 @@ export const ACCOUNTING_ROUTES: Routes = [
   { path: 'journals', title: 'اسناد حسابداری', loadComponent: () => import('./components/journals/journals').then((m) => m.JournalsPage) },
   { path: 'journals/new', title: 'سند جدید', loadComponent: () => import('./components/journals/journal-edit').then((m) => m.JournalEditPage) },
   { path: 'journals/:id', title: 'ویرایش سند', loadComponent: () => import('./components/journals/journal-edit').then((m) => m.JournalEditPage) },
+  { path: 'general-ledger', title: 'دفتر کل', loadComponent: () => import('./pages/general-ledger/general-ledger-filter').then((m) => m.GeneralLedgerFilterPage) },
+  { path: 'general-ledger/result', title: 'دفتر کل', loadComponent: () => import('./pages/general-ledger/general-ledger-result').then((m) => m.GeneralLedgerResultPage) },
   { path: 'fiscal-periods', title: 'تنظیم دوره مالی', loadComponent: () => import('./components/fiscal-period/fiscal-period').then((m) => m.FiscalPeriodPage) },
 ];

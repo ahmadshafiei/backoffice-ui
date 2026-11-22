@@ -78,9 +78,9 @@
     "semantic_hash": "85595a1b86fe4d76be3aaa572560af28"
   },
   "src/app/core/layout/menu.config.ts": {
-    "mtime": 1795282485.0976856,
-    "seen": 1795282504.9961443,
-    "ast_hash": "789223e3b2cadc0ad7786a8ad28fd6bb",
+    "mtime": 1795373384.140586,
+    "seen": 1795373475.4174128,
+    "ast_hash": "458a8fee0818ebe91a0ac2ca3698484a",
     "semantic_hash": ""
   },
   "src/app/core/layout/navbar/navbar.ts": {
@@ -120,9 +120,9 @@
     "semantic_hash": "174922c78789daddf66cb1e46349267c"
   },
   "src/app/features/accounting/accounting.routes.ts": {
-    "mtime": 1795282484.8549588,
-    "seen": 1795282504.9961443,
-    "ast_hash": "08c9ea40d09a86feb4e3d976f01f3065",
+    "mtime": 1795373342.4815147,
+    "seen": 1795373475.4174128,
+    "ast_hash": "3c07926ee7ada28e71a773cbe5894c42",
     "semantic_hash": ""
   },
   "src/app/features/accounting/components/account-class/account-class.ts": {
@@ -300,16 +300,16 @@
     "semantic_hash": ""
   },
   "src/app/shared/components/menu/menu.model.ts": {
-    "mtime": 1794322592.3613966,
-    "seen": 1794581832.7442856,
-    "ast_hash": "2640e12e555ffb3c6fa205ef66ddb828",
-    "semantic_hash": "2640e12e555ffb3c6fa205ef66ddb828"
+    "mtime": 1795373342.4823143,
+    "seen": 1795373475.4174128,
+    "ast_hash": "5bdc7fd2daa376975b523e6316004256",
+    "semantic_hash": ""
   },
   "src/app/shared/components/menu/menu.ts": {
-    "mtime": 1794322592.3613966,
-    "seen": 1794581832.7442856,
-    "ast_hash": "ee6f991f750f3f6c5e4a50dba6ea6689",
-    "semantic_hash": "ee6f991f750f3f6c5e4a50dba6ea6689"
+    "mtime": 1795373342.5123992,
+    "seen": 1795373475.4174128,
+    "ast_hash": "0294e41051d9aaa2dd7930e7e25c770c",
+    "semantic_hash": ""
   },
   "src/app/shared/components/modal/confirm-dialog.ts": {
     "mtime": 1794322592.3613966,
@@ -525,9 +525,9 @@
     "semantic_hash": ""
   },
   "src/app/shared/components/menu/menu.html": {
-    "mtime": 1794322592.3613966,
-    "seen": 1794680569.8570793,
-    "ast_hash": "1089c893b3c0b93782e0f63bc3f8aa76",
+    "mtime": 1795373426.0443318,
+    "seen": 1795373475.4174128,
+    "ast_hash": "da070ef76d60265daa412b22988ef90d",
     "semantic_hash": ""
   },
   "src/app/shared/components/notification/notification.html": {
@@ -585,9 +585,9 @@
     "semantic_hash": ""
   },
   "src/app/features/accounting/components/journals/journal-edit.html": {
-    "mtime": 1795359496.6788526,
-    "seen": 1795359519.723249,
-    "ast_hash": "92747f6e17a9466bfcc45bfa533fa45c",
+    "mtime": 1795373150.1571264,
+    "seen": 1795373475.4174128,
+    "ast_hash": "1e950d7f33f470fb543e6064856593db",
     "semantic_hash": ""
   },
   "src/app/features/accounting/components/journals/journals.html": {
@@ -702,6 +702,54 @@
     "mtime": 1795359179.5916276,
     "seen": 1795359519.723249,
     "ast_hash": "51a522411df2182590eca89d9559d23d",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/models/general-ledger.model.spec.ts": {
+    "mtime": 1795373384.092673,
+    "seen": 1795373475.4174128,
+    "ast_hash": "f808b4466486a7369c3dd22a57edc09a",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/models/general-ledger.model.ts": {
+    "mtime": 1795373384.092673,
+    "seen": 1795373475.4174128,
+    "ast_hash": "1ae38ffc275eb40064d501407f7a5a61",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/pages/general-ledger/general-ledger-filter.ts": {
+    "mtime": 1795373455.4544313,
+    "seen": 1795373475.4174128,
+    "ast_hash": "44f0d9e471b2a05d9f2633615d7e2262",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/pages/general-ledger/general-ledger-result.ts": {
+    "mtime": 1795373426.0443318,
+    "seen": 1795373475.4174128,
+    "ast_hash": "8de67b0dcfce9a0b9531b8ae53cc928f",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/services/general-ledger.service.ts": {
+    "mtime": 1795373384.092673,
+    "seen": 1795373475.4174128,
+    "ast_hash": "491afc4e0d78b439f6e896a7268048d8",
+    "semantic_hash": ""
+  },
+  "prds/general-ledger.md": {
+    "mtime": 1795373146.951909,
+    "seen": 1795373475.4174128,
+    "ast_hash": "66d79268e8633ace7338b56e142492f2",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/pages/general-ledger/general-ledger-filter.html": {
+    "mtime": 1795373384.094446,
+    "seen": 1795373475.4174128,
+    "ast_hash": "e9060c2c97f4efda590e590cb3135f0f",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/pages/general-ledger/general-ledger-result.html": {
+    "mtime": 1795373384.094446,
+    "seen": 1795373475.4174128,
+    "ast_hash": "630dcce2858dac4244dc73a603e06556",
     "semantic_hash": ""
   },
   "package-lock.json": {

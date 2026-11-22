@@ -17,9 +17,31 @@
           </button>
           <div class="panel" [class.open]="!collapsed() && isOpen(group)" [id]="'menu-' + group.id">
             <ul class="children">
-              @for (child of group.children; track child.path) {
+              @for (child of group.children; track child.label) {
                 <li>
-                  <a [routerLink]="child.path" routerLinkActive="active" [tabindex]="!collapsed() && isOpen(group) ? 0 : -1" (click)="navigated.emit()">{{ child.label }}</a>
+                  @if (child.children?.length) {
+                    <button type="button" class="subrow" [class.has-active]="isSubOpen(group.id, child)"
+                      [attr.aria-expanded]="isSubOpen(group.id, child)" [attr.aria-controls]="'menu-' + group.id + '-' + $index"
+                      [tabindex]="!collapsed() && isOpen(group) ? 0 : -1" (click)="toggleSub(group.id, child)">
+                      <span>{{ child.label }}</span>
+                      <app-icon class="caret" name="chevron-down" [size]="14" />
+                    </button>
+                    <div class="panel subpanel" [class.open]="!collapsed() && isOpen(group) && isSubOpen(group.id, child)" [id]="'menu-' + group.id + '-' + $index">
+                      <ul class="grandchildren">
+                        @for (leaf of child.children; track leaf.label) {
+                          @if (leaf.path) {
+                            <li>
+                              <a [routerLink]="leaf.path" routerLinkActive="active"
+                                [tabindex]="!collapsed() && isOpen(group) && isSubOpen(group.id, child) ? 0 : -1"
+                                (click)="navigated.emit()">{{ leaf.label }}</a>
+                            </li>
+                          }
+                        }
+                      </ul>
+                    </div>
+                  } @else if (child.path) {
+                    <a [routerLink]="child.path" routerLinkActive="active" [tabindex]="!collapsed() && isOpen(group) ? 0 : -1" (click)="navigated.emit()">{{ child.label }}</a>
+                  }
                 </li>
               }
             </ul>

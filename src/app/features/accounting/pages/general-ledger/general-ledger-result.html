@@ -1,0 +1,31 @@
+<app-page-header title="دفتر کل" [subtitle]="rangeLabel()">
+  <button type="button" class="btn" (click)="changeFilters()">تغییر فیلتر</button>
+</app-page-header>
+
+<section class="summary" aria-label="خلاصه دفتر کل">
+  @if (summary(); as summary) {
+    @for (item of summaryItems(); track item.label) {
+      <div>
+        <span>{{ item.label }}</span>
+        <strong>{{ item.value | faNumber }}</strong>
+      </div>
+    }
+  } @else {
+    <p class="summary-state">{{ loading() ? 'در حال محاسبه خلاصه…' : 'خلاصه‌ای برای این فیلتر دریافت نشد.' }}</p>
+  }
+</section>
+
+<section class="panel">
+  <app-data-table [columns]="columns" [rows]="rows()" [total]="total()" [loading]="loading()" [rowKey]="rowKey"
+    [(page)]="page" [(pageSize)]="pageSize" caption="گردش دفتر کل"
+    emptyTitle="گردشی در این بازه نیست" emptyMessage="فیلتر را تغییر دهید یا بازه دیگری را جستجو کنید.">
+    <ng-template appCell="date" let-row>{{ row.date | jalaliDate }}</ng-template>
+    <ng-template appCell="number" let-row>
+      <a class="doc-link" [routerLink]="['/accounting/journals', row.journalId]">{{ row.number | faNumber }}</a>
+    </ng-template>
+    <ng-template appCell="sequence" let-row>{{ row.sequence | faNumber }}</ng-template>
+    <ng-template appCell="debit" let-row>{{ row.debit | faNumber }}</ng-template>
+    <ng-template appCell="credit" let-row>{{ row.credit | faNumber }}</ng-template>
+    <ng-template appCell="balance" let-row>{{ row.balance | faNumber }}</ng-template>
+  </app-data-table>
+</section>

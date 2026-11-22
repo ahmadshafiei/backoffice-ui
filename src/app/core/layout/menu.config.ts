@@ -1,4 +1,4 @@
-import { MenuGroup } from '../../shared/components/menu/menu.model';
+import { MenuGroup, MenuLeaf } from '../../shared/components/menu/menu.model';
 
 /** Single source of truth for the main menu. Paths are `/<section>/<page>`. */
 export const MENU: readonly MenuGroup[] = [
@@ -61,6 +61,12 @@ export const MENU: readonly MenuGroup[] = [
       { label: 'طبقه تفصیلی', path: '/accounting/detail-class' },
        { label: 'ارتباط معین با طبقه تفصیلی', path: '/accounting/account-class' },
        { label: 'اسناد حسابداری', path: '/accounting/journals' },
+       {
+         label: 'گزارشات حسابداری',
+         children: [
+           { label: 'دفتر کل', path: '/accounting/general-ledger' },
+         ],
+       },
      ],
   },
   {
@@ -86,8 +92,18 @@ export function menuLabelFor(url: string): string | null {
   const path = url.split(/[?#]/)[0];
   for (const group of MENU) {
     if (group.path === path) return group.label;
-    const leaf = group.children?.find((c) => c.path === path);
-    if (leaf) return leaf.label;
+    const leaf = labelIn(group.children, path);
+    if (leaf) return leaf;
+  }
+  return null;
+}
+
+function labelIn(items: readonly MenuLeaf[] | undefined, path: string): string | null {
+  if (!items) return null;
+  for (const item of items) {
+    if (item.path === path) return item.label;
+    const nested = labelIn(item.children, path);
+    if (nested) return nested;
   }
   return null;
 }

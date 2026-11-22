@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { Icon } from '../icon/icon';
-import { MenuGroup } from './menu.model';
+import { MenuGroup, MenuLeaf } from './menu.model';
 
 /** Collapsible, accordion-style navigation menu. Collapsed mode shows an icon rail. */
 @Component({
@@ -29,16 +29,40 @@ export class Menu {
 
   private readonly manuallyOpen = signal<ReadonlySet<string>>(new Set());
   private readonly manuallyClosed = signal<ReadonlySet<string>>(new Set());
+  private readonly manuallyOpenSub = signal<ReadonlySet<string>>(new Set());
+  private readonly manuallyClosedSub = signal<ReadonlySet<string>>(new Set());
 
   /** The group that contains the current route is open unless the user explicitly closed it. */
   protected readonly activeGroupId = computed(() => {
     const url = this.url();
-    return this.groups().find((g) => g.children?.some((c) => url.startsWith(c.path)))?.id ?? null;
+    return this.groups().find((g) => g.children?.some((c) => this.matches(c, url)))?.id ?? null;
   });
 
   protected isOpen(group: MenuGroup): boolean {
     if (this.manuallyClosed().has(group.id)) return false;
     return this.manuallyOpen().has(group.id) || this.activeGroupId() === group.id;
+  }
+
+  protected isSubOpen(groupId: string, child: MenuLeaf): boolean {
+    const key = `${groupId}/${child.label}`;
+    if (this.manuallyClosedSub().has(key)) return false;
+    return this.manuallyOpenSub().has(key) || this.matches(child, this.url());
+  }
+
+  protected toggleSub(groupId: string, child: MenuLeaf): void {
+    const key = `${groupId}/${child.label}`;
+    if (this.isSubOpen(groupId, child)) {
+      this.manuallyOpenSub.update((s) => without(s, key));
+      this.manuallyClosedSub.update((s) => new Set(s).add(key));
+    } else {
+      this.manuallyClosedSub.update((s) => without(s, key));
+      this.manuallyOpenSub.update((s) => new Set(s).add(key));
+    }
+  }
+
+  private matches(leaf: MenuLeaf, url: string): boolean {
+    if (leaf.path && (url === leaf.path || url.startsWith(`${leaf.path}/`) || url.startsWith(`${leaf.path}?`))) return true;
+    return !!leaf.children?.some((child) => this.matches(child, url));
   }
 
   protected toggle(group: MenuGroup): void {
