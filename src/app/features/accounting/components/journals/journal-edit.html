@@ -1,7 +1,12 @@
 <app-page-header [title]="readOnly() ? 'مشاهده سند حسابداری' : (isEdit() ? 'ویرایش سند حسابداری' : 'سند حسابداری جدید')">
   <button type="button" class="btn" [disabled]="busy()" (click)="cancel()">{{ readOnly() ? 'بازگشت' : 'انصراف' }}</button>
   @if (!readOnly()) {
-    <button type="button" class="btn btn-primary" [disabled]="busy() || loading()" (click)="save()">
+    @if (isDraft()) {
+      <button type="button" class="btn post-btn" [disabled]="busy() || loading()" (click)="askPost()">
+        <app-icon name="lock" [size]="16" />قطعی کردن
+      </button>
+    }
+    <button type="button" class="btn btn-primary save-btn" [disabled]="busy() || loading()" (click)="save()">
       <app-icon name="circle-check" [size]="16" />ذخیره
     </button>
   }
@@ -13,8 +18,22 @@
 @if (readOnly()) {
   <p class="readonly-banner" role="status">
     <app-icon name="lock" [size]="16" />
-    این سند قطعی (posted) است و قابل ویرایش یا حذف نیست.
+    این سند قطعی است و قابل ویرایش یا حذف نیست.
   </p>
+  <dl class="posted-info">
+    <div>
+      <dt>شماره قطعی</dt>
+      <dd>{{ postedNumber() === null ? '—' : (postedNumber() | faNumber) }}</dd>
+    </div>
+    <div>
+      <dt>قطعی‌شده توسط</dt>
+      <dd>{{ postedByUser() || '—' }}</dd>
+    </div>
+    <div>
+      <dt>تاریخ قطعی</dt>
+      <dd>{{ postedDate() ? (postedDate() | jalaliDate: 'datetime') : '—' }}</dd>
+    </div>
+  </dl>
 }
 <section class="panel header-panel">
   <form class="header-grid" [formGroup]="header" novalidate>
@@ -62,8 +81,8 @@
                   [resolveLabel]="resolveAccountLabel" [splitLabel]="splitAccountLabel"
                   placeholder="جستجوی کد یا نام حساب" />
               </td>
-              <td><input type="number" class="control" formControlName="debit" min="0" step="0.01" /></td>
-              <td><input type="number" class="control" formControlName="credit" min="0" step="0.01" /></td>
+              <td><input class="control ltr amount" formControlName="debit" appMoneyInput /></td>
+              <td><input class="control ltr amount" formControlName="credit" appMoneyInput /></td>
               <td><input type="text" class="control" formControlName="description" /></td>
               @if (!readOnly()) {
                 <td class="actions">
@@ -103,4 +122,8 @@
     </nav>
   }
 </section>
+
+<app-confirm-dialog [(open)]="postOpen" title="قطعی کردن سند" confirmLabel="قطعی کردن" [busy]="busy()"
+  message="آیا مطمئنید که می‌خواهید این سند را قطعی کنید؟ پس از قطعی شدن، سند قابل ویرایش نیست."
+  (confirmed)="confirmPost()" />
 }

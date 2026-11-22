@@ -8,8 +8,8 @@ export const JournalType = { Manual: 1, Automatic: 2 } as const;
 export type JournalType = (typeof JournalType)[keyof typeof JournalType];
 
 export const JOURNAL_STATE_LABEL: Record<number, string> = {
-  [JournalState.Draft]: 'پیش‌نویس',
-  [JournalState.Posted]: 'ثبت‌شده',
+  [JournalState.Draft]: 'پیش‌ نویس',
+  [JournalState.Posted]: 'قطعی شده',
 };
 
 export const JOURNAL_TYPE_LABEL: Record<number, string> = {
@@ -49,6 +49,11 @@ export interface Journal {
   credit: number;
   debit: number;
   items: JournalItem[];
+  /** Set by the server once the journal is finalised (posted). */
+  postedNumber?: number | null;
+  postedByUser?: string | null;
+  /** ISO date-time of the finalisation. */
+  postedDate?: string | null;
 }
 
 export interface PagedJournals {

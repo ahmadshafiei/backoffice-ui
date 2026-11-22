@@ -26,4 +26,9 @@ export class JournalService {
   update(id: string, body: SaveJournalRequest): Observable<void> {
     return this.http.patch<void>(`${JOURNALS}/${id}`, body);
   }
+
+  /** Finalises (قطعی میکند) a draft journal. Posted journals cannot be posted twice. */
+  post(id: string): Observable<void> {
+    return this.http.patch<void>(`${JOURNALS}/${id}/post`, null);
+  }
 }

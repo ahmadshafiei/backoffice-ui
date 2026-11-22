@@ -6,8 +6,10 @@ import { Observable, firstValueFrom, map, of } from 'rxjs';
 import { NotificationApi } from '../../../../core/services/notification-api';
 import { Icon } from '../../../../shared/components/icon/icon';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
+import { ConfirmDialog } from '../../../../shared/components/modal/confirm-dialog';
 import { SearchSelect } from '../../../../shared/components/search-select/search-select';
 import { FaNumberPipe } from '../../../../shared/pipes/fa-number';
+import { JalaliDatePipe } from '../../../../shared/pipes/date-pipe';
 import {
   BRANCH_OPTIONS,
   JOURNAL_TYPE_OPTIONS,
@@ -18,6 +20,7 @@ import {
 import { Account } from '../../models/account.model';
 import { AccountService } from '../../services/account.service';
 import { Datepicker } from '../../../../shared/components/datepicker/datepicker';
+import { MoneyInputDirective } from '../../../../shared/directives/money-input';
 import { SelectField } from '../../../../shared/components/fields/select-field';
 import { TextField } from '../../../../shared/components/fields/text-field';
 import { JournalService } from '../../services/journal.service';
@@ -50,7 +53,10 @@ type ItemGroup = FormGroup<ItemForm>;
     SelectField,
     TextField,
     SearchSelect,
+    MoneyInputDirective,
+    ConfirmDialog,
     FaNumberPipe,
+    JalaliDatePipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './journal-edit.html',
@@ -68,10 +74,19 @@ export class JournalEditPage {
   protected readonly typeOptions = JOURNAL_TYPE_OPTIONS;
 
   protected readonly isEdit = signal(false);
-  protected readonly readOnly = signal(false);
+  protected readonly state = signal<number | null>(null);
+  /** Only draft journals can be finalised (posted). */
+  protected readonly isDraft = computed(() => this.state() === JournalState.Draft);
+  /** Posted journals are immutable. */
+  protected readonly readOnly = computed(() => this.state() === JournalState.Posted);
   protected readonly loading = signal(false);
   protected readonly busy = signal(false);
   protected readonly journalId = signal<string | null>(null);
+  protected readonly postOpen = signal(false);
+  /** Finalisation details, only present on posted journals. */
+  protected readonly postedNumber = signal<number | null>(null);
+  protected readonly postedByUser = signal<string | null>(null);
+  protected readonly postedDate = signal<string | null>(null);
 
   protected readonly searchAccounts = (term: string): Observable<readonly Account[]> =>
     this.accounts
@@ -167,7 +182,10 @@ export class JournalEditPage {
     this.loading.set(true);
     try {
       const journal = await firstValueFrom(this.journals.get(id));
-      this.readOnly.set(journal.state === JournalState.Posted);
+      this.state.set(journal.state);
+      this.postedNumber.set(journal.postedNumber ?? null);
+      this.postedByUser.set(journal.postedByUser ?? null);
+      this.postedDate.set(journal.postedDate ?? null);
       this.header.reset(
         {
           date: journal.date ? journal.date.slice(0, 10) : '',
@@ -279,5 +297,30 @@ export class JournalEditPage {
 
   protected cancel(): void {
     void this.router.navigate(['/accounting/journals']);
+  }
+
+  /** Finalise a draft journal, but only after the user confirms. */
+  protected askPost(): void {
+    if (!this.isDraft() || this.busy()) return;
+    this.postOpen.set(true);
+  }
+
+  protected async confirmPost(): Promise<void> {
+    const id = this.journalId();
+    if (!id || !this.isDraft()) return;
+    this.busy.set(true);
+    try {
+      await firstValueFrom(this.journals.post(id));
+      this.postOpen.set(false);
+      this.state.set(JournalState.Posted);
+      this.disableForm();
+      this.notify.success('سند قطعی شد.');
+      // Pull the finalisation details (number / user / date) the server has just assigned.
+      await this.load(id);
+    } catch {
+      /* surfaced by the interceptor */
+    } finally {
+      this.busy.set(false);
+    }
   }
 }
