@@ -4,14 +4,18 @@
 
 <section class="summary" aria-label="خلاصه دفتر کل">
   @if (summary(); as summary) {
-    @for (item of summaryItems(); track item.label) {
-      <div>
-        <span>{{ item.label }}</span>
-        <strong>{{ item.value | faNumber }}</strong>
-      </div>
-    }
+    <div class="summary-box">
+      @for (item of summaryItems(); track item.label) {
+        <div class="summary-field">
+          <span>{{ item.label }}</span>
+          <strong>{{ item.value | faNumber }}</strong>
+        </div>
+      }
+    </div>
   } @else {
-    <p class="summary-state">{{ loading() ? 'در حال محاسبه خلاصه…' : 'خلاصه‌ای برای این فیلتر دریافت نشد.' }}</p>
+    <div class="summary-box">
+      <p class="summary-state">{{ loading() ? 'در حال محاسبه خلاصه…' : 'خلاصه‌ای برای این فیلتر دریافت نشد.' }}</p>
+    </div>
   }
 </section>
 
@@ -21,7 +25,7 @@
     emptyTitle="گردشی در این بازه نیست" emptyMessage="فیلتر را تغییر دهید یا بازه دیگری را جستجو کنید.">
     <ng-template appCell="date" let-row>{{ row.date | jalaliDate }}</ng-template>
     <ng-template appCell="number" let-row>
-      <a class="doc-link" [routerLink]="['/accounting/journals', row.journalId]">{{ row.number | faNumber }}</a>
+      <a class="doc-link" [routerLink]="['/accounting/journals', row.journalId]" target="_blank">{{ row.number | faNumber }}</a>
     </ng-template>
     <ng-template appCell="sequence" let-row>{{ row.sequence | faNumber }}</ng-template>
     <ng-template appCell="debit" let-row>{{ row.debit | faNumber }}</ng-template>

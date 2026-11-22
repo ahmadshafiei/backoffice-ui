@@ -78,9 +78,9 @@
     "semantic_hash": "85595a1b86fe4d76be3aaa572560af28"
   },
   "src/app/core/layout/menu.config.ts": {
-    "mtime": 1795373384.140586,
-    "seen": 1795373475.4174128,
-    "ast_hash": "458a8fee0818ebe91a0ac2ca3698484a",
+    "mtime": 1795374085.3392951,
+    "seen": 1795374127.728991,
+    "ast_hash": "357bae29324ce290a90cc6049c6c1db5",
     "semantic_hash": ""
   },
   "src/app/core/layout/navbar/navbar.ts": {
@@ -741,15 +741,21 @@
     "semantic_hash": ""
   },
   "src/app/features/accounting/pages/general-ledger/general-ledger-filter.html": {
-    "mtime": 1795373384.094446,
-    "seen": 1795373475.4174128,
-    "ast_hash": "e9060c2c97f4efda590e590cb3135f0f",
+    "mtime": 1795373696.6123922,
+    "seen": 1795374127.728991,
+    "ast_hash": "2568a68a6749f83b67cd4a33d116b9be",
     "semantic_hash": ""
   },
   "src/app/features/accounting/pages/general-ledger/general-ledger-result.html": {
-    "mtime": 1795373384.094446,
-    "seen": 1795373475.4174128,
-    "ast_hash": "630dcce2858dac4244dc73a603e06556",
+    "mtime": 1795374093.101849,
+    "seen": 1795374127.728991,
+    "ast_hash": "55fca36bce029cf0701ea6c4a87136c2",
+    "semantic_hash": ""
+  },
+  "prds/refactor-general-ledger.md": {
+    "mtime": 1795373914.933654,
+    "seen": 1795374127.728991,
+    "ast_hash": "fe642f918bbe15c221e7bb9824e78c2e",
     "semantic_hash": ""
   },
   "package-lock.json": {

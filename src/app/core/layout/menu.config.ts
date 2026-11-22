@@ -60,14 +60,14 @@ export const MENU: readonly MenuGroup[] = [
       { label: 'حساب‌های تفصیلی', path: '/accounting/detail-accounts' },
       { label: 'طبقه تفصیلی', path: '/accounting/detail-class' },
        { label: 'ارتباط معین با طبقه تفصیلی', path: '/accounting/account-class' },
-       { label: 'اسناد حسابداری', path: '/accounting/journals' },
-       {
-         label: 'گزارشات حسابداری',
-         children: [
-           { label: 'دفتر کل', path: '/accounting/general-ledger' },
-         ],
-       },
-     ],
+        { label: 'اسناد حسابداری', path: '/accounting/journals' },
+      ],
+  },
+  {
+    id: 'accounting-reports', label: 'گزارشات حسابداری', icon: 'chart-column',
+    children: [
+      { label: 'دفتر کل', path: '/accounting/general-ledger' },
+    ],
   },
   {
     id: 'reports', label: 'گزارش‌ها', icon: 'chart-column',
