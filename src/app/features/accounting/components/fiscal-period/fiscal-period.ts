@@ -5,7 +5,6 @@ import { NotificationApi } from '../../../../core/services/notification-api';
 import { DataTable, TableCell, TableColumn, TableRowActions } from '../../../../shared/components/data-table/data-table';
 import { Datepicker } from '../../../../shared/components/datepicker/datepicker';
 import { TextField } from '../../../../shared/components/fields/text-field';
-import { ToggleField } from '../../../../shared/components/fields/toggle-field';
 import { Icon } from '../../../../shared/components/icon/icon';
 import { ConfirmDialog } from '../../../../shared/components/modal/confirm-dialog';
 import { Modal } from '../../../../shared/components/modal/modal';
@@ -21,10 +20,9 @@ function rangeValidator(group: AbstractControl): ValidationErrors | null {
   return isValidPeriodRange(startDate, endDate) ? null : { range: true };
 }
 
-/** Fiscal periods (دوره مالی). The API supports list / create / delete; only one period may be open at a time. */
 @Component({
   selector: 'app-fiscal-period',
-  imports: [ReactiveFormsModule, PageHeader, Icon, DataTable, TableCell, TableRowActions, Modal, TextField, Datepicker, ToggleField, ConfirmDialog, FaNumberPipe],
+  imports: [ReactiveFormsModule, PageHeader, Icon, DataTable, TableCell, TableRowActions, Modal, TextField, Datepicker, ConfirmDialog, FaNumberPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './fiscal-period.html',
   styleUrl: '../accounts/list-page.css'
@@ -42,8 +40,8 @@ export class FiscalPeriodPage {
   protected readonly formOpen = signal(false);
   protected readonly deleteOpen = signal(false);
   protected readonly deleting = signal<FiscalPeriod | null>(null);
-  protected readonly toggleOpen = signal(false);
-  protected readonly toggling = signal<FiscalPeriod | null>(null);
+  protected readonly activateOpen = signal(false);
+  protected readonly activating = signal<FiscalPeriod | null>(null);
   protected readonly busy = signal(false);
 
   protected readonly rowKey = (row: FiscalPeriod): string => row.id;
@@ -51,14 +49,13 @@ export class FiscalPeriodPage {
     { key: 'name', header: 'نام دوره' },
     { key: 'startDate', header: 'تاریخ شروع', width: '150px' },
     { key: 'endDate', header: 'تاریخ پایان', width: '150px' },
-    { key: 'isClosed', header: 'وضعیت', width: '130px' },
+    { key: 'isActive', header: 'وضعیت', width: '130px' },
   ];
 
   protected readonly form = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(/\S/)] }),
     startDate: new FormControl<string | null>(null, Validators.required),
-    endDate: new FormControl<string | null>(null, Validators.required),
-    isClosed: new FormControl(false, { nonNullable: true }),
+    endDate: new FormControl<string | null>(null, Validators.required)
   }, { validators: rangeValidator });
 
   constructor() {
@@ -88,16 +85,16 @@ export class FiscalPeriodPage {
   }
 
   protected openCreate(): void {
-    this.form.reset({ name: '', startDate: null, endDate: null, isClosed: false });
+    this.form.reset({ name: '', startDate: null, endDate: null });
     this.formOpen.set(true);
   }
 
   protected async submit(): Promise<void> {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    const { name, startDate, endDate, isClosed } = this.form.getRawValue();
+    const { name, startDate, endDate } = this.form.getRawValue();
     this.busy.set(true);
     try {
-      await firstValueFrom(this.periods.create({ name: name.trim(), startDate: startDate as string, endDate: endDate as string, isClosed }));
+      await firstValueFrom(this.periods.create({ name: name.trim(), startDate: startDate as string, endDate: endDate as string }));
       this.notify.success('دوره مالی ایجاد شد.');
       this.formOpen.set(false);
       await this.load(this.page(), this.pageSize());
@@ -108,20 +105,19 @@ export class FiscalPeriodPage {
     }
   }
 
-  protected askToggle(row: FiscalPeriod): void {
-    this.toggling.set(row);
-    this.toggleOpen.set(true);
+  protected askActivate(row: FiscalPeriod): void {
+    this.activating.set(row);
+    this.activateOpen.set(true);
   }
 
-  protected async confirmToggle(): Promise<void> {
-    const row = this.toggling();
+  protected async activate(): Promise<void> {
+    const row = this.activating();
     if (!row) return;
     this.busy.set(true);
     try {
-      const activating = row.isClosed;
-      await firstValueFrom(this.periods.setClosed(row, !row.isClosed));
-      this.notify.success(activating ? `«${row.name}» فعال شد.` : `«${row.name}» بسته شد.`);
-      this.toggleOpen.set(false);
+      await firstValueFrom(this.periods.activate(row, !row.isActive));
+      this.notify.success(`«${row.name}» فعال شد.`);
+      this.activateOpen.set(false);
       await this.load(this.page(), this.pageSize());
     } catch {
       /* surfaced by the interceptor */

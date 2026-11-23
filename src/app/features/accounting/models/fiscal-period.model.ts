@@ -3,14 +3,13 @@ export interface FiscalPeriod {
   name: string;
   startDate: string;
   endDate: string;
-  isClosed: boolean;
+  isActive: boolean;
 }
 
 export interface CreateFiscalPeriodRequest {
   name: string;
   startDate: string;
   endDate: string;
-  isClosed: boolean;
 }
 
 /** True when the end date is strictly after the start date (ISO `YYYY-MM-DD` strings compare lexicographically). */

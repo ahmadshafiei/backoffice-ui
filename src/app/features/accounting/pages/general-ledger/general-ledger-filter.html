@@ -2,11 +2,11 @@
 
 <section class="panel">
   <form class="filters" [formGroup]="form" (ngSubmit)="search()" novalidate>
-    <app-select-field label="حساب کل" formControlName="accountId" [options]="accountOptions()"
-      placeholder="انتخاب حساب کل" [required]="true"
-      [hint]="loadingAccounts() ? 'در حال بارگذاری حساب‌ها…' : ''" />
     <app-datepicker label="از تاریخ" formControlName="startDate" [required]="true" />
     <app-datepicker label="تا تاریخ" formControlName="endDate" [required]="true" [messages]="dateMessages" />
+
+    <app-select-field label="حساب کل" formControlName="accountId" [options]="accountOptions()"
+      placeholder="انتخاب حساب کل" [required]="true" [hint]="loadingAccounts() ? 'در حال بارگذاری حساب‌ها…' : ''" />
     <app-select-field label="شعبه" formControlName="branchId" [options]="branchOptions" placeholder="همه شعب" />
     <div class="actions">
       <button type="submit" class="btn btn-primary" [disabled]="loadingAccounts()">

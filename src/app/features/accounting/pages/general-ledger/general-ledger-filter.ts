@@ -11,11 +11,8 @@ import { AccountLevel } from '../../models/account.model';
 import { readLedgerFilters } from '../../models/general-ledger.model';
 import { BRANCH_OPTIONS } from '../../models/journal.model';
 import { AccountService } from '../../services/account.service';
+import { FiscalPeriodService } from '../../services/fiscal-period.service';
 
-/**
- * Filter step of the general ledger (دفتر کل).
- * No ledger data is requested until the user searches. Account choices are general-level only.
- */
 @Component({
   selector: 'app-general-ledger-filter',
   imports: [ReactiveFormsModule, PageHeader, Datepicker, SelectField, Icon],
@@ -25,6 +22,7 @@ import { AccountService } from '../../services/account.service';
 })
 export class GeneralLedgerFilterPage {
   private readonly accountsApi = inject(AccountService);
+  private readonly fiscalService = inject(FiscalPeriodService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -55,6 +53,7 @@ export class GeneralLedgerFilterPage {
       this.form.controls.endDate.updateValueAndValidity({ emitEvent: false });
     });
     void this.loadAccounts();
+    void this.loadActiveFiscalPeriod();
   }
 
   protected search(): void {
@@ -86,6 +85,18 @@ export class GeneralLedgerFilterPage {
       this.loadingAccounts.set(false);
     }
   }
+
+  private async loadActiveFiscalPeriod(): Promise<void> {
+    let activeFiscalPeriod = await firstValueFrom(this.fiscalService.getActive());
+
+    if (activeFiscalPeriod !== null) {
+      this.form.patchValue({
+        startDate: activeFiscalPeriod.startDate,
+        endDate: activeFiscalPeriod.endDate
+      });
+    }
+  }
+
 }
 
 function endOnOrAfterStart(control: AbstractControl): ValidationErrors | null {

@@ -8,11 +8,16 @@ const FISCAL_PERIODS = '/api/v1/fiscal-periods';
 
 @Injectable({ providedIn: 'root' })
 export class FiscalPeriodService {
+
   private readonly http = inject(HttpClient);
 
   list(query: { pageNumber: number; pageSize: number }): Observable<PagedResult<FiscalPeriod>> {
     const params = new HttpParams().set('pageNumber', query.pageNumber).set('pageSize', query.pageSize);
     return this.http.get<PagedResult<FiscalPeriod>>(FISCAL_PERIODS, { params });
+  }
+
+  getActive(): Observable<FiscalPeriod> {
+    return this.http.get<FiscalPeriod>(`${FISCAL_PERIODS}/active`);
   }
 
   get(id: string): Observable<FiscalPeriod> {
@@ -27,12 +32,8 @@ export class FiscalPeriodService {
     return this.http.delete<void>(`${FISCAL_PERIODS}/${id}`);
   }
 
-  /**
-   * ASSUMPTION: the PRD lists no endpoint for closing / activating a period. This assumes
-   * `PUT /api/v1/fiscal-periods/{id}` taking the full body. Adjust here once the real endpoint is known.
-   */
-  setClosed(period: FiscalPeriod, isClosed: boolean): Observable<void> {
+  activate(period: FiscalPeriod, isActive: boolean): Observable<void> {
     const { name, startDate, endDate } = period;
-    return this.http.put<void>(`${FISCAL_PERIODS}/${period.id}`, { name, startDate, endDate, isClosed });
+    return this.http.put<void>(`${FISCAL_PERIODS}/${period.id}`, { name, startDate, endDate, isActive });
   }
 }

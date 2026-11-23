@@ -13,11 +13,6 @@ import { GeneralLedgerService } from '../../services/general-ledger.service';
 interface LedgerRow extends GeneralLedgerItem {
   key: string;
 }
-
-/**
- * Result step of the general ledger: one summary plus the paged lines for the chosen filters.
- * The document number opens that journal.
- */
 @Component({
   selector: 'app-general-ledger-result',
   imports: [PageHeader, DataTable, TableCell, RouterLink, FaNumberPipe, JalaliDatePipe],
