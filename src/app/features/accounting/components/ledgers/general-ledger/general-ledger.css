@@ -54,6 +54,7 @@
   color: var(--primary);
   font-weight: 600;
   text-decoration: none;
+  display: block;
 }
 
 .doc-link:hover { text-decoration: underline; }
