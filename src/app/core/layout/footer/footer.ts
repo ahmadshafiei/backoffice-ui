@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, inject, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { firstValueFrom, map, timer } from 'rxjs';
 import { JalaliDatePipe } from '../../../shared/pipes/date-pipe';
 import { FiscalPeriodService } from '../../../features/accounting/services/fiscal-period.service';
-import { FiscalPeriod } from '../../../features/accounting/models/fiscal-period.model';
 
 @Component({
   selector: 'app-footer',
@@ -11,7 +10,7 @@ import { FiscalPeriod } from '../../../features/accounting/models/fiscal-period.
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <footer>
-      <span>سال مالی جاری: <strong>{{ activeFiscalPeriod?.name }}</strong></span>
+      <span>سال مالی جاری: <strong>{{ activeFiscalPeriod() }}</strong></span>
       <span class="clock">
         <time [attr.datetime]="now().toISOString()">{{ now() | jalaliDate: 'long' }}، ساعت {{ now() | jalaliDate: 'time' }}</time>
       </span>
@@ -30,16 +29,11 @@ export class Footer {
   protected readonly now = toSignal(timer(0, 1000).pipe(map(() => new Date())), { initialValue: new Date() });
   private readonly periods = inject(FiscalPeriodService);
 
-  constructor() {
-    untracked(() => void this.load());
-  }
+  protected readonly activeFiscalPeriod = this.periods.activePeriod;
 
-  async load() {
-    this.activeFiscalPeriod = await firstValueFrom(this.periods.getActive());
+  constructor() {
+    untracked(() => {
+      void firstValueFrom(this.periods.getActive()).catch(() => null);
+    });
   }
-  /**
-   * Placeholder: the current fiscal year is the Jalali calendar year. Replace with the value from
-   * «تنظیم سال مالی جاری» once that API exists.
-   */
-  protected activeFiscalPeriod: FiscalPeriod | null = null;
 }

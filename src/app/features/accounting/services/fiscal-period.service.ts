@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
+import { Observable, tap } from 'rxjs';
 import { CreateFiscalPeriodRequest, FiscalPeriod } from '../models/fiscal-period.model';
 import { PagedResult } from '../models/paged-result.model';
 
@@ -11,13 +11,18 @@ export class FiscalPeriodService {
 
   private readonly http = inject(HttpClient);
 
+  private readonly _activePeriod = signal<string | null>(null);
+  readonly activePeriod = this._activePeriod.asReadonly();
+
   list(query: { pageNumber: number; pageSize: number }): Observable<PagedResult<FiscalPeriod>> {
     const params = new HttpParams().set('pageNumber', query.pageNumber).set('pageSize', query.pageSize);
     return this.http.get<PagedResult<FiscalPeriod>>(FISCAL_PERIODS, { params });
   }
 
   getActive(): Observable<FiscalPeriod> {
-    return this.http.get<FiscalPeriod>(`${FISCAL_PERIODS}/active`);
+    return this.http.get<FiscalPeriod>(`${FISCAL_PERIODS}/active`).pipe(
+      tap((period) => this._activePeriod.set(period.name)),
+    );
   }
 
   get(id: string): Observable<FiscalPeriod> {
@@ -32,8 +37,8 @@ export class FiscalPeriodService {
     return this.http.delete<void>(`${FISCAL_PERIODS}/${id}`);
   }
 
-  activate(period: FiscalPeriod, isActive: boolean): Observable<void> {
-    const { name, startDate, endDate } = period;
-    return this.http.put<void>(`${FISCAL_PERIODS}/${period.id}`, { name, startDate, endDate, isActive });
+  activate(id: string, name: string): Observable<void> {
+    return this.http.patch<void>(`${FISCAL_PERIODS}/${id}/activate`, {})
+      .pipe(tap(() => this._activePeriod.set(name)));
   }
 }

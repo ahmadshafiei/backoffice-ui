@@ -115,7 +115,7 @@ export class FiscalPeriodPage {
     if (!row) return;
     this.busy.set(true);
     try {
-      await firstValueFrom(this.periods.activate(row, !row.isActive));
+      await firstValueFrom(this.periods.activate(row.id, row.name));
       this.notify.success(`«${row.name}» فعال شد.`);
       this.activateOpen.set(false);
       await this.load(this.page(), this.pageSize());

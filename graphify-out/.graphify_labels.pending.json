@@ -35,14 +35,16 @@
   "33": "NotificationApi",
   "34": "navbar.ts",
   "35": "coming-soon.ts",
-  "36": "shell.ts",
-  "37": "notification.ts",
+  "36": "Shell",
+  "37": "shell.ts",
   "38": "JournalsPage",
   "39": "Injectable",
+  "40": "AccountClassPage",
   "41": "array.utils.ts",
   "42": "rxjs",
   "43": "shell.ts",
   "44": "theme-store.ts",
+  "45": "empty-state.ts",
   "46": "general-ledger-result.ts",
   "47": "AccountSettingsPage",
   "48": "FiscalPeriodPage",
@@ -51,5 +53,6 @@
   "51": "Injectable",
   "52": ".close",
   "53": ".showModal",
-  "54": "Injectable"
+  "54": "Injectable",
+  "55": "Component"
 }
