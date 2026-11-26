@@ -13,6 +13,8 @@ describe('readLedgerFilters', () => {
       branchId: '1',
     }))).toEqual({
       accountId: 'acc-1',
+      accountCode: '',
+      accountName: '',
       startDate: '2026-01-01',
       endDate: '2026-12-29',
       branchId: 1,
@@ -28,6 +30,27 @@ describe('readLedgerFilters', () => {
       level: '2',
     }))).toEqual({
       accountId: 'acc-1',
+      accountCode: '',
+      accountName: '',
+      startDate: '2026-01-01',
+      endDate: '2026-12-29',
+      branchId: null,
+      level: 2,
+    });
+  });
+
+  it('reads accountCode and accountName when provided', () => {
+    expect(readLedgerFilters(params({
+      accountId: 'acc-1',
+      accountCode: '1101',
+      accountName: 'صندوق',
+      startDate: '2026-01-01',
+      endDate: '2026-12-29',
+      level: '2',
+    }))).toEqual({
+      accountId: 'acc-1',
+      accountCode: '1101',
+      accountName: 'صندوق',
       startDate: '2026-01-01',
       endDate: '2026-12-29',
       branchId: null,

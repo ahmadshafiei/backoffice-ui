@@ -11,7 +11,7 @@ export class FiscalPeriodService {
 
   private readonly http = inject(HttpClient);
 
-  private readonly _activePeriod = signal<string | null>(null);
+  private readonly _activePeriod = signal<FiscalPeriod | null>(null);
   readonly activePeriod = this._activePeriod.asReadonly();
 
   list(query: { pageNumber: number; pageSize: number }): Observable<PagedResult<FiscalPeriod>> {
@@ -21,7 +21,7 @@ export class FiscalPeriodService {
 
   getActive(): Observable<FiscalPeriod> {
     return this.http.get<FiscalPeriod>(`${FISCAL_PERIODS}/active`).pipe(
-      tap((period) => this._activePeriod.set(period.name)),
+      tap((period) => this._activePeriod.set(period)),
     );
   }
 
@@ -39,6 +39,6 @@ export class FiscalPeriodService {
 
   activate(id: string, name: string): Observable<void> {
     return this.http.patch<void>(`${FISCAL_PERIODS}/${id}/activate`, {})
-      .pipe(tap(() => this._activePeriod.set(name)));
+      .pipe(tap(() => this.getActive().subscribe()));
   }
 }

@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Datepicker } from '../../../../shared/components/datepicker/datepicker';
-import { SelectField, SelectOption } from '../../../../shared/components/fields/select-field';
+import { SearchSelect } from '../../../../shared/components/search-select/search-select';
+import { SelectField } from '../../../../shared/components/fields/select-field';
 import { Icon } from '../../../../shared/components/icon/icon';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
-import { AccountLevel } from '../../models/account.model';
+import { Account, AccountLevel } from '../../models/account.model';
 import { readLedgerFilters } from '../../models/ledger.model';
 import { BRANCH_OPTIONS } from '../../models/journal.model';
 import { AccountService } from '../../services/account.service';
@@ -15,7 +16,7 @@ import { FiscalPeriodService } from '../../services/fiscal-period.service';
 
 @Component({
   selector: 'app-ledger-filter',
-  imports: [ReactiveFormsModule, PageHeader, Datepicker, SelectField, Icon],
+  imports: [ReactiveFormsModule, PageHeader, Datepicker, SearchSelect, SelectField, Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ledger-filter.html',
   styleUrl: './ledger.css',
@@ -28,8 +29,6 @@ export class LedgerFilterPage {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly branchOptions = BRANCH_OPTIONS;
-  protected readonly accountOptions = signal<readonly SelectOption<string>[]>([]);
-  protected readonly loadingAccounts = signal(true);
   protected readonly dateMessages = { dateOrder: 'تاریخ پایان نمی‌تواند قبل از تاریخ شروع باشد.' };
 
   protected readonly level = signal<AccountLevel>(AccountLevel.General);
@@ -62,7 +61,6 @@ export class LedgerFilterPage {
     this.form.controls.startDate.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.form.controls.endDate.updateValueAndValidity({ emitEvent: false });
     });
-    void this.loadAccounts();
     void this.loadActiveFiscalPeriod();
   }
 
@@ -89,15 +87,35 @@ export class LedgerFilterPage {
       return;
     }
     const value = this.form.getRawValue();
-    const resultRoute = this.getResultRoute();
-    void this.router.navigate([resultRoute], {
-      queryParams: {
-        accountId: value.accountId,
-        startDate: value.startDate,
-        endDate: value.endDate,
-        branchId: value.branchId ?? undefined,
-        level: this.level(),
+    // Get account details to pass to result page
+    this.accountsApi.get(value.accountId!).subscribe({
+      next: (account) => {
+        const resultRoute = this.getResultRoute();
+        void this.router.navigate([resultRoute], {
+          queryParams: {
+            accountId: value.accountId,
+            accountCode: account.accountCode,
+            accountName: account.name,
+            startDate: value.startDate,
+            endDate: value.endDate,
+            branchId: value.branchId ?? undefined,
+            level: this.level(),
+          },
+        });
       },
+      error: () => {
+        // Navigate without account code/name if fetch fails
+        const resultRoute = this.getResultRoute();
+        void this.router.navigate([resultRoute], {
+          queryParams: {
+            accountId: value.accountId,
+            startDate: value.startDate,
+            endDate: value.endDate,
+            branchId: value.branchId ?? undefined,
+            level: this.level(),
+          },
+        });
+      }
     });
   }
 
@@ -114,23 +132,30 @@ export class LedgerFilterPage {
     }
   }
 
-  private async loadAccounts(): Promise<void> {
-    try {
-      const rows = await firstValueFrom(this.accountsApi.all(this.level()));
-      this.accountOptions.set(rows.map((account) => ({
-        value: account.id,
-        label: `${account.accountCode} — ${account.name}`,
-      })));
-    } catch {
-      /* surfaced by the interceptor */
-    } finally {
-      this.loadingAccounts.set(false);
+  protected readonly searchAccounts = (term: string): Observable<readonly Account[]> => {
+    return this.accountsApi.searchByLevel({
+      accountLevel: this.level(),
+      searchExp: term,
+    }).pipe(map((res) => res.items ?? []));
+  };
+
+  protected readonly optionValue = (account: Account): string => account.id;
+  protected readonly optionLabel = (account: Account): string => `${account.accountCode} — ${account.name}`;
+
+  protected readonly resolveLabel = (value: string): Observable<string> => {
+    return this.accountsApi.get(value).pipe(map((account) => `${account.accountCode} — ${account.name}`));
+  };
+
+  protected readonly splitLabel = (label: string): { code: string; name: string } | null => {
+    const parts = label.split(' — ');
+    if (parts.length === 2) {
+      return { code: parts[0], name: parts[1] };
     }
-  }
+    return null;
+  };
 
-  private async loadActiveFiscalPeriod(): Promise<void> {
-    let activeFiscalPeriod = await firstValueFrom(this.fiscalService.getActive());
-
+  private loadActiveFiscalPeriod(): void {
+    const activeFiscalPeriod = this.fiscalService.activePeriod();
     if (activeFiscalPeriod !== null) {
       this.form.patchValue({
         startDate: activeFiscalPeriod.startDate,

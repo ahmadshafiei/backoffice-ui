@@ -72,16 +72,24 @@ export class LedgerResultPage {
   protected readonly title = computed(() => {
     const filters = this.filters;
     if (!filters) return 'دفتر';
+    let ledgerTitle = '';
     switch (filters.level) {
       case 1:
-        return 'دفتر کل';
+        ledgerTitle = 'دفتر کل';
+        break;
       case 2:
-        return 'دفتر معین';
+        ledgerTitle = 'دفتر معین';
+        break;
       case 3:
-        return 'دفتر تفصیلی';
+        ledgerTitle = 'دفتر تفصیلی';
+        break;
       default:
-        return 'دفتر';
+        ledgerTitle = 'دفتر';
     }
+    if (filters.accountCode && filters.accountName) {
+      return `${ledgerTitle} (${filters.accountCode} — ${filters.accountName})`;
+    }
+    return ledgerTitle;
   });
 
   constructor() {

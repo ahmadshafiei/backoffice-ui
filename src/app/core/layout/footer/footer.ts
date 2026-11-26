@@ -10,7 +10,7 @@ import { FiscalPeriodService } from '../../../features/accounting/services/fisca
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <footer>
-      <span>سال مالی جاری: <strong>{{ activeFiscalPeriod() }}</strong></span>
+      <span>سال مالی جاری: <strong>{{ activeFiscalPeriod()?.name }}</strong></span>
       <span class="clock">
         <time [attr.datetime]="now().toISOString()">{{ now() | jalaliDate: 'long' }}، ساعت {{ now() | jalaliDate: 'time' }}</time>
       </span>

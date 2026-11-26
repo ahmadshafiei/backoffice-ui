@@ -1,6 +1,8 @@
 /** Filters for the ledger (دفتر کل، معین، تفصیلی). `branchId` is optional. `level` 1=General, 2=Subsidiary, 3=Detail. */
 export interface LedgerFilters {
   accountId: string;
+  accountCode?: string;
+  accountName?: string;
   startDate: string;
   endDate: string;
   branchId: number | null;
@@ -34,6 +36,8 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 /** Reads the result-page query string. Returns null when a required filter is missing or invalid. */
 export function readLedgerFilters(params: { get(name: string): string | null }): LedgerFilters | null {
   const accountId = params.get('accountId')?.trim() ?? '';
+  const accountCode = params.get('accountCode')?.trim() ?? '';
+  const accountName = params.get('accountName')?.trim() ?? '';
   const startDate = params.get('startDate') ?? '';
   const endDate = params.get('endDate') ?? '';
   const levelRaw = params.get('level');
@@ -48,8 +52,8 @@ export function readLedgerFilters(params: { get(name: string): string | null }):
   }
 
   const branchRaw = params.get('branchId');
-  if (branchRaw == null || branchRaw === '') return { accountId, startDate, endDate, branchId: null, level };
+  if (branchRaw == null || branchRaw === '') return { accountId, accountCode, accountName, startDate, endDate, branchId: null, level };
   const branchId = Number(branchRaw);
   if (!Number.isInteger(branchId)) return null;
-  return { accountId, startDate, endDate, branchId, level };
+  return { accountId, accountCode, accountName, startDate, endDate, branchId, level };
 }

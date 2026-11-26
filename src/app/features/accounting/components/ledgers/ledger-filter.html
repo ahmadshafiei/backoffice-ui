@@ -5,11 +5,13 @@
     <app-datepicker label="از تاریخ" formControlName="startDate" [required]="true" />
     <app-datepicker label="تا تاریخ" formControlName="endDate" [required]="true" [messages]="dateMessages" />
 
-    <app-select-field label="حساب" formControlName="accountId" [options]="accountOptions()"
-      placeholder="انتخاب حساب" [required]="true" [hint]="loadingAccounts() ? 'در حال بارگذاری حساب‌ها…' : ''" />
+    <app-search-select label="حساب" formControlName="accountId"
+      [search]="searchAccounts" [optionValue]="optionValue" [optionLabel]="optionLabel"
+      [resolveLabel]="resolveLabel" [splitLabel]="splitLabel"
+      placeholder="جستجوی حساب…" [required]="true" [clearable]="true" />
     <app-select-field label="شعبه" formControlName="branchId" [options]="branchOptions" placeholder="همه شعب" />
     <div class="actions">
-      <button type="submit" class="btn btn-primary" [disabled]="loadingAccounts()">
+      <button type="submit" class="btn btn-primary">
         <app-icon name="search" [size]="16" />جستجو
       </button>
     </div>
