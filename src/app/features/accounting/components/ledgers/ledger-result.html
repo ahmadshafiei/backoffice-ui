@@ -1,8 +1,8 @@
-<app-page-header title="دفتر کل" [subtitle]="rangeLabel()">
+<app-page-header [title]="title()" [subtitle]="rangeLabel()">
   <button type="button" class="btn" (click)="changeFilters()">تغییر فیلتر</button>
 </app-page-header>
 
-<section class="summary" aria-label="خلاصه دفتر کل">
+<section class="summary" aria-label="خلاصه دفتر">
   @if (summary(); as summary) {
     <div class="summary-box">
       @for (item of summaryItems(); track item.label) {
@@ -21,7 +21,7 @@
 
 <section class="panel">
   <app-data-table [columns]="columns" [rows]="rows()" [total]="total()" [loading]="loading()" [rowKey]="rowKey"
-    [(page)]="page" [(pageSize)]="pageSize" caption="گردش دفتر کل"
+    [(page)]="page" [(pageSize)]="pageSize" caption="گردش دفتر"
     emptyTitle="گردشی در این بازه نیست" emptyMessage="فیلتر را تغییر دهید یا بازه دیگری را جستجو کنید.">
     <ng-template appCell="date" let-row>{{ row.date | jalaliDate }}</ng-template>
     <ng-template appCell="number" let-row>

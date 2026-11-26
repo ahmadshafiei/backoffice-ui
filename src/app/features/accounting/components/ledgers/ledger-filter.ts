@@ -3,24 +3,24 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { Datepicker } from '../../../../../shared/components/datepicker/datepicker';
-import { SelectField, SelectOption } from '../../../../../shared/components/fields/select-field';
-import { Icon } from '../../../../../shared/components/icon/icon';
-import { PageHeader } from '../../../../../shared/components/page-header/page-header';
-import { AccountLevel } from '../../../models/account.model';
-import { readLedgerFilters } from '../../../models/general-ledger.model';
-import { BRANCH_OPTIONS } from '../../../models/journal.model';
-import { AccountService } from '../../../services/account.service';
-import { FiscalPeriodService } from '../../../services/fiscal-period.service';
+import { Datepicker } from '../../../../shared/components/datepicker/datepicker';
+import { SelectField, SelectOption } from '../../../../shared/components/fields/select-field';
+import { Icon } from '../../../../shared/components/icon/icon';
+import { PageHeader } from '../../../../shared/components/page-header/page-header';
+import { AccountLevel } from '../../models/account.model';
+import { readLedgerFilters } from '../../models/ledger.model';
+import { BRANCH_OPTIONS } from '../../models/journal.model';
+import { AccountService } from '../../services/account.service';
+import { FiscalPeriodService } from '../../services/fiscal-period.service';
 
 @Component({
-  selector: 'app-general-ledger-filter',
+  selector: 'app-ledger-filter',
   imports: [ReactiveFormsModule, PageHeader, Datepicker, SelectField, Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './general-ledger-filter.html',
-  styleUrl: './general-ledger.css',
+  templateUrl: './ledger-filter.html',
+  styleUrl: './ledger.css',
 })
-export class GeneralLedgerFilterPage {
+export class LedgerFilterPage {
   private readonly accountsApi = inject(AccountService);
   private readonly fiscalService = inject(FiscalPeriodService);
   private readonly router = inject(Router);
@@ -32,6 +32,10 @@ export class GeneralLedgerFilterPage {
   protected readonly loadingAccounts = signal(true);
   protected readonly dateMessages = { dateOrder: 'تاریخ پایان نمی‌تواند قبل از تاریخ شروع باشد.' };
 
+  protected readonly level = signal<AccountLevel>(AccountLevel.General);
+  protected readonly title = signal<string>('دفتر کل');
+  protected readonly subtitle = signal<string>('حساب کل، بازه تاریخ و در صورت نیاز شعبه را انتخاب کنید.');
+
   protected readonly form = new FormGroup({
     accountId: new FormControl<string | null>(null, Validators.required),
     startDate: new FormControl<string | null>(null, Validators.required),
@@ -40,6 +44,12 @@ export class GeneralLedgerFilterPage {
   });
 
   constructor() {
+    const routeData = this.route.snapshot.data;
+    if (routeData['level'] !== undefined) {
+      this.level.set(routeData['level']);
+      this.updateTitleAndSubtitle(routeData['level']);
+    }
+
     const restored = readLedgerFilters(this.route.snapshot.queryParamMap);
     if (restored) {
       this.form.setValue({
@@ -56,25 +66,57 @@ export class GeneralLedgerFilterPage {
     void this.loadActiveFiscalPeriod();
   }
 
+  private updateTitleAndSubtitle(level: AccountLevel): void {
+    switch (level) {
+      case AccountLevel.General:
+        this.title.set('دفتر کل');
+        this.subtitle.set('حساب کل، بازه تاریخ و در صورت نیاز شعبه را انتخاب کنید.');
+        break;
+      case AccountLevel.Subsidiary:
+        this.title.set('دفتر معین');
+        this.subtitle.set('حساب معین، بازه تاریخ و در صورت نیاز شعبه را انتخاب کنید.');
+        break;
+      case AccountLevel.Detail:
+        this.title.set('دفتر تفصیلی');
+        this.subtitle.set('حساب تفصیلی، بازه تاریخ و در صورت نیاز شعبه را انتخاب کنید.');
+        break;
+    }
+  }
+
   protected search(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
     const value = this.form.getRawValue();
-    void this.router.navigate(['/accounting/general-ledger/result'], {
+    const resultRoute = this.getResultRoute();
+    void this.router.navigate([resultRoute], {
       queryParams: {
         accountId: value.accountId,
         startDate: value.startDate,
         endDate: value.endDate,
         branchId: value.branchId ?? undefined,
+        level: this.level(),
       },
     });
   }
 
+  private getResultRoute(): string {
+    switch (this.level()) {
+      case AccountLevel.General:
+        return '/accounting/general-ledger/result';
+      case AccountLevel.Subsidiary:
+        return '/accounting/subsidiary-ledger/result';
+      case AccountLevel.Detail:
+        return '/accounting/detail-ledger/result';
+      default:
+        return '/accounting/general-ledger/result';
+    }
+  }
+
   private async loadAccounts(): Promise<void> {
     try {
-      const rows = await firstValueFrom(this.accountsApi.all(AccountLevel.General));
+      const rows = await firstValueFrom(this.accountsApi.all(this.level()));
       this.accountOptions.set(rows.map((account) => ({
         value: account.id,
         label: `${account.accountCode} — ${account.name}`,
@@ -96,7 +138,6 @@ export class GeneralLedgerFilterPage {
       });
     }
   }
-
 }
 
 function endOnOrAfterStart(control: AbstractControl): ValidationErrors | null {

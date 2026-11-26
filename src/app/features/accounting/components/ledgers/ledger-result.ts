@@ -1,32 +1,32 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { DataTable, TableCell, TableColumn } from '../../../../../shared/components/data-table/data-table';
-import { PageHeader } from '../../../../../shared/components/page-header/page-header';
-import { FaNumberPipe } from '../../../../../shared/pipes/fa-number';
-import { JalaliDatePipe } from '../../../../../shared/pipes/date-pipe';
-import { toFaDigits } from '../../../../../shared/utils/digits.utils';
-import { formatJalali, toJalali } from '../../../../../shared/utils/jalali.utils';
-import { GeneralLedgerFilters, GeneralLedgerItem, GeneralLedgerSummary, readLedgerFilters } from '../../../models/general-ledger.model';
-import { GeneralLedgerService } from '../../../services/general-ledger.service';
+import { DataTable, TableCell, TableColumn } from '../../../../shared/components/data-table/data-table';
+import { PageHeader } from '../../../../shared/components/page-header/page-header';
+import { FaNumberPipe } from '../../../../shared/pipes/fa-number';
+import { JalaliDatePipe } from '../../../../shared/pipes/date-pipe';
+import { toFaDigits } from '../../../../shared/utils/digits.utils';
+import { formatJalali, toJalali } from '../../../../shared/utils/jalali.utils';
+import { LedgerFilters, LedgerItem, LedgerSummary, readLedgerFilters } from '../../models/ledger.model';
+import { LedgerService } from '../../services/ledger.service';
 
-interface LedgerRow extends GeneralLedgerItem {
+interface LedgerRow extends LedgerItem {
   key: string;
 }
 @Component({
-  selector: 'app-general-ledger-result',
+  selector: 'app-ledger-result',
   imports: [PageHeader, DataTable, TableCell, RouterLink, FaNumberPipe, JalaliDatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './general-ledger-result.html',
-  styleUrl: './general-ledger.css',
+  templateUrl: './ledger-result.html',
+  styleUrl: './ledger.css',
 })
-export class GeneralLedgerResultPage {
-  private readonly ledgers = inject(GeneralLedgerService);
+export class LedgerResultPage {
+  private readonly ledgers = inject(LedgerService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
-  protected readonly filters: GeneralLedgerFilters | null = readLedgerFilters(this.route.snapshot.queryParamMap);
-  protected readonly summary = signal<GeneralLedgerSummary | null>(null);
+  protected readonly filters: LedgerFilters | null = readLedgerFilters(this.route.snapshot.queryParamMap);
+  protected readonly summary = signal<LedgerSummary | null>(null);
   protected readonly rows = signal<readonly LedgerRow[]>([]);
   protected readonly total = signal(0);
   protected readonly loading = signal(false);
@@ -69,6 +69,21 @@ export class GeneralLedgerResultPage {
     ];
   });
 
+  protected readonly title = computed(() => {
+    const filters = this.filters;
+    if (!filters) return 'دفتر';
+    switch (filters.level) {
+      case 1:
+        return 'دفتر کل';
+      case 2:
+        return 'دفتر معین';
+      case 3:
+        return 'دفتر تفصیلی';
+      default:
+        return 'دفتر';
+    }
+  });
+
   constructor() {
     const filters = this.filters;
     if (!filters) {
@@ -85,7 +100,8 @@ export class GeneralLedgerResultPage {
   protected changeFilters(): void {
     const filters = this.filters;
     if (!filters) return;
-    void this.router.navigate(['/accounting/general-ledger'], {
+    const filterRoute = this.getFilterRoute(filters.level);
+    void this.router.navigate([filterRoute], {
       queryParams: {
         accountId: filters.accountId,
         startDate: filters.startDate,
@@ -95,7 +111,20 @@ export class GeneralLedgerResultPage {
     });
   }
 
-  private async load(filters: GeneralLedgerFilters, pageNumber: number, pageSize: number): Promise<void> {
+  private getFilterRoute(level: number): string {
+    switch (level) {
+      case 1:
+        return '/accounting/general-ledger';
+      case 2:
+        return '/accounting/subsidiary-ledger';
+      case 3:
+        return '/accounting/detail-ledger';
+      default:
+        return '/accounting/general-ledger';
+    }
+  }
+
+  private async load(filters: LedgerFilters, pageNumber: number, pageSize: number): Promise<void> {
     const requestId = ++this.requestId;
     this.loading.set(true);
     const summaryPromise = this.summaryLoaded

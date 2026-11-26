@@ -67,6 +67,8 @@ export const MENU: readonly MenuGroup[] = [
     id: 'accounting-reports', label: 'گزارشات حسابداری', icon: 'chart-column',
     children: [
       { label: 'دفتر کل', path: '/accounting/general-ledger' },
+      { label: 'دفتر معین', path: '/accounting/subsidiary-ledger' },
+      { label: 'دفتر تفصیلی', path: '/accounting/detail-ledger' },
     ],
   },
   {

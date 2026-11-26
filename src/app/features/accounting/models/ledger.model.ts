@@ -1,12 +1,13 @@
-/** Filters for the general ledger (دفتر کل). `branchId` is optional. */
-export interface GeneralLedgerFilters {
+/** Filters for the ledger (دفتر کل، معین، تفصیلی). `branchId` is optional. `level` 1=General, 2=Subsidiary, 3=Detail. */
+export interface LedgerFilters {
   accountId: string;
   startDate: string;
   endDate: string;
   branchId: number | null;
+  level: number;
 }
 
-export interface GeneralLedgerSummary {
+export interface LedgerSummary {
   openingDebit: number;
   openingCredit: number;
   periodDebit: number;
@@ -15,7 +16,7 @@ export interface GeneralLedgerSummary {
   closingCredit: number;
 }
 
-export interface GeneralLedgerItem {
+export interface LedgerItem {
   date: string;
   number: number;
   sequence: number;
@@ -31,15 +32,24 @@ export interface GeneralLedgerItem {
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Reads the result-page query string. Returns null when a required filter is missing or invalid. */
-export function readLedgerFilters(params: { get(name: string): string | null }): GeneralLedgerFilters | null {
+export function readLedgerFilters(params: { get(name: string): string | null }): LedgerFilters | null {
   const accountId = params.get('accountId')?.trim() ?? '';
   const startDate = params.get('startDate') ?? '';
   const endDate = params.get('endDate') ?? '';
+  const levelRaw = params.get('level');
   if (!accountId || !ISO_DATE.test(startDate) || !ISO_DATE.test(endDate) || startDate > endDate) return null;
 
+  let level = 1;
+  if (levelRaw != null && levelRaw !== '') {
+    const parsed = Number(levelRaw);
+    if (Number.isInteger(parsed) && parsed >= 1 && parsed <= 3) {
+      level = parsed;
+    }
+  }
+
   const branchRaw = params.get('branchId');
-  if (branchRaw == null || branchRaw === '') return { accountId, startDate, endDate, branchId: null };
+  if (branchRaw == null || branchRaw === '') return { accountId, startDate, endDate, branchId: null, level };
   const branchId = Number(branchRaw);
   if (!Number.isInteger(branchId)) return null;
-  return { accountId, startDate, endDate, branchId };
+  return { accountId, startDate, endDate, branchId, level };
 }
