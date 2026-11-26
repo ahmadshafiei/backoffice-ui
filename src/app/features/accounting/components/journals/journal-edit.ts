@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signa
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, firstValueFrom, map, of } from 'rxjs';
+import { Observable, firstValueFrom, map } from 'rxjs';
 import { NotificationApi } from '../../../../core/services/notification-api';
 import { Icon } from '../../../../shared/components/icon/icon';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
@@ -17,7 +17,7 @@ import {
   JournalItem,
   SaveJournalRequest,
 } from '../../models/journal.model';
-import { Account } from '../../models/account.model';
+import { Account, AccountLevel } from '../../models/account.model';
 import { AccountService } from '../../services/account.service';
 import { Datepicker } from '../../../../shared/components/datepicker/datepicker';
 import { MoneyInputDirective } from '../../../../shared/directives/money-input';
@@ -27,7 +27,10 @@ import { JournalService } from '../../services/journal.service';
 import { oppositeSide, toNonNegativeAmount, validateJournalItems } from '../../utils/journal.utils';
 
 interface ItemForm {
-  accountId: FormControl<string | null>;
+  subsidiaryAccountId: FormControl<string | null>;
+  detailAccountId: FormControl<string | null>;
+  /** Mirrors the selected subsidiary's `isDetailAllowed` so the detail field can be required. */
+  subsidiaryNeedsDetail: FormControl<boolean>;
   debit: FormControl<number | null>;
   credit: FormControl<number | null>;
   description: FormControl<string>;
@@ -88,21 +91,38 @@ export class JournalEditPage {
   protected readonly postedByUser = signal<string | null>(null);
   protected readonly postedDate = signal<string | null>(null);
 
-  protected readonly searchAccounts = (term: string): Observable<readonly Account[]> =>
-    this.accounts
-      .searchPostable({ searchExp: term || undefined })
-      .pipe(map((result) => result.items ?? []));
+  /** Accounts seen in a search, keyed by id, so a picked row can report `isDetailAllowed`. */
+  private readonly accountCache = new Map<string, Account>();
+
+  /** Detail searches are per-row: they filter by the row's chosen subsidiary (`parentId`). */
+  private readonly detailSearches = new WeakMap<ItemGroup, (term: string) => Observable<readonly Account[]>>();
+
+  private searchByLevel(level: AccountLevel, term: string, parentId?: string): Observable<readonly Account[]> {
+    return this.accounts.searchByLevel({ accountLevel: level, searchExp: term || undefined, parentId }).pipe(
+      map((result) => {
+        const items = result.items ?? [];
+        for (const account of items) this.accountCache.set(account.id, account);
+        return items;
+      }),
+    );
+  }
+  protected readonly searchSubsidiary = (term: string): Observable<readonly Account[]> =>
+    this.searchByLevel(AccountLevel.Subsidiary, term);
+  /** Returns the stable per-row detail search, scoped to that row's selected subsidiary. */
+  protected readonly detailSearch = (group: ItemGroup): ((term: string) => Observable<readonly Account[]>) => {
+    let search = this.detailSearches.get(group);
+    if (!search) {
+      search = (term: string) =>
+        this.searchByLevel(AccountLevel.Detail, term, group.controls.subsidiaryAccountId.value ?? undefined);
+      this.detailSearches.set(group, search);
+    }
+    return search;
+  };
   protected readonly accountValue = (account: Account): string => account.id;
   protected readonly accountLabel = (account: Account): string => `${account.accountCode} - ${account.name}`;
-  /** Account names that came with the loaded journal (`accountName`), keyed by account id. */
-  private readonly knownAccountNames = new Map<string, string>();
-  /** Uses the name delivered with the journal; only falls back to the accounts API for unknown ids. */
-  protected readonly resolveAccountLabel = (id: string): Observable<string> => {
-    const known = this.knownAccountNames.get(id);
-    return known !== undefined
-      ? of(known)
-      : this.accounts.get(id).pipe(map((account) => `${account.accountCode} - ${account.name}`));
-  };
+  /** Resolves the display label of an id set externally (e.g. on load) via the accounts API. */
+  protected readonly resolveAccountLabel = (id: string): Observable<string> =>
+    this.accounts.get(id).pipe(map((account) => `${account.accountCode} - ${account.name}`));
   protected readonly splitAccountLabel = (label: string): { code: string; name: string } | null => {
     const separator = label.indexOf(' - ');
     return separator < 0
@@ -158,15 +178,41 @@ export class JournalEditPage {
   }
 
   private makeItem(item?: JournalItem): ItemGroup {
+    const needsDetail = item?.detailAccountId ? true : false;
     const group = new FormGroup<ItemForm>({
-      accountId: new FormControl<string | null>(item?.accountId ?? null, Validators.required),
+      subsidiaryAccountId: new FormControl<string | null>(item?.subsidiaryAccountId ?? null, Validators.required),
+      detailAccountId: new FormControl<string | null>(item?.detailAccountId ?? null),
+      subsidiaryNeedsDetail: new FormControl<boolean>(needsDetail, { nonNullable: true }),
       debit: new FormControl<number | null>(item?.debit ? toNonNegativeAmount(item.debit) : null, Validators.min(0)),
       credit: new FormControl<number | null>(item?.credit ? toNonNegativeAmount(item.credit) : null, Validators.min(0)),
       description: new FormControl(item?.description ?? '', { nonNullable: true }),
     });
+    // Detail is required only when the chosen subsidiary accepts detail accounts.
+    group.controls.detailAccountId.setValidators((control) =>
+      group.controls.subsidiaryNeedsDetail.value && !control.value ? { detailRequired: true } : null,
+    );
+    if (!needsDetail) group.controls.detailAccountId.disable({ emitEvent: false });
+    this.watchSubsidiary(group);
     this.watchAmount(group, 'debit');
     this.watchAmount(group, 'credit');
     return group;
+  }
+
+  /** When the subsidiary changes, toggle the detail requirement from its `isDetailAllowed` flag. */
+  private watchSubsidiary(group: ItemGroup): void {
+    group.controls.subsidiaryAccountId.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((id) => {
+      const account = id ? this.accountCache.get(id) : undefined;
+      const needsDetail = account?.isDetailAllowed ?? false;
+      group.controls.subsidiaryNeedsDetail.setValue(needsDetail);
+      const detail = group.controls.detailAccountId;
+      if (needsDetail) {
+        detail.enable({ emitEvent: false });
+      } else {
+        detail.setValue(null, { emitEvent: false });
+        detail.disable({ emitEvent: false });
+      }
+      detail.updateValueAndValidity();
+    });
   }
 
   /** A row is either debit or credit: filling one side clears the other, and negatives become 0. */
@@ -197,8 +243,7 @@ export class JournalEditPage {
       );
       this.items.clear();
       const items = [...(journal.items ?? [])].sort((a, b) => a.sequence - b.sequence);
-      this.knownAccountNames.clear();
-      for (const item of items) if (item.accountName) this.knownAccountNames.set(item.accountId, item.accountName);
+      this.accountCache.clear();
       for (const item of items) this.items.push(this.makeItem(item), { emitEvent: false });
       if (this.items.length === 0) this.items.push(this.makeItem(), { emitEvent: false });
       this.itemsSignal.update((v) => v + 1);
@@ -268,7 +313,8 @@ export class JournalEditPage {
       items: this.items.controls.map((group, index) => {
         const raw = group.getRawValue();
         return {
-          accountId: raw.accountId as string,
+          subsidiaryAccountId: raw.subsidiaryAccountId as string,
+          detailAccountId: raw.subsidiaryNeedsDetail ? raw.detailAccountId : null,
           debit: toNonNegativeAmount(raw.debit) ?? 0,
           credit: toNonNegativeAmount(raw.credit) ?? 0,
           sequence: index + 1,

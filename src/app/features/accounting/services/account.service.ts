@@ -13,13 +13,14 @@ export class AccountService {
   private readonly allCache = new Map<AccountLevel, Observable<Account[]>>();
 
 
-  searchPostable(query: { searchExp?: string }): Observable<PagedResult<Account>> {
+  /** Type-ahead search over accounts of one level (e.g. حساب معین = 2, حساب تفصیلی = 3). */
+  searchByLevel(query: { accountLevel: AccountLevel; searchExp?: string; parentId?: string }): Observable<PagedResult<Account>> {
     let params = new HttpParams()
       .set('pageNumber', 1)
       .set('pageSize', 10)
-      .set('isDetailAllowed', 'false')
-      .set('isActive', true);
+      .set('accountLevel', query.accountLevel);
     if (query.searchExp) params = params.set('searchExp', query.searchExp);
+    if (query.parentId) params = params.set('parentId', query.parentId);
     return this.http.get<PagedResult<Account>>(ACCOUNTS, { params });
   }
 

@@ -61,7 +61,8 @@
       <thead>
         <tr>
           <th scope="col" class="col-seq">ردیف</th>
-          <th scope="col" class="col-account">حساب</th>
+          <th scope="col" class="col-account">حساب معین</th>
+          <th scope="col" class="col-account">حساب تفصیلی</th>
           <th scope="col" class="col-amount">بدهکار</th>
           <th scope="col" class="col-amount">بستانکار</th>
           <th scope="col">شرح</th>
@@ -76,10 +77,17 @@
             <tr [formGroup]="group">
               <td class="seq">{{ ($index + 1) | faNumber }}</td>
               <td>
-                <app-search-select formControlName="accountId" [required]="true"
-                  [search]="searchAccounts" [optionValue]="accountValue" [optionLabel]="accountLabel"
+                <app-search-select formControlName="subsidiaryAccountId" [required]="true"
+                  [search]="searchSubsidiary" [optionValue]="accountValue" [optionLabel]="accountLabel"
                   [resolveLabel]="resolveAccountLabel" [splitLabel]="splitAccountLabel"
-                  placeholder="جستجوی کد یا نام حساب" />
+                  placeholder="جستجوی کد یا نام حساب معین" />
+              </td>
+              <td>
+                <app-search-select formControlName="detailAccountId"
+                  [required]="group.controls.subsidiaryNeedsDetail.value"
+                  [search]="detailSearch(group)" [optionValue]="accountValue" [optionLabel]="accountLabel"
+                  [resolveLabel]="resolveAccountLabel" [splitLabel]="splitAccountLabel"
+                  placeholder="جستجوی کد یا نام حساب تفصیلی" />
               </td>
               <td><input class="control ltr amount" formControlName="debit" appMoneyInput /></td>
               <td><input class="control ltr amount" formControlName="credit" appMoneyInput /></td>

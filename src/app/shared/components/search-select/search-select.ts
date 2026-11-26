@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, HostListener, computed, inject, input, signal, viewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Observable, Subscription, catchError, debounceTime, map, of } from 'rxjs';
+import { Observable, Subscription, catchError, debounceTime, map, of, switchMap, timer } from 'rxjs';
 import { FloatingPosition, floatingPosition } from '../../utils/floating.util';
 import { Icon } from '../icon/icon';
 
 let nextSearchSelectId = 0;
 
-const DEFAULT_DEBOUNCE_MS = 300;
+const DEFAULT_DEBOUNCE_MS = 500;
 const MENU_MAX_HEIGHT = 240;
 
 /**
@@ -132,8 +132,8 @@ export class SearchSelect<T> implements ControlValueAccessor {
   protected readonly error = signal('');
   protected readonly menuPosition = signal<FloatingPosition>({ top: 0, left: 0, width: 0, maxHeight: MENU_MAX_HEIGHT, above: false });
 
-  private onChange: (value: string | null) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: string | null) => void = () => { };
+  private onTouched: () => void = () => { };
   private searchSub?: Subscription;
   private labelSub?: Subscription;
   private viewportCleanup: (() => void) | null = null;
@@ -274,18 +274,25 @@ export class SearchSelect<T> implements ControlValueAccessor {
 
   private runSearch(term: string): void {
     this.searchSub?.unsubscribe();
+
     this.loading.set(true);
     this.activeIndex.set(-1);
-    this.searchSub = this.search()(term)
+
+    const delay$ = term === '' ? of(0) : timer(this.debounceMs());
+
+    this.searchSub = delay$
       .pipe(
-        debounceTime(this.debounceMs()),
+        switchMap(() => this.search()(term)),
         catchError(() => of([] as readonly T[])),
-        map((items) => items ?? []),
+        map((items) => items ?? [])
       )
       .subscribe((items) => {
         this.options.set(items);
         this.loading.set(false);
-        if (this.open()) this.positionMenu();
+
+        if (this.open()) {
+          this.positionMenu();
+        }
       });
   }
 

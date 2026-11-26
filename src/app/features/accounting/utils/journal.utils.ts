@@ -1,6 +1,9 @@
 /** One row of a journal as edited on screen (either side may be empty). */
 export interface JournalSideRow {
-  accountId: string | null;
+  subsidiaryAccountId: string | null;
+  detailAccountId: string | null;
+  /** True when the chosen subsidiary requires a detail account. */
+  subsidiaryNeedsDetail: boolean;
   debit: number | null;
   credit: number | null;
 }
@@ -24,7 +27,8 @@ export function toNonNegativeAmount(value: number | null | undefined): number | 
 
 export const JOURNAL_VALIDATION_MESSAGES = {
   minRows: 'برای ثبت سند حداقل دو ردیف (یک بدهکار و یک بستانکار) لازم است.',
-  accountRequired: 'حساب همه ردیف‌ها را انتخاب کنید.',
+  accountRequired: 'حساب معین همه ردیف‌ها را انتخاب کنید.',
+  detailRequired: 'برای ردیف‌هایی که حساب معین آن‌ها تفصیلی می‌پذیرد، حساب تفصیلی را انتخاب کنید.',
   negative: 'مبلغ بدهکار و بستانکار نمی‌تواند منفی باشد.',
   bothSides: 'هر ردیف باید فقط بدهکار یا فقط بستانکار باشد.',
   noSides: 'حداقل یک ردیف بدهکار و یک ردیف بستانکار باید وجود داشته باشد.',
@@ -50,7 +54,8 @@ export function validateJournalItems(rows: readonly JournalSideRow[]): string | 
   let creditRows = 0;
 
   for (const row of rows) {
-    if (!row.accountId) return JOURNAL_VALIDATION_MESSAGES.accountRequired;
+    if (!row.subsidiaryAccountId) return JOURNAL_VALIDATION_MESSAGES.accountRequired;
+    if (row.subsidiaryNeedsDetail && !row.detailAccountId) return JOURNAL_VALIDATION_MESSAGES.detailRequired;
 
     const debit = amountOf(row.debit);
     const credit = amountOf(row.credit);

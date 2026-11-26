@@ -5,8 +5,16 @@ import {
   validateJournalItems,
 } from './journal.utils';
 
-const row = (debit: number | null, credit: number | null, accountId: string | null = 'account-1') => ({
-  accountId,
+interface RowOptions {
+  subsidiaryAccountId?: string | null;
+  detailAccountId?: string | null;
+  needsDetail?: boolean;
+}
+
+const row = (debit: number | null, credit: number | null, options: RowOptions = {}) => ({
+  subsidiaryAccountId: options.subsidiaryAccountId === undefined ? 'account-1' : options.subsidiaryAccountId,
+  detailAccountId: options.detailAccountId ?? null,
+  subsidiaryNeedsDetail: options.needsDetail ?? false,
   debit,
   credit,
 });
@@ -17,8 +25,19 @@ describe('validateJournalItems', () => {
     expect(validateJournalItems([row(10, 0)])).toBe(JOURNAL_VALIDATION_MESSAGES.minRows);
   });
 
-  it('requires an account on every row', () => {
-    expect(validateJournalItems([row(10, 0, null), row(0, 10)])).toBe(JOURNAL_VALIDATION_MESSAGES.accountRequired);
+  it('requires a subsidiary account on every row', () => {
+    expect(validateJournalItems([row(10, 0, { subsidiaryAccountId: null }), row(0, 10)])).toBe(
+      JOURNAL_VALIDATION_MESSAGES.accountRequired,
+    );
+  });
+
+  it('requires a detail account when the subsidiary accepts detail', () => {
+    expect(
+      validateJournalItems([row(10, 0, { needsDetail: true }), row(0, 10)]),
+    ).toBe(JOURNAL_VALIDATION_MESSAGES.detailRequired);
+    expect(
+      validateJournalItems([row(10, 0, { needsDetail: true, detailAccountId: 'detail-1' }), row(0, 10)]),
+    ).toBeNull();
   });
 
   it('rejects negative debit or credit values', () => {

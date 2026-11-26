@@ -20,8 +20,8 @@ function makeJournal(overrides: Partial<Journal> = {}): Journal {
     debit: 100,
     credit: 100,
     items: [
-      { accountId: 'account-1', debit: 100, credit: 0, sequence: 1, description: '' },
-      { accountId: 'account-2', debit: 0, credit: 100, sequence: 2, description: '' },
+      { subsidiaryAccountId: 'account-1', debit: 100, credit: 0, sequence: 1, description: '' },
+      { subsidiaryAccountId: 'account-2', debit: 0, credit: 100, sequence: 2, description: '' },
     ],
     ...overrides,
   };
@@ -35,7 +35,7 @@ function setup(id: string | null, journal: Journal = makeJournal()) {
     post: vi.fn(() => of(undefined)),
     list: vi.fn(),
   };
-  const accountService = { get: vi.fn(() => of({ accountCode: '0', name: 'x' })), searchPostable: vi.fn(() => of({ items: [] })) };
+  const accountService = { get: vi.fn(() => of({ accountCode: '0', name: 'x' })), searchByLevel: vi.fn(() => of({ items: [] })) };
   const notify = { success: vi.fn(), error: vi.fn(), info: vi.fn() };
   const router = { navigate: vi.fn(() => Promise.resolve(true)) };
 
@@ -238,9 +238,9 @@ describe('JournalEditPage', () => {
     const page = fixture.componentInstance as any;
     page.header.setValue({ date: '2026-11-10', branchId: 1, type: 1, description: '' });
     const [debitRow, creditRow] = page.items.controls;
-    debitRow.controls.accountId.setValue('account-1');
+    debitRow.controls.subsidiaryAccountId.setValue('account-1');
     debitRow.controls.debit.setValue(100);
-    creditRow.controls.accountId.setValue('account-2');
+    creditRow.controls.subsidiaryAccountId.setValue('account-2');
     creditRow.controls.credit.setValue(90);
 
     await page.save();
@@ -256,9 +256,9 @@ describe('JournalEditPage', () => {
     const page = fixture.componentInstance as any;
     page.header.setValue({ date: '2026-11-10', branchId: 1, type: 1, description: '  ' });
     const [debitRow, creditRow] = page.items.controls;
-    debitRow.controls.accountId.setValue('account-1');
+    debitRow.controls.subsidiaryAccountId.setValue('account-1');
     debitRow.controls.debit.setValue(100);
-    creditRow.controls.accountId.setValue('account-2');
+    creditRow.controls.subsidiaryAccountId.setValue('account-2');
     creditRow.controls.credit.setValue(100);
 
     await page.save();
@@ -269,35 +269,35 @@ describe('JournalEditPage', () => {
       type: 1,
       description: '',
       items: [
-        { accountId: 'account-1', debit: 100, credit: 0, sequence: 1, description: '' },
-        { accountId: 'account-2', debit: 0, credit: 100, sequence: 2, description: '' },
+        { subsidiaryAccountId: 'account-1', detailAccountId: null, debit: 100, credit: 0, sequence: 1, description: '' },
+        { subsidiaryAccountId: 'account-2', detailAccountId: null, debit: 0, credit: 100, sequence: 2, description: '' },
       ],
     });
     expect(router.navigate).toHaveBeenCalledWith(['/accounting/journals']);
   });
 
-  it('shows rows ordered by sequence and takes account names from the journal without extra requests', async () => {
+  it('shows rows ordered by sequence and resolves account labels via the API', async () => {
     const { fixture, accountService } = setup('journal-1', makeJournal({
       items: [
-        { accountId: 'account-2', accountName: '2000 - B', debit: 0, credit: 100, sequence: 2, description: '' },
-        { accountId: 'account-1', accountName: '1000 - A', debit: 100, credit: 0, sequence: 1, description: '' },
+        { subsidiaryAccountId: 'account-2', debit: 0, credit: 100, sequence: 2, description: '' },
+        { subsidiaryAccountId: 'account-1', debit: 100, credit: 0, sequence: 1, description: '' },
       ],
     }));
     await settle(fixture);
 
     const page = fixture.componentInstance as any;
-    expect(page.items.controls.map((group: any) => group.controls.accountId.value)).toEqual(['account-1', 'account-2']);
+    expect(page.items.controls.map((group: any) => group.controls.subsidiaryAccountId.value)).toEqual(['account-1', 'account-2']);
     let label = '';
     page.resolveAccountLabel('account-1').subscribe((value: string) => (label = value));
-    expect(label).toBe('1000 - A');
-    expect(accountService.get).not.toHaveBeenCalled();
+    expect(label).toBe('0 - x');
+    expect(accountService.get).toHaveBeenCalledWith('account-1');
   });
 
   it('groups debit and credit amounts three digits from the right', async () => {
     const { fixture } = setup('journal-1', makeJournal({
       items: [
-        { accountId: 'account-1', debit: 1234567, credit: 0, sequence: 1, description: '' },
-        { accountId: 'account-2', debit: 0, credit: 1234567.5, sequence: 2, description: '' },
+        { subsidiaryAccountId: 'account-1', debit: 1234567, credit: 0, sequence: 1, description: '' },
+        { subsidiaryAccountId: 'account-2', debit: 0, credit: 1234567.5, sequence: 2, description: '' },
       ],
     }));
     await settle(fixture);
