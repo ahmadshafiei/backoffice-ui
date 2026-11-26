@@ -66,9 +66,9 @@
     "semantic_hash": "740a170baf81eedc9a6f4bc07fd0806e"
   },
   "src/app/core/layout/footer/footer.ts": {
-    "mtime": 1795534044.4780436,
-    "seen": 1795534097.931673,
-    "ast_hash": "e391f4f9be64d561f57182522f9f8754",
+    "mtime": 1795534457.100008,
+    "seen": 1795535485.7622871,
+    "ast_hash": "c0943d58ca68f588b94767711626c976",
     "semantic_hash": ""
   },
   "src/app/core/layout/layout-store.ts": {
@@ -120,9 +120,9 @@
     "semantic_hash": "174922c78789daddf66cb1e46349267c"
   },
   "src/app/features/accounting/accounting.routes.ts": {
-    "mtime": 1795373342.4815147,
-    "seen": 1795373475.4174128,
-    "ast_hash": "3c07926ee7ada28e71a773cbe5894c42",
+    "mtime": 1795534875.0042205,
+    "seen": 1795535485.7622871,
+    "ast_hash": "7425389f2a66e65ae777783cf696094c",
     "semantic_hash": ""
   },
   "src/app/features/accounting/components/account-class/account-class.ts": {
@@ -306,9 +306,9 @@
     "semantic_hash": ""
   },
   "src/app/shared/components/menu/menu.ts": {
-    "mtime": 1795373342.5123992,
-    "seen": 1795373475.4174128,
-    "ast_hash": "0294e41051d9aaa2dd7930e7e25c770c",
+    "mtime": 1795535420.2757237,
+    "seen": 1795535485.7622871,
+    "ast_hash": "2a62fd314077c0be8aca9ae7b7cf6670",
     "semantic_hash": ""
   },
   "src/app/shared/components/modal/confirm-dialog.ts": {
@@ -585,9 +585,9 @@
     "semantic_hash": ""
   },
   "src/app/features/accounting/components/journals/journal-edit.html": {
-    "mtime": 1795373150.1571264,
-    "seen": 1795373475.4174128,
-    "ast_hash": "1e950d7f33f470fb543e6064856593db",
+    "mtime": 1795535242.0997584,
+    "seen": 1795535485.7622871,
+    "ast_hash": "92747f6e17a9466bfcc45bfa533fa45c",
     "semantic_hash": ""
   },
   "src/app/features/accounting/components/journals/journals.html": {
@@ -651,9 +651,9 @@
     "semantic_hash": ""
   },
   "src/app/features/accounting/components/fiscal-period/fiscal-period.ts": {
-    "mtime": 1795458795.441659,
-    "seen": 1795534097.931673,
-    "ast_hash": "b708e6a52d56869de9be07adaf47de1f",
+    "mtime": 1795534469.1357038,
+    "seen": 1795535485.7622871,
+    "ast_hash": "b4cb04fbc2d635a2166f8843251bc19a",
     "semantic_hash": ""
   },
   "src/app/features/accounting/models/fiscal-period.model.spec.ts": {
@@ -669,9 +669,9 @@
     "semantic_hash": ""
   },
   "src/app/features/accounting/services/fiscal-period.service.ts": {
-    "mtime": 1795534038.8054352,
-    "seen": 1795534097.931673,
-    "ast_hash": "d9a2a3c9ab2a435a7aada34a83b01b8e",
+    "mtime": 1795534457.100008,
+    "seen": 1795535485.7622871,
+    "ast_hash": "49d72991d2d99ea9eddc3ee1aca89553",
     "semantic_hash": ""
   },
   "src/app/features/accounting/components/fiscal-period/fiscal-period.html": {
@@ -716,18 +716,6 @@
     "ast_hash": "1ae38ffc275eb40064d501407f7a5a61",
     "semantic_hash": ""
   },
-  "src/app/features/accounting/pages/general-ledger/general-ledger-filter.ts": {
-    "mtime": 1795459637.31367,
-    "seen": 1795534097.931673,
-    "ast_hash": "897b5418997a23f9ec99b9d602dfba14",
-    "semantic_hash": ""
-  },
-  "src/app/features/accounting/pages/general-ledger/general-ledger-result.ts": {
-    "mtime": 1795459635.3214276,
-    "seen": 1795534097.931673,
-    "ast_hash": "8d82bccfae218e0a8943297a989363f4",
-    "semantic_hash": ""
-  },
   "src/app/features/accounting/services/general-ledger.service.ts": {
     "mtime": 1795373384.092673,
     "seen": 1795373475.4174128,
@@ -740,22 +728,34 @@
     "ast_hash": "66d79268e8633ace7338b56e142492f2",
     "semantic_hash": ""
   },
-  "src/app/features/accounting/pages/general-ledger/general-ledger-filter.html": {
-    "mtime": 1795459671.3405902,
-    "seen": 1795534097.931673,
-    "ast_hash": "d09fc5a6757eefad3af0aff01ab81c8a",
-    "semantic_hash": ""
-  },
-  "src/app/features/accounting/pages/general-ledger/general-ledger-result.html": {
-    "mtime": 1795374093.101849,
-    "seen": 1795374127.728991,
-    "ast_hash": "55fca36bce029cf0701ea6c4a87136c2",
-    "semantic_hash": ""
-  },
   "prds/refactor-general-ledger.md": {
     "mtime": 1795373914.933654,
     "seen": 1795374127.728991,
     "ast_hash": "fe642f918bbe15c221e7bb9824e78c2e",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/components/ledgers/general-ledger/general-ledger-filter.ts": {
+    "mtime": 1795534874.9983244,
+    "seen": 1795535485.7622871,
+    "ast_hash": "26a5faa8c859279ed0330d04b548f2af",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/components/ledgers/general-ledger/general-ledger-result.ts": {
+    "mtime": 1795534875.0042205,
+    "seen": 1795535485.7622871,
+    "ast_hash": "b4238e14abc8612af4551a4b3a83956e",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/components/ledgers/general-ledger/general-ledger-filter.html": {
+    "mtime": 1795459671.3405902,
+    "seen": 1795535485.7622871,
+    "ast_hash": "d09fc5a6757eefad3af0aff01ab81c8a",
+    "semantic_hash": ""
+  },
+  "src/app/features/accounting/components/ledgers/general-ledger/general-ledger-result.html": {
+    "mtime": 1795374093.101849,
+    "seen": 1795535485.7622871,
+    "ast_hash": "55fca36bce029cf0701ea6c4a87136c2",
     "semantic_hash": ""
   },
   "package-lock.json": {

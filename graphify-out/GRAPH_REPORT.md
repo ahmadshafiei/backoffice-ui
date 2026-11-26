@@ -1,17 +1,17 @@
 # Graph Report - backoffice-ui  (2026-11-24)
 
 ## Corpus Check
-- 94 files · ~26,796 words
+- 94 files · ~26,750 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 17 file(s) not represented in the graph (top: .css 15, (none) 1, .log 1)
 
 ## Summary
-- 704 nodes · 1553 edges · 56 communities (30 shown, 26 thin omitted)
+- 706 nodes · 1552 edges · 50 communities (25 shown, 25 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.89)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a403ca23`
+- Built from commit: `70fce0e9`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -27,7 +27,7 @@
 - Account class association page
 - MoneyInputDirective
 - detail-class template
-- journal.utils.ts
+- AccountFormModal
 - general-accounts template
 - group-accounts template
 - subsidiary-accounts template
@@ -47,21 +47,13 @@
 - Graphify project workflow
 - Authentication stub
 - SearchSelect
-- NotificationApi
+- Login
 - navbar.ts
-- coming-soon.ts
-- Shell
-- shell.ts
-- JournalsPage
 - AccountClassPage
 - array.utils.ts
-- rxjs
-- shell.ts
-- theme-store.ts
-- empty-state.ts
-- general-ledger-result.ts
+- NotificationApi
 - AccountSettingsPage
-- FiscalPeriodPage
+- general-ledger-result.ts
 
 ## God Nodes (most connected - your core abstractions)
 1. `@angular/core` - 59 edges
@@ -81,56 +73,56 @@
 - `FiscalPeriodPage` --references--> `TableColumn`  [EXTRACTED]
   src/app/features/accounting/components/fiscal-period/fiscal-period.ts → src/app/shared/components/data-table/data-table.ts
 - `LedgerRow` --inherits--> `GeneralLedgerItem`  [EXTRACTED]
-  src/app/features/accounting/pages/general-ledger/general-ledger-result.ts → src/app/features/accounting/models/general-ledger.model.ts
+  src/app/features/accounting/components/ledgers/general-ledger/general-ledger-result.ts → src/app/features/accounting/models/general-ledger.model.ts
 - `GeneralLedgerResultPage` --references--> `TableColumn`  [EXTRACTED]
-  src/app/features/accounting/pages/general-ledger/general-ledger-result.ts → src/app/shared/components/data-table/data-table.ts
+  src/app/features/accounting/components/ledgers/general-ledger/general-ledger-result.ts → src/app/shared/components/data-table/data-table.ts
 - `jalaliLabel()` --calls--> `toFaDigits()`  [EXTRACTED]
-  src/app/features/accounting/pages/general-ledger/general-ledger-result.ts → src/app/shared/utils/digits.utils.ts
+  src/app/features/accounting/components/ledgers/general-ledger/general-ledger-result.ts → src/app/shared/utils/digits.utils.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (56 total, 26 thin omitted)
+## Communities (50 total, 25 thin omitted)
 
 ### Community 0 - "@angular/core"
 Cohesion: 0.06
-Nodes (36): ACCOUNTING_ROUTES, RowEdit, AccountFormModal, setRequired(), AccountListBase, Account, ACCOUNT_LEVEL_LABEL, ACCOUNT_TYPE_LABEL (+28 more)
+Nodes (40): @angular/core, @angular/forms, NotificationKind, Toast, ACCOUNTING_ROUTES, RowEdit, AccountListBase, Account (+32 more)
+
+### Community 1 - "JournalEditPage"
+Cohesion: 0.10
+Nodes (8): JournalEditPage, amountOf(), JOURNAL_VALIDATION_MESSAGES, JournalAmountField, JournalSideRow, oppositeSide(), toNonNegativeAmount(), validateJournalItems()
 
 ### Community 2 - "journal-edit.ts"
-Cohesion: 0.16
-Nodes (12): ItemForm, ItemGroup, BRANCH_OPTIONS, JOURNAL_STATE_LABEL, JOURNAL_TYPE_LABEL, JOURNAL_TYPE_OPTIONS, JournalItem, JournalState (+4 more)
+Cohesion: 0.08
+Nodes (19): rxjs, ItemForm, ItemGroup, JournalsPage, BRANCH_OPTIONS, Journal, JOURNAL_STATE_LABEL, JOURNAL_TYPE_LABEL (+11 more)
 
 ### Community 3 - "datepicker.ts"
-Cohesion: 0.09
-Nodes (25): jalaliLabel(), Datepicker, fromIso(), Host, toIso(), FloatingPosition, floatingPosition(), BREAKS (+17 more)
+Cohesion: 0.07
+Nodes (26): jalaliLabel(), Datepicker, fromIso(), toIso(), FieldBase, ToggleField, FloatingPosition, floatingPosition() (+18 more)
 
 ### Community 4 - "@angular/router"
-Cohesion: 0.23
-Nodes (8): @angular/router, routes, authGuard(), AUTH_ROUTES, labelIn(), MENU, menuLabelFor(), ComingSoon
+Cohesion: 0.06
+Nodes (23): @angular/platform-browser@^22.2.0, @angular/platform-browser, @angular/router, App, appConfig, routes, authGuard(), AUTH_ROUTES (+15 more)
 
 ### Community 5 - "development"
 Cohesion: 0.05
 Nodes (39): build, serve, test, architect, prefix, projectType, root, schematics (+31 more)
 
 ### Community 6 - "package.json"
-Cohesion: 0.06
-Nodes (39): dependencies, @angular/common@^22.2.0, @angular/compiler@^22.2.0, @angular/core@^22.2.0, @angular/forms@^22.2.0, @angular/platform-browser@^22.2.0, @angular/router@^22.2.0, @fontsource-variable/vazirmatn@^5.3.0 (+31 more)
+Cohesion: 0.07
+Nodes (37): dependencies, @angular/common@^22.2.0, @angular/compiler@^22.2.0, @angular/core@^22.2.0, @angular/forms@^22.2.0, @angular/router@^22.2.0, @fontsource-variable/vazirmatn@^5.3.0, rxjs@~7.8.0 (+29 more)
 
 ### Community 8 - "Account class association page"
 Cohesion: 0.20
 Nodes (10): Account class association page, Account and detail class assignments, Detail class columns, GET /api/v1/account-classes, PUT /api/v1/account-classes, Save changed assignments, Account class associations, Accounting settings (+2 more)
 
 ### Community 9 - "MoneyInputDirective"
-Cohesion: 0.06
-Nodes (14): @angular/forms, FieldBase, TextField, ToggleField, MoneyInputDirective, Host, toEnDigits(), toFaDigits() (+6 more)
+Cohesion: 0.10
+Nodes (9): MoneyInputDirective, Host, toEnDigits(), toFaDigits(), DECIMAL_SEPARATOR, formatGroupedNumber(), GROUP_SEPARATOR, parseGroupedNumber() (+1 more)
 
 ### Community 10 - "detail-class template"
 Cohesion: 0.25
 Nodes (8): app-confirm-dialog, app-data-table, app-icon, app-modal, app-page-header, app-select-field, app-text-field, detail-class template
-
-### Community 12 - "journal.utils.ts"
-Cohesion: 0.24
-Nodes (7): amountOf(), JOURNAL_VALIDATION_MESSAGES, JournalAmountField, JournalSideRow, oppositeSide(), toNonNegativeAmount(), validateJournalItems()
 
 ### Community 13 - "general-accounts template"
 Cohesion: 0.33
@@ -176,61 +168,41 @@ Nodes (3): app-empty-state, app-icon, data-table template
 Cohesion: 0.09
 Nodes (4): SearchSelect, Host, Item, ITEMS
 
-### Community 33 - "NotificationApi"
-Cohesion: 0.20
-Nodes (3): NotificationApi, NotificationKind, Toast
-
 ### Community 34 - "navbar.ts"
-Cohesion: 0.18
-Nodes (5): AuthUser, LoginRequest, AuthStore, Login, BrandLogo
-
-### Community 35 - "coming-soon.ts"
-Cohesion: 0.36
-Nodes (4): Menu, MenuGroup, MenuLeaf, without()
-
-### Community 37 - "shell.ts"
-Cohesion: 0.15
-Nodes (5): App, appConfig, Footer, Navbar, Notification
+Cohesion: 0.08
+Nodes (8): AuthUser, LoginRequest, AuthStore, LayoutStore, Navbar, Theme, ThemeStore, BrandLogo
 
 ### Community 40 - "AccountClassPage"
 Cohesion: 0.20
 Nodes (4): AccountClassPage, sameSet(), toSet(), AccountClass
 
-### Community 42 - "rxjs"
-Cohesion: 0.10
-Nodes (17): @angular/common, @angular/core, rxjs, apiInterceptor(), describeHttpError(), PageTitleStrategy, AssignAccountClassRequest, AccountingSettings (+9 more)
+### Community 42 - "NotificationApi"
+Cohesion: 0.16
+Nodes (7): apiInterceptor(), describeHttpError(), NotificationApi, AccountingSettings, UpdateAccountingSettingsRequest, AccountingSettingsService, environment
 
-### Community 45 - "empty-state.ts"
-Cohesion: 0.38
-Nodes (3): EmptyState, IconName, ICONS
-
-### Community 46 - "general-ledger-result.ts"
-Cohesion: 0.10
-Nodes (9): GeneralLedgerFilters, GeneralLedgerItem, GeneralLedgerSummary, readLedgerFilters(), GeneralLedgerFilterPage, GeneralLedgerResultPage, LedgerRow, GeneralLedgerService (+1 more)
-
-### Community 48 - "FiscalPeriodPage"
-Cohesion: 0.12
-Nodes (6): FiscalPeriodPage, rangeValidator(), CreateFiscalPeriodRequest, FiscalPeriod, isValidPeriodRange(), FiscalPeriodService
+### Community 48 - "general-ledger-result.ts"
+Cohesion: 0.05
+Nodes (20): @angular/common, FiscalPeriodPage, rangeValidator(), GeneralLedgerFilterPage, GeneralLedgerResultPage, LedgerRow, AssignAccountClassRequest, CreateFiscalPeriodRequest (+12 more)
 
 ## Knowledge Gaps
 - **60 isolated node(s):** `app-confirm-dialog`, `app-data-table`, `app-icon`, `app-modal`, `app-page-header` (+55 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 262 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **26 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 265 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **25 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `@angular/core` connect `rxjs` to `@angular/core`, `NotificationApi`, `navbar.ts`, `journal-edit.ts`, `@angular/router`, `shell.ts`, `package.json`, `datepicker.ts`, `coming-soon.ts`, `MoneyInputDirective`, `SearchSelect`, `shell.ts`, `theme-store.ts`, `empty-state.ts`?**
-  _High betweenness centrality (0.184) - this node is a cross-community bridge._
+- **Why does `@angular/core` connect `@angular/core` to `SearchSelect`, `navbar.ts`, `journal-edit.ts`, `@angular/router`, `datepicker.ts`, `package.json`, `MoneyInputDirective`, `NotificationApi`, `general-ledger-result.ts`?**
+  _High betweenness centrality (0.183) - this node is a cross-community bridge._
 - **What connects `app-confirm-dialog`, `app-data-table`, `app-icon` to the rest of the system?**
   _60 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `@angular/core` be split into smaller, more focused modules?**
-  _Cohesion score 0.0646476412347117 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06355296080066722 - nodes in this community are weakly interconnected._
 - **Why does `SearchSelect` connect `SearchSelect` to `journal-edit.ts`, `datepicker.ts`?**
   _High betweenness centrality (0.054) - this node is a cross-community bridge._
-- **Should `datepicker.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.08944793850454227 - nodes in this community are weakly interconnected._
-- **Why does `Datepicker` connect `datepicker.ts` to `@angular/core`, `MoneyInputDirective`, `journal-edit.ts`?**
+- **Should `JournalEditPage` be split into smaller, more focused modules?**
+  _Cohesion score 0.10080645161290322 - nodes in this community are weakly interconnected._
+- **Why does `Datepicker` connect `datepicker.ts` to `@angular/core`, `journal-edit.ts`?**
   _High betweenness centrality (0.046) - this node is a cross-community bridge._
-- **Should `development` be split into smaller, more focused modules?**
-  _Cohesion score 0.052564102564102565 - nodes in this community are weakly interconnected._
+- **Should `journal-edit.ts` be split into smaller, more focused modules?**
+  _Cohesion score 0.07922705314009662 - nodes in this community are weakly interconnected._

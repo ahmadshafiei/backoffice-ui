@@ -76,8 +76,9 @@ export class Menu {
       this.manuallyOpen.update((s) => without(s, group.id));
       this.manuallyClosed.update((s) => new Set(s).add(group.id));
     } else {
-      this.manuallyClosed.update((s) => without(s, group.id));
-      this.manuallyOpen.update((s) => new Set(s).add(group.id));
+      const openId = group.id;
+      this.manuallyOpen.set(new Set([openId]));
+      this.manuallyClosed.set(new Set(this.groups().map((g) => g.id).filter((id) => id !== openId)));
     }
   }
 }
