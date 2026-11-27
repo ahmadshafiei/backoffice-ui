@@ -2,22 +2,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TrialBalanceFilters } from '../components/trial-balance/trial-balance.model';
+import { TrialBalanceApiItem } from '../models/trial-balance.model';
 import { PagedResult } from '../models/paged-result.model';
 import { FiscalPeriodService } from './fiscal-period.service';
 
 const TRIAL_BALANCE = '/api/v1/trial-balances';
-
-export interface TrialBalanceApiItem {
-  accountId: string;
-  accountCode: string;
-  accountName: string;
-  debitUntilPeriod: number;
-  creditUntilPeriod: number;
-  debitDuringPeriod: number;
-  creditDuringPeriod: number;
-  debitBalance: number;
-  creditBalance: number;
-}
 
 @Injectable({ providedIn: 'root' })
 export class TrialBalanceService {

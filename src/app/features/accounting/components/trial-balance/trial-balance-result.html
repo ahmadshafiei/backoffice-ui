@@ -12,5 +12,10 @@
     <ng-template appCell="periodCredit" let-row>{{ row.periodCredit | faNumber }}</ng-template>
     <ng-template appCell="closingDebit" let-row>{{ row.closingDebit | faNumber }}</ng-template>
     <ng-template appCell="closingCredit" let-row>{{ row.closingCredit | faNumber }}</ng-template>
+    <ng-template appCell="actions" let-row>
+      <button type="button" class="btn btn-icon" (click)="openLedger(row)" title="مشاهده دفتر">
+        <app-icon name="file-text" [size]="16" />
+      </button>
+    </ng-template>
   </app-data-table>
 </section>

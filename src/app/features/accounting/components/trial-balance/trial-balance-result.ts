@@ -3,16 +3,20 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { DataTable, TableCell, TableColumn } from '../../../../shared/components/data-table/data-table';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
+import { Icon } from '../../../../shared/components/icon/icon';
 import { FaNumberPipe } from '../../../../shared/pipes/fa-number';
 import { TrialBalanceFilters, TrialBalanceItem, readTrialBalanceFilters } from './trial-balance.model';
-import { TrialBalanceService, TrialBalanceApiItem } from '../../services/trial-balance.service';
+import { TrialBalanceService } from '../../services/trial-balance.service';
+import { TrialBalanceApiItem } from '../../models/trial-balance.model';
 
 interface TrialBalanceRow extends TrialBalanceItem {
   key: string;
+  accountId: string;
+  level: number;
 }
 @Component({
   selector: 'app-trial-balance-result',
-  imports: [PageHeader, DataTable, TableCell, FaNumberPipe],
+  imports: [PageHeader, DataTable, TableCell, Icon, FaNumberPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './trial-balance-result.html',
   styleUrl: './trial-balance.css',
@@ -42,6 +46,7 @@ export class TrialBalanceResultPage {
     { key: 'periodCredit', header: 'بستانکار دوره', width: '130px' },
     { key: 'closingDebit', header: 'بدهکار پایان دوره', width: '140px' },
     { key: 'closingCredit', header: 'بستانکار پایان دوره', width: '140px' },
+    { key: 'actions', header: '', width: '50px' },
   ];
 
   protected readonly title = computed(() => {
@@ -85,6 +90,25 @@ export class TrialBalanceResultPage {
     });
   }
 
+  protected openLedger(row: TrialBalanceRow): void {
+    const filters = this.filters;
+    if (!filters) return;
+    const ledgerRoute = this.getLedgerRoute(row.level);
+    const queryParams = new URLSearchParams({
+      accountId: row.accountId,
+      accountCode: row.accountCode,
+      accountName: row.accountName,
+      startDate: filters.startDate,
+      endDate: filters.endDate,
+      level: row.level.toString(),
+    });
+    if (filters.branchId != null) {
+      queryParams.set('branchId', filters.branchId.toString());
+    }
+    const url = `${ledgerRoute}?${queryParams.toString()}`;
+    window.open(url, '_blank');
+  }
+
   private getFilterRoute(level: number): string {
     switch (level) {
       case 1:
@@ -95,6 +119,19 @@ export class TrialBalanceResultPage {
         return '/accounting/trial-balance/detail';
       default:
         return '/accounting/trial-balance/general';
+    }
+  }
+
+  private getLedgerRoute(level: number): string {
+    switch (level) {
+      case 1:
+        return '/accounting/general-ledger/result';
+      case 2:
+        return '/accounting/subsidiary-ledger/result';
+      case 3:
+        return '/accounting/detail-ledger/result';
+      default:
+        return '/accounting/general-ledger/result';
     }
   }
 
@@ -113,6 +150,8 @@ export class TrialBalanceResultPage {
         periodCredit: item.creditDuringPeriod,
         closingDebit: item.debitBalance,
         closingCredit: item.creditBalance,
+        accountId: item.accountId,
+        level: item.level,
         key: `${item.accountId}-${index}`,
       })));
       this.total.set(Number(result.totalCount));
