@@ -19,7 +19,9 @@
             <ul class="children">
               @for (child of group.children; track child.label) {
                 <li>
-                  @if (child.children?.length) {
+                  @if (child.separator) {
+                    <hr class="separator" />
+                  } @else if (child.children?.length) {
                     <button type="button" class="subrow" [class.has-active]="isSubOpen(group.id, child)"
                       [attr.aria-expanded]="isSubOpen(group.id, child)" [attr.aria-controls]="'menu-' + group.id + '-' + $index"
                       [tabindex]="!collapsed() && isOpen(group) ? 0 : -1" (click)="toggleSub(group.id, child)">

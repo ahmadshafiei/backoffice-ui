@@ -1,0 +1,14 @@
+<app-page-header [title]="title()" [subtitle]="subtitle()" />
+
+<section class="panel">
+  <form class="filters" [formGroup]="form" (ngSubmit)="search()" novalidate>
+    <app-datepicker label="از تاریخ" formControlName="startDate" [required]="true" />
+    <app-datepicker label="تا تاریخ" formControlName="endDate" [required]="true" [messages]="dateMessages" />
+    <app-select-field label="شعبه" formControlName="branchId" [options]="branchOptions" placeholder="همه شعب" />
+    <div class="actions">
+      <button type="submit" class="btn btn-primary">
+        <app-icon name="search" [size]="16" />جستجو
+      </button>
+    </div>
+  </form>
+</section>

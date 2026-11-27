@@ -69,6 +69,10 @@ export const MENU: readonly MenuGroup[] = [
       { label: 'دفتر کل', path: '/accounting/general-ledger' },
       { label: 'دفتر معین', path: '/accounting/subsidiary-ledger' },
       { label: 'دفتر تفصیلی', path: '/accounting/detail-ledger' },
+      { separator: true },
+      { label: 'تراز آزمایشی کل', path: '/accounting/trial-balance/general' },
+      { label: 'تراز آزمایشی معین', path: '/accounting/trial-balance/subsidiary' },
+      { label: 'تراز آزمایشی تفصیلی', path: '/accounting/trial-balance/detail' },
     ],
   },
   {
@@ -103,7 +107,7 @@ export function menuLabelFor(url: string): string | null {
 function labelIn(items: readonly MenuLeaf[] | undefined, path: string): string | null {
   if (!items) return null;
   for (const item of items) {
-    if (item.path === path) return item.label;
+    if (item.path === path) return item.label ?? null;
     const nested = labelIn(item.children, path);
     if (nested) return nested;
   }

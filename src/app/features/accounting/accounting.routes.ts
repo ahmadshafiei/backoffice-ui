@@ -18,5 +18,11 @@ export const ACCOUNTING_ROUTES: Routes = [
   { path: 'subsidiary-ledger/result', title: 'دفتر معین', loadComponent: () => import('./components/ledgers/ledger-result').then((m) => m.LedgerResultPage) },
   { path: 'detail-ledger', title: 'دفتر تفصیلی', data: { level: AccountLevel.Detail }, loadComponent: () => import('./components/ledgers/ledger-filter').then((m) => m.LedgerFilterPage) },
   { path: 'detail-ledger/result', title: 'دفتر تفصیلی', loadComponent: () => import('./components/ledgers/ledger-result').then((m) => m.LedgerResultPage) },
+  { path: 'trial-balance/general', title: 'تراز آزمایشی کل', data: { level: AccountLevel.General }, loadComponent: () => import('./components/trial-balance/trial-balance-filter').then((m) => m.TrialBalanceFilterPage) },
+  { path: 'trial-balance/general/result', title: 'تراز آزمایشی کل', loadComponent: () => import('./components/trial-balance/trial-balance-result').then((m) => m.TrialBalanceResultPage) },
+  { path: 'trial-balance/subsidiary', title: 'تراز آزمایشی معین', data: { level: AccountLevel.Subsidiary }, loadComponent: () => import('./components/trial-balance/trial-balance-filter').then((m) => m.TrialBalanceFilterPage) },
+  { path: 'trial-balance/subsidiary/result', title: 'تراز آزمایشی معین', loadComponent: () => import('./components/trial-balance/trial-balance-result').then((m) => m.TrialBalanceResultPage) },
+  { path: 'trial-balance/detail', title: 'تراز آزمایشی تفصیلی', data: { level: AccountLevel.Detail }, loadComponent: () => import('./components/trial-balance/trial-balance-filter').then((m) => m.TrialBalanceFilterPage) },
+  { path: 'trial-balance/detail/result', title: 'تراز آزمایشی تفصیلی', loadComponent: () => import('./components/trial-balance/trial-balance-result').then((m) => m.TrialBalanceResultPage) },
   { path: 'fiscal-periods', title: 'تنظیم دوره مالی', loadComponent: () => import('./components/fiscal-period/fiscal-period').then((m) => m.FiscalPeriodPage) },
 ];

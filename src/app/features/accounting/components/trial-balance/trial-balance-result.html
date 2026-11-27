@@ -1,0 +1,16 @@
+<app-page-header [title]="title()">
+  <button type="button" class="btn" (click)="changeFilters()">تغییر فیلتر</button>
+</app-page-header>
+
+<section class="panel">
+  <app-data-table [columns]="columns" [rows]="rows()" [total]="total()" [loading]="loading()" [rowKey]="rowKey"
+    caption="تراز آزمایشی"
+    emptyTitle="داده‌ای برای نمایش وجود ندارد" emptyMessage="فیلتر را تغییر دهید یا بازه دیگری را جستجو کنید.">
+    <ng-template appCell="openingDebit" let-row>{{ row.openingDebit | faNumber }}</ng-template>
+    <ng-template appCell="openingCredit" let-row>{{ row.openingCredit | faNumber }}</ng-template>
+    <ng-template appCell="periodDebit" let-row>{{ row.periodDebit | faNumber }}</ng-template>
+    <ng-template appCell="periodCredit" let-row>{{ row.periodCredit | faNumber }}</ng-template>
+    <ng-template appCell="closingDebit" let-row>{{ row.closingDebit | faNumber }}</ng-template>
+    <ng-template appCell="closingCredit" let-row>{{ row.closingCredit | faNumber }}</ng-template>
+  </app-data-table>
+</section>
